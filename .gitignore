@@ -24,5 +24,6 @@ htmlcov/
 .idea/
 .DS_Store
 
+notes
 .env
 .superpowers/
