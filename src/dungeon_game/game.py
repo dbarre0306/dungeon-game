@@ -7,7 +7,7 @@ from langchain.agents import create_agent
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 
-from dungeon_game.dungeon import DungeonRoom, generate_dungeon
+from dungeon_game.dungeon import DungeonFactory, DungeonRoom
 
 load_dotenv()
 
@@ -75,7 +75,8 @@ class Game:
     def run(self) -> None:
 
         print("Generating Dungeon")
-        dungeon_room = generate_dungeon()
+        dungeon_factory = DungeonFactory()
+        dungeon_room = dungeon_factory.generate()
         print("Generating Dungeon completed")
 
         agent_builder = StateGraph(GameState)
