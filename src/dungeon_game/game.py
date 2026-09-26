@@ -101,6 +101,11 @@ class Game:
 
         state = self.initial_game_state(dungeon_room)
 
+        state["command"] = "look around"
+        state = agent.invoke(state)
+        pprint.pprint(state["narration"])
+        pprint.pprint(f"Room: {state["current_room"]["id"]}")
+
         command = input("> ")
         while command != "x":
             state["command"] = command
@@ -163,25 +168,28 @@ class Game:
         return state["current_room"]["id"] == "cave_entrance"
 
     def explore_cave_entrance(self, state: GameState) -> GameState:
-        if state["action"]["explore_option"] != "forward":
-            return {"narration": "You cannot run away.  You must enter the cave."}
+        if state["action"]["explore_option"] == "forward":
+            room = state["current_room"]["next_room"]
+            return self.describe_room(room)
+        elif state["action"]["explore_option"] == "look":
+            room = state["current_room"]
+            return self.describe_room(room)
         else:
-            return self.describe_next_room(state)
+            return {"narration": "You cannot run away.  You must enter the cave."}
 
-    def describe_next_room(self, state: GameState) -> GameState:
-        next_room = state["current_room"]["next_room"]
+    def describe_room(self, room: DungeonRoom) -> GameState:
         msg = {
             "messages": [
                 {
                     "role": "user",
-                    "content": "Describe the room to the player using only the facts from the next room. "
-                    f"\nThe next room is: {next_room}",
+                    "content": "Describe the room to the player using only the facts from the room."
+                    f"\nThe room is: {room}",
                 }
             ]
         }
         result = self.dungeon_master_agent.invoke(msg)
         response = result["structured_response"]
-        return {"narration": response.narration, "current_room": next_room}
+        return {"narration": response.narration, "current_room": room}
 
     # TODO: probably won't need this
     # def human_message(self, room: DungeonRoom) -> dict:
