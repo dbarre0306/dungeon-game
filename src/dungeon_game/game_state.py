@@ -17,8 +17,6 @@ class DungeonRoom(TypedDict):
     initial_facts: list[str]
     events: list[str]
     next_room: DungeonRoom | None
-    legal_actions: list[Action]
-    command_error: str | None
 
 
 class PlayerState(TypedDict):

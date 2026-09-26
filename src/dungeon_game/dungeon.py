@@ -14,13 +14,6 @@ class DungeonFactory:
             "initial_facts": ["The player is standing at the entrance of the cave."],
             "events": [],
             "next_room": self._generate_chamber(),
-            "legal_actions": [
-                {
-                    "action": "explore",
-                    "explore_option": "forward",
-                }
-            ],
-            "command_error": "You cannot run away.  You must enter the cave.",
         }
 
     def _generate_chamber(self) -> DungeonRoom:
@@ -37,21 +30,12 @@ class DungeonFactory:
             ],
             "events": [],
             "next_room": challenge_room,
-            "legal_actions": [
-                {
-                    "action": "explore",
-                    "explore_option": "left",
-                },
-                {
-                    "action": "explore",
-                    "explore_option": "right",
-                },
-            ],
-            "command_error": "You must go either left or right.",
         }
 
     def _generate_first_challenge_room(self, rooms: list[str]) -> DungeonRoom:
-        room = random.choice(rooms)
+        # TODO: change this back; it's temporary
+        # room = random.choice(rooms)
+        room = "enemy"
         other_rooms = self._remove_room(rooms, room)
         match room:
             case "treasure":
