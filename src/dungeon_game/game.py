@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from dungeon_game.actions.explore import ExploreNode
 from dungeon_game.dungeon import DungeonFactory, DungeonRoom
-from dungeon_game.game_state import ActionType, ExploreOption, GameState
+from dungeon_game.game_state import ActionType, ExploreOption, GameState, Player
 
 load_dotenv()
 
@@ -146,11 +146,26 @@ class Game:
 
     def initial_game_state(self, dungeon_room: DungeonRoom) -> GameState:
         return {
-            "player": {
-                "player_type": "warrior",
-                "health_points": 10,
-            },
+            "player": self.create_player(),
             "current_room": dungeon_room,
+        }
+
+    def create_player(self) -> Player:
+        return {
+            "player_type": "warrior",
+            "max_health_points": 25,
+            "health_points": 10,
+            "is_fighting": False,
+            "offensive_weapon": {
+                "name": "Bronze Sword",
+                "bonus_points": 3,
+            },
+            "defensive_weapon": {
+                "name": "Bronze Shield",
+                "health_points": 2,
+                "condition": "good",
+            },
+            "healiing_powers": [{"name": "Potion", "health_points": 8, "quantity": 2}],
         }
 
     def router(self, state: GameState) -> GameState:
