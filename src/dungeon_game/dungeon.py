@@ -1,13 +1,6 @@
-from __future__ import annotations
-
 import random
-from typing import TypedDict
 
-
-class DungeonRoom(TypedDict):
-    id: str
-    facts: list[str]
-    next_room: DungeonRoom | None
+from dungeon_game.game_state import DungeonRoom
 
 
 class DungeonFactory:
