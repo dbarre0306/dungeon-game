@@ -11,7 +11,9 @@ from dungeon_game.dungeon import DungeonFactory, DungeonRoom
 
 load_dotenv()
 
-ActionType = Literal["explore", "combat", "unknown"]
+ActionType = Literal[
+    "explore", "combat", "shop", "drink_potion", "open_chest", "multiple", "unknown"
+]
 ExploreOption = Literal["left", "right", "forward", "backward", "look"]
 
 
@@ -38,7 +40,6 @@ class Instructions(BaseModel):
 
 
 class RouterState(BaseModel):
-    # action: Literal["combat", "shop", "explore", "multiple", "unknown"] = Field(
     action: ActionType = Field(description="Action")
     explore_option: ExploreOption | None = Field(
         description="Which direction the player wants to move or if they are just looking around."
@@ -85,12 +86,26 @@ class Game:
         agent_builder.add_node("router", self.router)
         agent_builder.add_node("explore", self.explore)
         agent_builder.add_node("combat", self.combat)
+        agent_builder.add_node("shop", self.shop)
+        agent_builder.add_node("drink_potion", self.drink_potion)
+        agent_builder.add_node("open_chest", self.open_chest)
+        agent_builder.add_node("multiple", self.multiple)
         agent_builder.add_node("unknown", self.unknown)
 
         # Add edges to connect nodes
         agent_builder.add_edge(START, "router")
         agent_builder.add_conditional_edges(
-            "router", self.next_action, ["explore", "combat", "unknown"]
+            "router",
+            self.next_action,
+            [
+                "explore",
+                "combat",
+                "shop",
+                "drink_potion",
+                "open_chest",
+                "multiple",
+                "unknown",
+            ],
         )
         agent_builder.add_edge("explore", END)
         agent_builder.add_edge("combat", END)
@@ -127,8 +142,10 @@ class Game:
         content = (
             f"Player command: {state["command"]}\n"
             "\n"
-            "Do your best to categorize the player's command "
-            "to either explore or combat.  If there is no match, categorize it as unknown. "
+            "Do your best to categorize the player's command to only one of the "
+            "following categories: explore, combat, shop, drink_potion, or open_chest. "
+            "If the command matches multiple categories, then categorize it as multiple. "
+            "If there is no match, categorize it as unknown. "
             "\n"
             "Exploring encompasses both moving, entering, or looking around. If just looking around, "
             "set the explore_option to `look`.  If moving or entering, set the explore_option to be the "
@@ -156,6 +173,18 @@ class Game:
     def combat(self, state: GameState) -> GameState:
         # self.combat_agent.invoke({"messages": [{"role": "user", "content": ""}]})
         return {"narration": "combat"}
+
+    def shop(self, state: GameState) -> GameState:
+        return {"narration": "shop"}
+
+    def drink_potion(self, state: GameState) -> GameState:
+        return {"narration": "drink_potion"}
+
+    def open_chest(self, state: GameState) -> GameState:
+        return {"narration": "open_chest"}
+
+    def multiple(self, state: GameState) -> GameState:
+        return {"narration": "You can only do one action at a time."}
 
     def unknown(self, state: GameState) -> GameState:
         return {"narration": "I don't understand what you are saying."}

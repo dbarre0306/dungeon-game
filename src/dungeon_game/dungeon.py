@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import Literal, TypedDict
+from typing import TypedDict
 
 
 class DungeonRoom(TypedDict):
