@@ -11,8 +11,16 @@ class DungeonFactory:
     def _generate_cave_entrance(self) -> DungeonRoom:
         return {
             "id": "cave_entrance",
-            "facts": ["The player is standing at the entrance of the cave."],
+            "initial_facts": ["The player is standing at the entrance of the cave."],
+            "events": [],
             "next_room": self._generate_chamber(),
+            "legal_actions": [
+                {
+                    "action": "explore",
+                    "explore_option": "forward",
+                }
+            ],
+            "command_error": "You cannot run away.  You must enter the cave.",
         }
 
     def _generate_chamber(self) -> DungeonRoom:
@@ -21,13 +29,25 @@ class DungeonFactory:
         )
         return {
             "id": "cave_chamber",
-            "facts": [
+            "initial_facts": [
                 "The player is in the cave chamber.",
                 "The chamber has a passageway to the left and another the right."
                 "There is a flicking torch on the wall.",
                 "There may be silence or noises coming from either passageway.",
             ],
+            "events": [],
             "next_room": challenge_room,
+            "legal_actions": [
+                {
+                    "action": "explore",
+                    "explore_option": "left",
+                },
+                {
+                    "action": "explore",
+                    "explore_option": "right",
+                },
+            ],
+            "command_error": "You must go either left or right.",
         }
 
     def _generate_first_challenge_room(self, rooms: list[str]) -> DungeonRoom:
@@ -65,12 +85,13 @@ class DungeonFactory:
     def _generate_treasure_room(next_room: DungeonRoom) -> DungeonRoom:
         return {
             "id": "treasure_room",
-            "facts": [
+            "initial_facts": [
                 "There are two identical chests to the left and right.",
                 "One chest contains gold coins.",
                 "The other chest contains a serpent.",
                 "There is only one passageway out of this room.",
             ],
+            "events": [],
             "next_room": next_room,
         }
 
@@ -79,7 +100,8 @@ class DungeonFactory:
         enemy = random.choice(["goblin", "orc with a battle ax", "giant rat"])
         return {
             "id": "enemy_room",
-            "facts": [f"An {enemy} is in this room."],
+            "initial_facts": [f"An {enemy} is in this room."],
+            "events": [],
             "next_room": next_room,
         }
 
@@ -87,20 +109,22 @@ class DungeonFactory:
     def _generate_trap_room(next_room: DungeonRoom) -> DungeonRoom:
         return {
             "id": "trap_room",
-            "facts": [
+            "initial_facts": [
                 "There are gold coins on the other side of the room.",
                 "There is only one passageway forward.",
             ],
+            "events": [],
             "next_room": next_room,
         }
 
     def _generate_shop_room(self) -> DungeonRoom:
         return {
             "id": "shop_room",
-            "facts": [
+            "initial_facts": [
                 "There is a merchant selling stuff.",
                 "There is only one passageway forward.",
             ],
+            "events": [],
             "next_room": self._generate_throne_room(),
         }
 
@@ -108,10 +132,11 @@ class DungeonFactory:
     def _generate_throne_room() -> DungeonRoom:
         return {
             "id": "throne_room",
-            "facts": [
+            "initial_facts": [
                 "There is a troll twice the player's size sitting on a stone throne.",
                 "The troll has a large spiked wooden club.",
                 "The troll has the Amulet of Valdorin around his neck.",
             ],
+            "events": [],
             "next_room": None,
         }

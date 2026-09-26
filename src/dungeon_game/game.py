@@ -1,9 +1,12 @@
 import os
 import pprint
+from collections.abc import Callable
 from typing import Literal, TypedDict
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
+from langchain.agents.middleware import ModelRequest, ModelResponse, wrap_model_call
+from langchain.agents.structured_output import StructuredOutputError
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 
@@ -21,14 +24,38 @@ class Instructions(BaseModel):
 class RouterState(BaseModel):
     action: ActionType = Field(description="Action")
     explore_option: ExploreOption | None = Field(
-        description="Which direction the player wants to move or if they are just looking around."
+        default=None,
+        description="Which direction the player wants to move or if they are just looking around.",
     )
 
 
+# TODO: rename to DungeonMasterResponse
 class GameUpdate(BaseModel):
     player_health_points: int | None
     enemy_health_points: int | None
     narration: str
+
+
+@wrap_model_call
+def retry_on_invalid_structured_output(
+    request: ModelRequest,
+    handler: Callable[[ModelRequest], ModelResponse],
+) -> ModelResponse:
+    """Guardrail: retry a model call that returns malformed structured output.
+
+    Small models occasionally hallucinate invalid tool-call arguments for
+    optional Literal fields (e.g. echoing back the field's JSON schema
+    instead of a real value), which raises StructuredOutputError. Retrying
+    gives the model another chance to produce a valid response before we
+    give up on the whole turn.
+    """
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        try:
+            return handler(request)
+        except StructuredOutputError:
+            if attempt == max_attempts - 1:
+                raise
 
 
 class Game:
@@ -39,6 +66,7 @@ class Game:
             model=model,
             system_prompt="You are great at categorizing commands from the player.",
             response_format=RouterState,
+            middleware=[retry_on_invalid_structured_output],
         )
 
         self.dungeon_master_agent = create_agent(
@@ -84,12 +112,18 @@ class Game:
                 "shop",
                 "drink_potion",
                 "open_chest",
+                # "get_coins",
                 "multiple",
                 "unknown",
             ],
         )
         agent_builder.add_edge("explore", END)
         agent_builder.add_edge("combat", END)
+        # agent_builder.add_edge("counter_attack", END)
+        agent_builder.add_edge("shop", END)
+        agent_builder.add_edge("drink_potion", END)
+        agent_builder.add_edge("open_chest", END)
+        agent_builder.add_edge("multiple", END)
         agent_builder.add_edge("unknown", END)
 
         # Compile the agent
@@ -124,19 +158,25 @@ class Game:
             f"Player command: {state["command"]}\n"
             "\n"
             "Do your best to categorize the player's command to only one of the "
-            "following categories: explore, combat, shop, drink_potion, or open_chest. "
-            "If the command matches multiple categories, then categorize it as multiple. "
-            "If there is no match, categorize it as unknown. "
+            "following categories: `explore`, `combat`, `shop`, `drink_potion`, or `open_chest`. "
+            "If the command matches multiple categories, then categorize it as `multiple`. "
+            "If there is no match, categorize it as `unknown`. "
             "\n"
             "Exploring encompasses both moving, entering, or looking around. If just looking around, "
             "set the explore_option to `look`.  If moving or entering, set the explore_option to be the "
             "player's direction which is either "
             "`left`, `right`, `forward`, or `backward`.  If the player's command doesn't specify "
-            "the direction, the use `forward` by default."
+            "the direction, then use `forward` by default."
         )
-        result = self.router_agent.invoke(
-            {"messages": [{"role": "user", "content": content}]}
-        )
+        try:
+            result = self.router_agent.invoke(
+                {"messages": [{"role": "user", "content": content}]}
+            )
+        except StructuredOutputError:
+            # The model occasionally returns malformed structured output
+            # (e.g. for typos or ambiguous commands). Treat it as unknown
+            # rather than crashing the whole game loop.
+            return {"action": {"action": "unknown", "explore_option": None}}
         return {
             "action": {
                 "action": result["structured_response"].action,
@@ -148,7 +188,6 @@ class Game:
         return self.explore_node.execute(state)
 
     def combat(self, state: GameState) -> GameState:
-        # self.combat_agent.invoke({"messages": [{"role": "user", "content": ""}]})
         return {"narration": "combat"}
 
     def shop(self, state: GameState) -> GameState:
@@ -161,23 +200,10 @@ class Game:
         return {"narration": "open_chest"}
 
     def multiple(self, state: GameState) -> GameState:
-        return {"narration": "You can only do one action at a time."}
+        return {"narration": "You can only perform one action at a time."}
 
     def unknown(self, state: GameState) -> GameState:
         return {"narration": "I don't understand what you are saying."}
 
     def next_action(self, state: GameState) -> ActionType:
         return state["action"]["action"]
-
-    # TODO: probably won't need this
-    # def human_message(self, room: DungeonRoom) -> dict:
-    #     content = (
-    #         "Facts:\n"
-    #         f"{self.format_facts(room["facts"])}"
-    #     )
-
-    #     return {"messages": [{"role": "user", "content": content}]}
-
-    # @staticmethod
-    # def format_facts(facts: list[str]) -> str:
-    #     return "\n".join(map(lambda f: f"- {f}", facts))

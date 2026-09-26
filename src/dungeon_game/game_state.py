@@ -7,20 +7,23 @@ ActionType = Literal[
 ExploreOption = Literal["left", "right", "forward", "backward", "look"]
 
 
+class Action(TypedDict):
+    action: ActionType | None
+    explore_option: ExploreOption | None
+
+
 class DungeonRoom(TypedDict):
     id: str
-    facts: list[str]
+    initial_facts: list[str]
+    events: list[str]
     next_room: DungeonRoom | None
+    legal_actions: list[Action]
+    command_error: str | None
 
 
 class PlayerState(TypedDict):
     player_type: Literal["warrior", "mage"]
     health_points: int
-
-
-class Action(TypedDict):
-    action: ActionType | None
-    explore_option: ExploreOption | None
 
 
 class GameState(TypedDict):
