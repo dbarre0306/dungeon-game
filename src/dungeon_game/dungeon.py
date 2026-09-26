@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 
 class DungeonRoom(TypedDict):
@@ -83,9 +83,10 @@ class DungeonFactory:
 
     @staticmethod
     def _generate_enemy_room(next_room: DungeonRoom) -> DungeonRoom:
+        enemy = random.choice(["goblin", "orc with a battle ax", "giant rat"])
         return {
             "id": "enemy_room",
-            "facts": ["An enemy is in this room"],
+            "facts": [f"An {enemy} is in this room."],
             "next_room": next_room,
         }
 
