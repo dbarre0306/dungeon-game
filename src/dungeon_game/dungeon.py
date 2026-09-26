@@ -5,7 +5,7 @@ from typing import TypedDict
 
 
 class DungeonRoom(TypedDict):
-    name: str
+    id: str
     facts: list[str]
     next_room: DungeonRoom | None
 
@@ -16,7 +16,7 @@ def generate_dungeon() -> DungeonRoom:
 
 def generate_cave_entrance() -> DungeonRoom:
     return {
-        "name": "Cave Entrance",
+        "id": "cave_entrance",
         "facts": ["The player is standing at the entrance of the cave."],
         "next_room": generate_chamber(),
     }
@@ -25,7 +25,7 @@ def generate_cave_entrance() -> DungeonRoom:
 def generate_chamber() -> DungeonRoom:
     challenge_room = generate_first_challenge_room(["treasure", "enemy", "trap"])
     return {
-        "name": "Cave Chamber",
+        "id": "cave_chamber",
         "facts": [
             "The player is in the cave chamber.",
             "The chamber has a passageway to the left and another the right."
@@ -65,7 +65,7 @@ def generate_second_challenge_room(rooms: list[str]):
 
 def generate_treasure_room(next_room: DungeonRoom) -> DungeonRoom:
     return {
-        "name": "Treasure Room",
+        "id": "treasure_room",
         "facts": [
             "There are two identical chests to the left and right.",
             "One chest contains gold coins.",
@@ -78,7 +78,7 @@ def generate_treasure_room(next_room: DungeonRoom) -> DungeonRoom:
 
 def generate_enemy_room(next_room: DungeonRoom) -> DungeonRoom:
     return {
-        "name": "Enemy Room",
+        "id": "enemy_room",
         "facts": ["An enemy is in this room"],
         "next_room": next_room,
     }
@@ -86,7 +86,7 @@ def generate_enemy_room(next_room: DungeonRoom) -> DungeonRoom:
 
 def generate_trap_room(next_room: DungeonRoom) -> DungeonRoom:
     return {
-        "name": "Trap Room",
+        "id": "trap_room",
         "facts": [
             "There are gold coins on the other side of the room.",
             "There is only one passageway forward.",
@@ -97,7 +97,7 @@ def generate_trap_room(next_room: DungeonRoom) -> DungeonRoom:
 
 def generate_shop_room() -> DungeonRoom:
     return {
-        "name": "Shop Room",
+        "id": "shop_room",
         "facts": [
             "There is a merchant selling stuff.",
             "There is only one passageway forward.",
@@ -108,10 +108,10 @@ def generate_shop_room() -> DungeonRoom:
 
 def generate_throne_room() -> DungeonRoom:
     return {
-        "name": "Throne Room",
+        "id": "throne_room",
         "facts": [
-            "There is a troll twice the player's size on stone throne.",
-            "The troll has a large wooden club.",
+            "There is a troll twice the player's size sitting on a stone throne.",
+            "The troll has a large spiked wooden club.",
             "The troll has the Amulet of Valdorin around his neck.",
         ],
         "next_room": None,

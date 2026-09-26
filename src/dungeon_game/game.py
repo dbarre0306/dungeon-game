@@ -45,6 +45,12 @@ class RouterState(BaseModel):
     )
 
 
+class GameUpdate(BaseModel):
+    player_health_points: int | None
+    enemy_health_points: int | None
+    narration: str
+
+
 class Game:
 
     def __init__(self):
@@ -63,6 +69,7 @@ class Game:
             "with words in that you can make it fun and scary at the same time. "
             "In this game, the player must retrieve the Amulet of Valdorin that was "
             "was stolen by a troll who lives in the Dungeon of Mistwood.",
+            response_format=GameUpdate,
         )
 
     def run(self) -> None:
@@ -91,20 +98,24 @@ class Game:
         # Compile the agent
         agent = agent_builder.compile()
 
+        state = self.initial_game_state(dungeon_room)
+
         command = input("> ")
         while command != "x":
-            state = agent.invoke(
-                {
-                    "command": command,
-                    "player": {
-                        "player_type": "warrior",
-                        "health_points": 10,
-                    },
-                    "current_room": dungeon_room,
-                }
-            )
+            state["command"] = command
+            state = agent.invoke(state)
             pprint.pprint(state["narration"])
+            pprint.pprint(f"Room: {state["current_room"]["id"]}")
             command = input("> ")
+
+    def initial_game_state(self, dungeon_room: DungeonRoom) -> GameState:
+        return {
+            "player": {
+                "player_type": "warrior",
+                "health_points": 10,
+            },
+            "current_room": dungeon_room,
+        }
 
     def router(self, state: GameState) -> GameState:
         content = (
@@ -130,7 +141,10 @@ class Game:
         }
 
     def explore(self, state: GameState) -> GameState:
-        # self.explore_agent.invoke({"messages": [{"role": "user", "content": ""}]})
+        pprint.pprint(f"Explore Room: {state["current_room"]["id"]}")
+        if self.is_at_cave_entrance(state):
+            return self.explore_cave_entrance(state)
+
         return {"narration": "explore"}
 
     def combat(self, state: GameState) -> GameState:
@@ -142,3 +156,41 @@ class Game:
 
     def next_action(self, state: GameState) -> ActionType:
         return state["action"]["action"]
+
+    @staticmethod
+    def is_at_cave_entrance(state: GameState) -> bool:
+        return state["current_room"]["id"] == "cave_entrance"
+
+    def explore_cave_entrance(self, state: GameState) -> GameState:
+        if state["action"]["explore_option"] != "forward":
+            return {"narration": "You cannot run away.  You must enter the cave."}
+        else:
+            return self.describe_next_room(state)
+
+    def describe_next_room(self, state: GameState) -> GameState:
+        next_room = state["current_room"]["next_room"]
+        msg = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Describe the room to the player using only the facts from the next room. "
+                    f"\nThe next room is: {next_room}",
+                }
+            ]
+        }
+        result = self.dungeon_master_agent.invoke(msg)
+        response = result["structured_response"]
+        return {"narration": response.narration, "current_room": next_room}
+
+    # TODO: probably won't need this
+    # def human_message(self, room: DungeonRoom) -> dict:
+    #     content = (
+    #         "Facts:\n"
+    #         f"{self.format_facts(room["facts"])}"
+    #     )
+
+    #     return {"messages": [{"role": "user", "content": content}]}
+
+    # @staticmethod
+    # def format_facts(facts: list[str]) -> str:
+    #     return "\n".join(map(lambda f: f"- {f}", facts))
