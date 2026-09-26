@@ -154,7 +154,7 @@ class Game:
         return {
             "player_type": "warrior",
             "max_health_points": 25,
-            "health_points": 10,
+            "health_points": 25,
             "is_fighting": False,
             "offensive_weapon": {
                 "name": "Bronze Sword",
@@ -166,7 +166,7 @@ class Game:
                 "condition": "good",
             },
             "healing_powers": [{"name": "Potion", "health_points": 8, "quantity": 2}],
-            "gold_coins": 0,
+            "gold_coins": 10,
         }
 
     def router(self, state: GameState) -> GameState:
