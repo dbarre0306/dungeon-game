@@ -165,7 +165,8 @@ class Game:
                 "health_points": 2,
                 "condition": "good",
             },
-            "healiing_powers": [{"name": "Potion", "health_points": 8, "quantity": 2}],
+            "healing_powers": [{"name": "Potion", "health_points": 8, "quantity": 2}],
+            "gold_coins": 0,
         }
 
     def router(self, state: GameState) -> GameState:
