@@ -13,12 +13,13 @@ from dungeon_game.actions.explore import ExploreNode
 from dungeon_game.dungeon import DungeonFactory, DungeonRoom
 from dungeon_game.game_state import (
     ActionType,
-    DefensiveWeapon,
     ExploreOption,
     GameState,
-    HealingPower,
-    OffensiveWeapon,
     Player,
+    Potions,
+    Shield,
+    Sword,
+    Warrior,
 )
 
 load_dotenv()
@@ -157,16 +158,13 @@ class Game:
         )
 
     def create_player(self) -> Player:
-        return Player(
-            player_type="warrior",
+        return Warrior(
             max_health_points=25,
             health_points=25,
             is_fighting=False,
-            offensive_weapon=OffensiveWeapon(name="Bronze Sword", bonus_points=3),
-            defensive_weapon=DefensiveWeapon(
-                name="Bronze Shield", health_points=2, condition="good"
-            ),
-            healing_powers=[HealingPower(name="Potion", health_points=8, quantity=2)],
+            potions=Potions(8, 2),
+            sword=Sword("Bronze Sword", 0),
+            shield=Shield("Bronze Shield", 2),
             gold_coins=10,
         )
 
