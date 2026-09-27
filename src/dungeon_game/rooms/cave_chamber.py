@@ -8,10 +8,10 @@ class CaveChamber(Room):
         super().__init__(room)
 
     def is_valid_action(self, action: Action) -> tuple[bool, str | None]:
-        if action["explore_option"] == "look":
+        if action.explore_option == "look":
             return (True, None)
-        elif action["explore_option"] == "left":
+        elif action.explore_option == "left":
             return (True, None)
-        elif action["explore_option"] == "right":
+        elif action.explore_option == "right":
             return (True, None)
         return False, "You must go either left or right."

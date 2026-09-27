@@ -8,7 +8,7 @@ from dungeon_game.rooms.room import Room
 
 
 def create_room(room: DungeonRoom) -> Room | None:
-    match room["id"]:
+    match room.id:
         case "cave_entrance":
             return CaveEntrance(room)
         case "cave_chamber":

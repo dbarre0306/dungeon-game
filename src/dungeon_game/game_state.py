@@ -1,5 +1,8 @@
 from __future__ import annotations
-from typing import Literal, TypedDict
+
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 ActionType = Literal[
     "explore", "combat", "shop", "drink_potion", "open_chest", "multiple", "unknown"
@@ -9,36 +12,36 @@ ExploreOption = Literal["left", "right", "forward", "backward", "look"]
 WeaponCondition = Literal["good", "cracked", "broken"]
 
 
-class Action(TypedDict):
-    action: ActionType | None
-    explore_option: ExploreOption | None
+class Action(BaseModel):
+    action: ActionType | None = None
+    explore_option: ExploreOption | None = None
 
 
-class DungeonRoom(TypedDict):
+class DungeonRoom(BaseModel):
     id: str
     initial_facts: list[str]
     events: list[str]
     next_room: DungeonRoom | None
 
 
-class OffensiveWeapon(TypedDict):
+class OffensiveWeapon(BaseModel):
     name: str
     bonus_points: int
 
 
-class DefensiveWeapon(TypedDict):
+class DefensiveWeapon(BaseModel):
     name: str
     health_points: int
     condition: WeaponCondition
 
 
-class HealingPower(TypedDict):
+class HealingPower(BaseModel):
     name: str
     health_points: int
     quantity: int
 
 
-class Player(TypedDict):
+class Player(BaseModel):
     player_type: Literal["warrior", "mage"]
     max_health_points: int
     health_points: int
@@ -49,9 +52,9 @@ class Player(TypedDict):
     gold_coins: int
 
 
-class GameState(TypedDict):
+class GameState(BaseModel):
     player: Player
     command: str
-    action: Action
-    narration: str
+    action: Action = Field(default_factory=Action)
+    narration: str = ""
     current_room: DungeonRoom

@@ -1,7 +1,6 @@
 import os
 import pprint
 from collections.abc import Callable
-from typing import Literal, TypedDict
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
@@ -12,7 +11,15 @@ from pydantic import BaseModel, Field
 
 from dungeon_game.actions.explore import ExploreNode
 from dungeon_game.dungeon import DungeonFactory, DungeonRoom
-from dungeon_game.game_state import ActionType, ExploreOption, GameState, Player
+from dungeon_game.game_state import (
+    ActionType,
+    DefensiveWeapon,
+    ExploreOption,
+    GameState,
+    HealingPower,
+    OffensiveWeapon,
+    Player,
+)
 
 load_dotenv()
 
@@ -129,49 +136,43 @@ class Game:
         # Compile the agent
         agent = agent_builder.compile()
 
-        state = self.initial_game_state(dungeon_room)
-
-        state["command"] = "look around"
-        state = agent.invoke(state)
-        pprint.pprint(state["narration"])
-        pprint.pprint(f"Room: {state["current_room"]["id"]}")
+        state = self.initial_game_state(dungeon_room, "look around")
+        state = GameState.model_validate(agent.invoke(state))
+        pprint.pprint(state.narration)
+        pprint.pprint(f"Room: {state.current_room.id}")
 
         command = input("> ")
         while command != "x":
-            state["command"] = command
-            state = agent.invoke(state)
-            pprint.pprint(state["narration"])
-            pprint.pprint(f"Room: {state["current_room"]["id"]}")
+            state = state.model_copy(update={"command": command})
+            state = GameState.model_validate(agent.invoke(state))
+            pprint.pprint(state.narration)
+            pprint.pprint(f"Room: {state.current_room.id}")
             command = input("> ")
 
-    def initial_game_state(self, dungeon_room: DungeonRoom) -> GameState:
-        return {
-            "player": self.create_player(),
-            "current_room": dungeon_room,
-        }
+    def initial_game_state(self, dungeon_room: DungeonRoom, command: str) -> GameState:
+        return GameState(
+            player=self.create_player(),
+            current_room=dungeon_room,
+            command=command,
+        )
 
     def create_player(self) -> Player:
-        return {
-            "player_type": "warrior",
-            "max_health_points": 25,
-            "health_points": 25,
-            "is_fighting": False,
-            "offensive_weapon": {
-                "name": "Bronze Sword",
-                "bonus_points": 3,
-            },
-            "defensive_weapon": {
-                "name": "Bronze Shield",
-                "health_points": 2,
-                "condition": "good",
-            },
-            "healing_powers": [{"name": "Potion", "health_points": 8, "quantity": 2}],
-            "gold_coins": 10,
-        }
+        return Player(
+            player_type="warrior",
+            max_health_points=25,
+            health_points=25,
+            is_fighting=False,
+            offensive_weapon=OffensiveWeapon(name="Bronze Sword", bonus_points=3),
+            defensive_weapon=DefensiveWeapon(
+                name="Bronze Shield", health_points=2, condition="good"
+            ),
+            healing_powers=[HealingPower(name="Potion", health_points=8, quantity=2)],
+            gold_coins=10,
+        )
 
     def router(self, state: GameState) -> GameState:
         content = (
-            f"Player command: {state["command"]}\n"
+            f"Player command: {state.command}\n"
             "\n"
             "Do your best to categorize the player's command to only one of the "
             "following categories: `explore`, `combat`, `shop`, `drink_potion`, or `open_chest`. "
@@ -222,4 +223,4 @@ class Game:
         return {"narration": "I don't understand what you are saying."}
 
     def next_action(self, state: GameState) -> ActionType:
-        return state["action"]["action"]
+        return state.action.action
