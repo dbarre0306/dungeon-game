@@ -11,8 +11,7 @@ from dungeon_game.agents.router_agent import create_router_agent
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
 from dungeon_game.domain.misc.action import ActionType
-from dungeon_game.domain.player.player import Player, Potions
-from dungeon_game.domain.player.warrior import Shield, Sword, Warrior
+from dungeon_game.domain.player.warrior import create_default_warrior
 from dungeon_game.game_state import GameState
 
 load_dotenv()
@@ -91,21 +90,9 @@ class Game:
 
     def initial_game_state(self, dungeon: Dungeon, command: str) -> GameState:
         return GameState(
-            player=self.create_player(),
+            player=create_default_warrior(),
             dungeon=dungeon,
             command=command,
-        )
-
-    def create_player(self) -> Player:
-        return Warrior(
-            max_health_points=25,
-            health_points=25,
-            is_fighting=False,
-            potions=Potions(8, 2),
-            sword=Sword("Bronze Sword", 0),
-            shield=Shield("Bronze Shield", 2),
-            gold_coins=10,
-            current_room_index=0,
         )
 
     def router(self, state: GameState) -> GameState:

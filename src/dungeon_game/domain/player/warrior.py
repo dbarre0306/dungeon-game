@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.player.player import Player
+from dungeon_game.domain.player.player import Player, Potions
 
 
 class Sword(BaseModel):
@@ -25,3 +25,16 @@ class Warrior(Player):
     type: Literal["warrior"] = "warrior"
     sword: Sword
     shield: Shield
+
+
+def create_default_warrior() -> Player:
+    return Warrior(
+        max_health_points=25,
+        health_points=25,
+        is_fighting=False,
+        potions=Potions(8, 2),
+        sword=Sword("Bronze Sword", 0),
+        shield=Shield("Bronze Shield", 2),
+        gold_coins=10,
+        current_room_index=0,
+    )
