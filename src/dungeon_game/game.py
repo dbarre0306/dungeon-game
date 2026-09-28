@@ -1,18 +1,16 @@
 import os
 import pprint
-from collections.abc import Callable
 
 from dotenv import load_dotenv
-from langchain.agents import create_agent
-from langchain.agents.middleware import ModelRequest, ModelResponse, wrap_model_call
 from langchain.agents.structured_output import StructuredOutputError
 from langgraph.graph import END, START, StateGraph
-from pydantic import BaseModel, Field
 
 from dungeon_game.actions.explore import ExploreNode
+from dungeon_game.agents.dungeon_master_agent import create_dungeon_master_agent
+from dungeon_game.agents.router_agent import create_router_agent
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
-from dungeon_game.domain.misc.action import ActionType, ExploreOption
+from dungeon_game.domain.misc.action import ActionType
 from dungeon_game.domain.player.player import Player, Potions
 from dungeon_game.domain.player.warrior import Shield, Sword, Warrior
 from dungeon_game.game_state import GameState
@@ -20,65 +18,12 @@ from dungeon_game.game_state import GameState
 load_dotenv()
 
 
-class RouterState(BaseModel):
-    action: ActionType = Field(description="Action")
-    explore_option: ExploreOption | None = Field(
-        default=None,
-        description="Which direction the player wants to move or if they are just looking around.",
-    )
-
-
-# TODO: rename to DungeonMasterResponse
-class GameUpdate(BaseModel):
-    player_health_points: int | None
-    enemy_health_points: int | None
-    narration: str
-
-
-@wrap_model_call
-def retry_on_invalid_structured_output(
-    request: ModelRequest,
-    handler: Callable[[ModelRequest], ModelResponse],
-) -> ModelResponse:
-    """Guardrail: retry a model call that returns malformed structured output.
-
-    Small models occasionally hallucinate invalid tool-call arguments for
-    optional Literal fields (e.g. echoing back the field's JSON schema
-    instead of a real value), which raises StructuredOutputError. Retrying
-    gives the model another chance to produce a valid response before we
-    give up on the whole turn.
-    """
-    max_attempts = 3
-    for attempt in range(max_attempts):
-        try:
-            return handler(request)
-        except StructuredOutputError:
-            if attempt == max_attempts - 1:
-                raise
-
-
 class Game:
 
     def __init__(self):
         model = f"openai:{os.getenv("MODEL", "gpt-4o-mini")}"
-        self.router_agent = create_agent(
-            model=model,
-            system_prompt="You are great at categorizing commands from the player.",
-            response_format=RouterState,
-            middleware=[retry_on_invalid_structured_output],
-        )
-
-        self.dungeon_master_agent = create_agent(
-            model=model,
-            system_prompt="You are the Dungeon Master for this game. "
-            "The game is similar to Dungeons and Dragons.  As the Dungeon Master "
-            "you control the flow of the game through narration.  You have a way "
-            "with words in that you can make it fun and scary at the same time. "
-            "In this game, the player must retrieve the Amulet of Valdorin that was "
-            "was stolen by a troll who lives in the Dungeon of Mistwood.",
-            response_format=GameUpdate,
-        )
-
+        self.router_agent = create_router_agent(model)
+        self.dungeon_master_agent = create_dungeon_master_agent(model)
         self.explore_node = ExploreNode(self.dungeon_master_agent)
 
     def run(self) -> None:
