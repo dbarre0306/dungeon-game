@@ -1,5 +1,5 @@
-from dungeon_game.game_state import DungeonRoom, GameState
-from dungeon_game.rooms.room_factory import create_room
+from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+from dungeon_game.game_state import GameState
 
 
 class ExploreNode:
@@ -8,7 +8,7 @@ class ExploreNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> GameState:
-        room = create_room(state.current_room)
+        room = self.get_room(state)
         is_valid, err_msg = room.is_valid_action(state.action)
         if is_valid:
             return self._explore_cave_entrance(state)
@@ -22,14 +22,25 @@ class ExploreNode:
             return self._go_to_next_room_and_describe(state)
 
     def _describe_room(self, state: GameState):
-        room = state.current_room
+        room = self.get_room(state)
         narration = self._get_room_description(room)
         return {"narration": narration}
 
     def _go_to_next_room_and_describe(self, state: GameState):
-        next_room = state.current_room.next_room
+        next_room = self.get_next_room(state)
+        if next_room is None:
+            return {"narration": "There is nowhere further to go."}
         narration = self._get_room_description(next_room)
-        return {"narration": narration, "current_room": next_room}
+        player = state.player.model_copy(
+            update={"current_room_index": state.player.current_room_index + 1}
+        )
+        return {"narration": narration, "player": player}
+
+    def get_room(self, state: GameState) -> DungeonRoom:
+        return state.dungeon.get_room(state.player.current_room_index)
+
+    def get_next_room(self, state: GameState) -> DungeonRoom | None:
+        return state.dungeon.get_next_room(state.player.current_room_index)
 
     def _get_room_description(self, room: DungeonRoom) -> GameState:
         msg = {
@@ -41,7 +52,7 @@ class ExploreNode:
                     "needs to clearly understand what is there in order to make a decison on what "
                     "do to next.  Try to keep it to a few sentences or less."
                     "\n\nThe initial facts are: "
-                    f"{self._format_list(room.initial_facts)}"
+                    f"{self._format_list(room.get_initial_facts())}"
                     f"\n\nThe events are: "
                     f"{self._format_list(room.events)}",
                 }

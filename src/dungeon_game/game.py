@@ -10,23 +10,14 @@ from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 
 from dungeon_game.actions.explore import ExploreNode
-from dungeon_game.dungeon import DungeonFactory, DungeonRoom
-from dungeon_game.game_state import (
-    ActionType,
-    ExploreOption,
-    GameState,
-    Player,
-    Potions,
-    Shield,
-    Sword,
-    Warrior,
-)
+from dungeon_game.domain.dungeon.dungeon import Dungeon
+from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
+from dungeon_game.domain.misc.action import ActionType, ExploreOption
+from dungeon_game.domain.player.player import Player, Potions
+from dungeon_game.domain.player.warrior import Shield, Sword, Warrior
+from dungeon_game.game_state import GameState
 
 load_dotenv()
-
-
-class Instructions(BaseModel):
-    text: str
 
 
 class RouterState(BaseModel):
@@ -94,7 +85,7 @@ class Game:
 
         print("Generating Dungeon")
         dungeon_factory = DungeonFactory()
-        dungeon_room = dungeon_factory.generate()
+        dungeon = dungeon_factory.generate()
         print("Generating Dungeon completed")
 
         agent_builder = StateGraph(GameState)
@@ -137,23 +128,26 @@ class Game:
         # Compile the agent
         agent = agent_builder.compile()
 
-        state = self.initial_game_state(dungeon_room, "look around")
+        state = self.initial_game_state(dungeon, "look around")
         state = GameState.model_validate(agent.invoke(state))
         pprint.pprint(state.narration)
-        pprint.pprint(f"Room: {state.current_room.id}")
+        pprint.pprint(f"Room: {self.current_room(state).type}")
 
         command = input("> ")
         while command != "x":
             state = state.model_copy(update={"command": command})
             state = GameState.model_validate(agent.invoke(state))
             pprint.pprint(state.narration)
-            pprint.pprint(f"Room: {state.current_room.id}")
+            pprint.pprint(f"Room: {self.current_room(state).type}")
             command = input("> ")
 
-    def initial_game_state(self, dungeon_room: DungeonRoom, command: str) -> GameState:
+    def current_room(self, state: GameState):
+        return state.dungeon.get_room(state.player.current_room_index)
+
+    def initial_game_state(self, dungeon: Dungeon, command: str) -> GameState:
         return GameState(
             player=self.create_player(),
-            current_room=dungeon_room,
+            dungeon=dungeon,
             command=command,
         )
 
@@ -166,6 +160,7 @@ class Game:
             sword=Sword("Bronze Sword", 0),
             shield=Shield("Bronze Shield", 2),
             gold_coins=10,
+            current_room_index=0,
         )
 
     def router(self, state: GameState) -> GameState:
@@ -177,9 +172,9 @@ class Game:
             "If the command matches multiple categories, then categorize it as `multiple`. "
             "If there is no match, categorize it as `unknown`. "
             "\n"
-            "Exploring encompasses both moving, entering, or looking around. If just looking around, "
-            "set the explore_option to `look`.  If moving or entering, set the explore_option to be the "
-            "player's direction which is either "
+            "Exploring encompasses both moving, entering, or looking around. If just looking "
+            "around, set the explore_option to `look`.  If moving or entering, set the "
+            "explore_option to be the player's direction which is either "
             "`left`, `right`, `forward`, or `backward`.  If the player's command doesn't specify "
             "the direction, then use `forward` by default."
         )

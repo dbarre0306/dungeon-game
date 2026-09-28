@@ -1,0 +1,18 @@
+from typing import Literal
+
+from dungeon_game.domain.misc.action import Action
+from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+
+
+class ThroneRoom(DungeonRoom):
+    type: Literal["throne_room"] = "throne_room"
+
+    def is_valid_action(self, action: Action) -> tuple[bool, str | None]:
+        return (True, None)
+
+    def get_initial_facts(self) -> list[str]:
+        return [
+            "There is a troll twice the player's size sitting on a stone throne.",
+            "The troll has a large spiked wooden club.",
+            "The troll has the Amulet of Valdorin around his neck.",
+        ]
