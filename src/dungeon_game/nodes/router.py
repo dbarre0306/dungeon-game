@@ -1,3 +1,5 @@
+from typing import Any
+
 from langchain.agents.structured_output import StructuredOutputError
 
 from dungeon_game.game_state import GameState
@@ -8,7 +10,7 @@ class RouterNode:
     def __init__(self, router_agent):
         self._router_agent = router_agent
 
-    def execute(self, state: GameState) -> GameState:
+    def execute(self, state: GameState) -> dict[str, Any]:
         content = (
             f"Player command: {state.command}\n"
             "\n"

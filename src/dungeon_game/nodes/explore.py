@@ -1,3 +1,5 @@
+from typing import Any
+
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
@@ -7,7 +9,7 @@ class ExploreNode:
     def __init__(self, dungeon_master_agent):
         self._dungeon_master_agent = dungeon_master_agent
 
-    def execute(self, state: GameState) -> GameState:
+    def execute(self, state: GameState) -> dict[str, Any]:
         room = self.get_room(state)
         is_valid, err_msg = room.is_valid_action(state.action)
         if is_valid:
@@ -15,18 +17,18 @@ class ExploreNode:
         else:
             return {"narration": err_msg}
 
-    def _explore_cave_entrance(self, state: GameState) -> GameState:
+    def _explore_cave_entrance(self, state: GameState) -> dict[str, Any]:
         if state.action.explore_option == "look":
             return self._describe_room(state)
         else:
             return self._go_to_next_room_and_describe(state)
 
-    def _describe_room(self, state: GameState):
+    def _describe_room(self, state: GameState) -> dict[str, Any]:
         room = self.get_room(state)
         narration = self._get_room_description(room)
         return {"narration": narration}
 
-    def _go_to_next_room_and_describe(self, state: GameState):
+    def _go_to_next_room_and_describe(self, state: GameState) -> dict[str, Any]:
         next_room = self.get_next_room(state)
         if next_room is None:
             return {"narration": "There is nowhere further to go."}
@@ -42,7 +44,7 @@ class ExploreNode:
     def get_next_room(self, state: GameState) -> DungeonRoom | None:
         return state.dungeon.get_next_room(state.player.current_room_index)
 
-    def _get_room_description(self, room: DungeonRoom) -> GameState:
+    def _get_room_description(self, room: DungeonRoom) -> str:
         msg = {
             "messages": [
                 {

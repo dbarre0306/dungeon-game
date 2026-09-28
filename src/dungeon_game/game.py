@@ -1,5 +1,6 @@
 import os
 import pprint
+from typing import Any
 
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
@@ -104,10 +105,10 @@ class Game:
             command=command,
         )
 
-    def multiple(self, state: GameState) -> GameState:
+    def multiple(self, state: GameState) -> dict[str, Any]:
         return {"narration": "You can only perform one action at a time."}
 
-    def unknown(self, state: GameState) -> GameState:
+    def unknown(self, state: GameState) -> dict[str, Any]:
         return {"narration": "I don't understand what you are saying."}
 
     def next_action(self, state: GameState) -> ActionType:
