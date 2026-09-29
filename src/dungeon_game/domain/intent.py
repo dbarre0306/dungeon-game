@@ -3,9 +3,16 @@ from typing import Literal
 from pydantic import BaseModel
 
 ActionType = Literal[
-    "explore", "attack", "shop", "drink_potion", "open_chest", "multiple", "unknown"
+    "explore",
+    "look",
+    "attack",
+    "shop",
+    "drink_potion",
+    "open_chest",
+    "multiple",
+    "unknown",
 ]
-ExploreDirection = Literal["left", "right", "forward", "backward", "look"]
+ExploreDirection = Literal["left", "right", "forward", "backward"]
 
 
 class Intent(BaseModel):

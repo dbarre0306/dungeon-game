@@ -10,38 +10,30 @@ class ExploreNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        room = self.get_room(state)
+        print(f"EXPLORE : {state.intent.type}")
+        next_room = self._get_next_room(state)
+        if next_room == None:
+            return {"narration": "There is nowhere further to go."}
+
+        room = self._get_room(state)
         is_valid, err_msg = room.is_valid_action(state.intent)
         if is_valid:
-            return self._explore_cave_entrance(state)
+            next_room_index = state.player.current_room_index + 1
+            description = self._get_room_description(next_room)
+            player = state.player.model_copy(
+                update={"current_room_index": next_room_index}
+            )
+            new_dungeon = state.dungeon.with_room_updated(
+                next_room_index, room_description=description
+            )
+            return {"narration": description, "player": player, "dungeon": new_dungeon}
         else:
             return {"narration": err_msg}
 
-    def _explore_cave_entrance(self, state: GameState) -> dict[str, Any]:
-        if state.intent.explore_option == "look":
-            return self._describe_room(state)
-        else:
-            return self._go_to_next_room_and_describe(state)
-
-    def _describe_room(self, state: GameState) -> dict[str, Any]:
-        room = self.get_room(state)
-        narration = self._get_room_description(room)
-        return {"narration": narration}
-
-    def _go_to_next_room_and_describe(self, state: GameState) -> dict[str, Any]:
-        next_room = self.get_next_room(state)
-        if next_room is None:
-            return {"narration": "There is nowhere further to go."}
-        narration = self._get_room_description(next_room)
-        player = state.player.model_copy(
-            update={"current_room_index": state.player.current_room_index + 1}
-        )
-        return {"narration": narration, "player": player}
-
-    def get_room(self, state: GameState) -> DungeonRoom:
+    def _get_room(self, state: GameState) -> DungeonRoom:
         return state.dungeon.get_room(state.player.current_room_index)
 
-    def get_next_room(self, state: GameState) -> DungeonRoom | None:
+    def _get_next_room(self, state: GameState) -> DungeonRoom | None:
         return state.dungeon.get_next_room(state.player.current_room_index)
 
     def _get_room_description(self, room: DungeonRoom) -> str:

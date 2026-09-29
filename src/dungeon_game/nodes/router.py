@@ -15,15 +15,15 @@ class RouterNode:
             f"Player command: {state.command}\n"
             "\n"
             "Do your best to categorize the player's command to only one of the "
-            "following categories: `explore`, `attack`, `shop`, `drink_potion`, or `open_chest`. "
+            "following categories: `explore`, `look`, `attack`, `shop`, `drink_potion`, or `open_chest`. "
             "If the command matches multiple categories, then categorize it as `multiple`. "
             "If there is no match, categorize it as `unknown`. "
             "\n"
-            "Exploring encompasses both moving, entering, or looking around. If just looking "
-            "around, set the explore_direction to `look`.  If moving or entering, set the "
-            "explore_direction to be the player's direction which is either "
+            "Exploring encompasses both moving, exiting, or entering. "
+            "Set explore_direction to be the player's direction which is either "
             "`left`, `right`, `forward`, or `backward`.  If the player's command doesn't specify "
-            "the direction, then use `forward` by default."
+            "the direction, then use `forward` by default.  If a player refers to exiting "
+            "a room, they are indicating that they want to move forward through the only door."
         )
         try:
             result = self._router_agent.invoke(

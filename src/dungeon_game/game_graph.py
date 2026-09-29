@@ -12,6 +12,7 @@ from dungeon_game.nodes.attack import AttackNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
+from dungeon_game.nodes.look import LookNode
 from dungeon_game.nodes.open_chest import OpenChestNode
 from dungeon_game.nodes.router import RouterNode
 from dungeon_game.nodes.shop import ShopNode
@@ -27,6 +28,7 @@ class GameGraph:
         dungeon_master_agent = create_dungeon_master_agent(model)
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
+        self.look_node = LookNode(dungeon_master_agent)
         self.attack_node = AttackNode()
         self.enemy_attack_node = EnemyAttackNode()
         self.shop_node = ShopNode()
@@ -41,6 +43,7 @@ class GameGraph:
         # Add nodes
         graph_builder.add_node("router", self.router_node.execute)
         graph_builder.add_node("explore", self.explore_node.execute)
+        graph_builder.add_node("look", self.look_node.execute)
         graph_builder.add_node("attack", self.attack_node.execute)
         graph_builder.add_node("enemy_attack", self.enemy_attack_node.execute)
         graph_builder.add_node("shop", self.shop_node.execute)
@@ -56,6 +59,7 @@ class GameGraph:
             self._next_action,
             [
                 "explore",
+                "look",
                 "attack",
                 "shop",
                 "drink_potion",
@@ -66,6 +70,7 @@ class GameGraph:
             ],
         )
         graph_builder.add_edge("explore", END)
+        graph_builder.add_edge("look", END)
         graph_builder.add_edge("attack", "enemy_attack")
         graph_builder.add_edge("enemy_attack", END)  # If enemy is dead, do not go here
         graph_builder.add_edge("shop", END)

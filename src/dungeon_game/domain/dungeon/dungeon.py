@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field
 
@@ -30,3 +30,11 @@ class Dungeon(BaseModel):
         if next_index >= len(self.rooms):
             return None
         return self.rooms[next_index]
+
+    def with_room_updated(self, index: int, **updates: Any) -> "Dungeon":
+        """Return a new Dungeon with the room at `index` replaced by a copy
+        of that room with `updates` applied."""
+        updated_room = self.rooms[index].model_copy(update=updates)
+        new_rooms = list(self.rooms)
+        new_rooms[index] = updated_room
+        return self.model_copy(update={"rooms": new_rooms})

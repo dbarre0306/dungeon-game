@@ -8,6 +8,7 @@ from dungeon_game.domain.intent import Intent
 # Base class for all dungeon rooms
 class DungeonRoom(BaseModel):
     events: list[str] = []
+    room_description: str | None = None
 
     @abstractmethod
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
