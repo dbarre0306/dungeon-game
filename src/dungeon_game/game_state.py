@@ -10,7 +10,7 @@ class GameState(BaseModel):
     player: Warrior | Mage = Field(discriminator="type")
     dungeon: Dungeon
     command: str
-    action: Intent = Field(default_factory=Intent)
+    intent: Intent = Field(default_factory=Intent)
     narration: str = ""
 
 

@@ -86,4 +86,4 @@ class GameGraph:
         return {"narration": "I don't understand what you are saying."}
 
     def _next_action(self, state: GameState) -> ActionType:
-        return state.action.type
+        return state.intent.type

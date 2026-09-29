@@ -11,14 +11,14 @@ class ExploreNode:
 
     def execute(self, state: GameState) -> dict[str, Any]:
         room = self.get_room(state)
-        is_valid, err_msg = room.is_valid_action(state.action)
+        is_valid, err_msg = room.is_valid_action(state.intent)
         if is_valid:
             return self._explore_cave_entrance(state)
         else:
             return {"narration": err_msg}
 
     def _explore_cave_entrance(self, state: GameState) -> dict[str, Any]:
-        if state.action.explore_option == "look":
+        if state.intent.explore_option == "look":
             return self._describe_room(state)
         else:
             return self._go_to_next_room_and_describe(state)

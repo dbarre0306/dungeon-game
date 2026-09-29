@@ -9,7 +9,7 @@ class AttackNode:
 
     def execute(self, state: GameState) -> dict[str, Any]:
         room = self._get_room(state)
-        is_valid, err_msg = room.is_valid_action(state.action)
+        is_valid, err_msg = room.is_valid_action(state.intent)
         if is_valid:
             return self._attack_enemy(state)
         else:
