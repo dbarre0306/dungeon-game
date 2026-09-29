@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 ActionType = Literal[
-    "explore", "combat", "shop", "drink_potion", "open_chest", "multiple", "unknown"
+    "explore", "attack", "shop", "drink_potion", "open_chest", "multiple", "unknown"
 ]
 ExploreOption = Literal["left", "right", "forward", "backward", "look"]
 

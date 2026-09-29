@@ -4,7 +4,7 @@ from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
-from dungeon_game.domain.rooms.enemy_room import EnemyRoom
+from dungeon_game.domain.rooms.enemy_room import Enemy, EnemyRoom
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
@@ -46,7 +46,23 @@ class DungeonFactory:
             case "treasure":
                 return TreasureRoom()
             case "enemy":
-                enemy = random.choice(["goblin", "orc with a battle ax", "giant rat"])
-                return EnemyRoom(enemy=enemy)
+                enemy_name = random.choice(["goblin", "orc", "rat"])
+                return EnemyRoom(
+                    enemy=Enemy(
+                        enemy_name,
+                        DungeonFactory._get_enemy_description(enemy_name),
+                        10,
+                    )
+                )
             case "trap":
                 return TrapRoom()
+
+    @staticmethod
+    def _get_enemy_description(enemy: str) -> str:
+        match enemy:
+            case "goblin":
+                return "goblin"
+            case "orc":
+                return "orc with a battle ax"
+            case "rat":
+                return "giant rat"

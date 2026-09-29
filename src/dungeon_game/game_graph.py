@@ -8,8 +8,9 @@ from dungeon_game.agents.dungeon_master_agent import create_dungeon_master_agent
 from dungeon_game.agents.router_agent import create_router_agent
 from dungeon_game.domain.misc.action import ActionType
 from dungeon_game.game_state import GameState
-from dungeon_game.nodes.combat import CombatNode
+from dungeon_game.nodes.attack import AttackNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
+from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
 from dungeon_game.nodes.open_chest import OpenChestNode
 from dungeon_game.nodes.router import RouterNode
@@ -26,7 +27,8 @@ class GameGraph:
         dungeon_master_agent = create_dungeon_master_agent(model)
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
-        self.combat_node = CombatNode()
+        self.attack_node = AttackNode()
+        self.enemy_attack_node = EnemyAttackNode()
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode()
         self.open_chest_node = OpenChestNode()
@@ -39,7 +41,8 @@ class GameGraph:
         # Add nodes
         graph_builder.add_node("router", self.router_node.execute)
         graph_builder.add_node("explore", self.explore_node.execute)
-        graph_builder.add_node("combat", self.combat_node.execute)
+        graph_builder.add_node("attack", self.attack_node.execute)
+        graph_builder.add_node("enemy_attack", self.enemy_attack_node.execute)
         graph_builder.add_node("shop", self.shop_node.execute)
         graph_builder.add_node("drink_potion", self.drink_potion_node.execute)
         graph_builder.add_node("open_chest", self.open_chest_node.execute)
@@ -53,7 +56,7 @@ class GameGraph:
             self._next_action,
             [
                 "explore",
-                "combat",
+                "attack",
                 "shop",
                 "drink_potion",
                 "open_chest",
@@ -63,8 +66,8 @@ class GameGraph:
             ],
         )
         graph_builder.add_edge("explore", END)
-        graph_builder.add_edge("combat", END)
-        # graph_builder.add_edge("counter_attack", END)
+        graph_builder.add_edge("attack", "enemy_attack")
+        graph_builder.add_edge("enemy_attack", END)  # If enemy is dead, do not go here
         graph_builder.add_edge("shop", END)
         graph_builder.add_edge("drink_potion", END)
         graph_builder.add_edge("open_chest", END)

@@ -15,7 +15,7 @@ class RouterNode:
             f"Player command: {state.command}\n"
             "\n"
             "Do your best to categorize the player's command to only one of the "
-            "following categories: `explore`, `combat`, `shop`, `drink_potion`, or `open_chest`. "
+            "following categories: `explore`, `attack`, `shop`, `drink_potion`, or `open_chest`. "
             "If the command matches multiple categories, then categorize it as `multiple`. "
             "If there is no match, categorize it as `unknown`. "
             "\n"
