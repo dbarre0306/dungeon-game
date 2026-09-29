@@ -8,7 +8,6 @@ ActionType = Literal[
 ExploreOption = Literal["left", "right", "forward", "backward", "look"]
 
 
-class Action(BaseModel):
-    command: str = ""
-    action: ActionType | None = None
+class Intent(BaseModel):
+    type: ActionType | None = None
     explore_option: ExploreOption | None = None

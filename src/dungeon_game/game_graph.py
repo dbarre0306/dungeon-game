@@ -6,7 +6,7 @@ from langgraph.graph import END, START, StateGraph
 
 from dungeon_game.agents.dungeon_master_agent import create_dungeon_master_agent
 from dungeon_game.agents.router_agent import create_router_agent
-from dungeon_game.domain.misc.action import ActionType
+from dungeon_game.domain.intent import ActionType
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.attack import AttackNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
@@ -86,4 +86,4 @@ class GameGraph:
         return {"narration": "I don't understand what you are saying."}
 
     def _next_action(self, state: GameState) -> ActionType:
-        return state.action.action
+        return state.action.type

@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.misc.action import Action
+from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 _NUMBER_OF_GOLD_COINS = 5
@@ -27,13 +27,13 @@ class EnemyRoom(DungeonRoom):
     def __init__(self, enemy: Enemy):
         super().__init__(enemy=enemy)
 
-    def is_valid_action(self, action: Action) -> tuple[bool, str | None]:
-        if action.action == "explore" and self.enemy.health_points > 0:
+    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
+        if action.type == "explore" and self.enemy.health_points > 0:
             return (False, f"The {self.enemy.name} will not let you pass.")
-        # elif action.action == "get_coins":
-        elif action.action == "combat":
+        # elif action.type == "get_coins":
+        elif action.type == "combat":
             return (True, None)
-        elif action.action == "drink_potion":
+        elif action.type == "drink_potion":
             return (True, None)
         return (False, "I have no idea what you trying to do.")
 

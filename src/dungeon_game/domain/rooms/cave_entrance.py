@@ -2,14 +2,14 @@
 # it does simplify the software design.
 from typing import Literal
 
-from dungeon_game.domain.misc.action import Action
+from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
 class CaveEntrance(DungeonRoom):
     type: Literal["cave_entrance"] = "cave_entrance"
 
-    def is_valid_action(self, action: Action) -> tuple[bool, str | None]:
+    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         if action.explore_option == "look":
             return (True, None)
         if action.explore_option == "forward":

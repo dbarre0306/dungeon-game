@@ -33,10 +33,10 @@ class RouterNode:
             # The model occasionally returns malformed structured output
             # (e.g. for typos or ambiguous commands). Treat it as unknown
             # rather than crashing the whole game loop.
-            return {"action": {"action": "unknown", "explore_option": None}}
+            return {"action": {"type": "unknown", "explore_option": None}}
         return {
             "action": {
-                "action": result["structured_response"].action,
+                "type": result["structured_response"].action,
                 "explore_option": result["structured_response"].explore_option,
             }
         }

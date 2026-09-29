@@ -5,7 +5,7 @@ from langchain.agents.middleware import ModelRequest, ModelResponse, wrap_model_
 from langchain.agents.structured_output import StructuredOutputError
 from pydantic import BaseModel, Field
 
-from dungeon_game.domain.misc.action import ActionType, ExploreOption
+from dungeon_game.domain.intent import ActionType, ExploreOption
 
 
 class RouterState(BaseModel):
