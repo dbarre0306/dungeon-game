@@ -10,9 +10,9 @@ class CaveEntrance(DungeonRoom):
     type: Literal["cave_entrance"] = "cave_entrance"
 
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.explore_option == "look":
+        if action.explore_direction == "look":
             return (True, None)
-        if action.explore_option == "forward":
+        if action.explore_direction == "forward":
             return (True, None)
         return False, "You cannot run away.  You must enter the cave."
 

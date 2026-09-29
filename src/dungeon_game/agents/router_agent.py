@@ -5,12 +5,12 @@ from langchain.agents.middleware import ModelRequest, ModelResponse, wrap_model_
 from langchain.agents.structured_output import StructuredOutputError
 from pydantic import BaseModel, Field
 
-from dungeon_game.domain.intent import ActionType, ExploreOption
+from dungeon_game.domain.intent import ActionType, ExploreDirection
 
 
 class RouterState(BaseModel):
     action: ActionType = Field(description="Action")
-    explore_option: ExploreOption | None = Field(
+    explore_direction: ExploreDirection | None = Field(
         default=None,
         description="Which direction the player wants to move or if they are just looking around.",
     )

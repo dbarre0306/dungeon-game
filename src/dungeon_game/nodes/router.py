@@ -20,8 +20,8 @@ class RouterNode:
             "If there is no match, categorize it as `unknown`. "
             "\n"
             "Exploring encompasses both moving, entering, or looking around. If just looking "
-            "around, set the explore_option to `look`.  If moving or entering, set the "
-            "explore_option to be the player's direction which is either "
+            "around, set the explore_direction to `look`.  If moving or entering, set the "
+            "explore_direction to be the player's direction which is either "
             "`left`, `right`, `forward`, or `backward`.  If the player's command doesn't specify "
             "the direction, then use `forward` by default."
         )
@@ -33,10 +33,10 @@ class RouterNode:
             # The model occasionally returns malformed structured output
             # (e.g. for typos or ambiguous commands). Treat it as unknown
             # rather than crashing the whole game loop.
-            return {"intent": {"type": "unknown", "explore_option": None}}
+            return {"intent": {"type": "unknown", "explore_direction": None}}
         return {
             "intent": {
                 "type": result["structured_response"].action,
-                "explore_option": result["structured_response"].explore_option,
+                "explore_direction": result["structured_response"].explore_direction,
             }
         }

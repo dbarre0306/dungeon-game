@@ -8,11 +8,11 @@ class CaveChamber(DungeonRoom):
     type: Literal["cave_chamber"] = "cave_chamber"
 
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.explore_option == "look":
+        if action.explore_direction == "look":
             return (True, None)
-        elif action.explore_option == "left":
+        elif action.explore_direction == "left":
             return (True, None)
-        elif action.explore_option == "right":
+        elif action.explore_direction == "right":
             return (True, None)
         return False, "You must go either left or right."
 
