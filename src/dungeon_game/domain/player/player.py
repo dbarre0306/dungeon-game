@@ -1,13 +1,12 @@
+from abc import abstractmethod
+
 from pydantic import BaseModel
 
 
 class Potions(BaseModel):
-    name: str
+    name: str = "Potions"
     health_points: int
     quantity: int
-
-    def __init__(self, health_points: int, quantity: int):
-        super().__init__(name="Potions", health_points=health_points, quantity=quantity)
 
 
 class Player(BaseModel):
@@ -17,3 +16,13 @@ class Player(BaseModel):
     gold_coins: int
     potions: Potions
     current_room_index: int
+    hit_bonus: int
+    last_action: str | None = None
+
+    @abstractmethod
+    def get_weapon(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_extra_weapon_damage(self) -> int:
+        pass

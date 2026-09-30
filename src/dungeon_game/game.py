@@ -22,18 +22,15 @@ class Game:
         state = self.initial_game_state(dungeon, "look around")
         state = self.game_graph.invoke(state)
         print(state.narration)
-        pprint.pprint(f"Room: {self.current_room(state).type}")
+        pprint.pprint(f"Room: {state.get_current_room().type}")
 
         command = input("> ")
         while command != "x":
             state = state.model_copy(update={"command": command})
             state = self.game_graph.invoke(state)
             print(state.narration)
-            pprint.pprint(f"Room: {self.current_room(state).type}")
+            pprint.pprint(f"Room: {state.get_current_room().type}")
             command = input("> ")
-
-    def current_room(self, state: GameState):
-        return state.dungeon.get_room(state.player.current_room_index)
 
     def initial_game_state(self, dungeon: Dungeon, command: str) -> GameState:
         return GameState(

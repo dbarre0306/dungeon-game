@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from typing import Any, cast
 
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
@@ -7,6 +7,7 @@ from langgraph.graph import END, START, StateGraph
 from dungeon_game.agents.dungeon_master_agent import create_dungeon_master_agent
 from dungeon_game.agents.router_agent import create_router_agent
 from dungeon_game.domain.intent import ActionType
+from dungeon_game.domain.rooms.enemy_room import EnemyRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.attack import AttackNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
@@ -29,7 +30,7 @@ class GameGraph:
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
-        self.attack_node = AttackNode()
+        self.attack_node = AttackNode(dungeon_master_agent)
         self.enemy_attack_node = EnemyAttackNode()
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode()
@@ -71,7 +72,9 @@ class GameGraph:
         )
         graph_builder.add_edge("explore", END)
         graph_builder.add_edge("look", END)
-        graph_builder.add_edge("attack", "enemy_attack")
+        graph_builder.add_conditional_edges(
+            "attack", self._after_attack, ["enemy_attack", END]
+        )
         graph_builder.add_edge("enemy_attack", END)  # If enemy is dead, do not go here
         graph_builder.add_edge("shop", END)
         graph_builder.add_edge("drink_potion", END)
@@ -92,3 +95,10 @@ class GameGraph:
 
     def _next_action(self, state: GameState) -> ActionType:
         return state.intent.type
+
+    def _after_attack(self, state: GameState) -> str:
+        room = state.get_current_room()
+        if isinstance(room, EnemyRoom):
+            combat_room = cast(EnemyRoom, room)
+            return END if combat_room.enemy.is_dead() else "enemy_attack"
+        return END

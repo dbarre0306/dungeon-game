@@ -3,8 +3,6 @@ from pydantic import BaseModel
 
 
 class DungeonMasterResponse(BaseModel):
-    player_health_points: int | None
-    enemy_health_points: int | None
     narration: str
 
 

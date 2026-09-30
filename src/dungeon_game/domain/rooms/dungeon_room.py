@@ -1,4 +1,6 @@
+import operator
 from abc import abstractmethod
+from typing import Annotated
 
 from pydantic import BaseModel
 
@@ -7,7 +9,7 @@ from dungeon_game.domain.intent import Intent
 
 # Base class for all dungeon rooms
 class DungeonRoom(BaseModel):
-    events: list[str] = []
+    events: Annotated[list[str], operator.add] = []
     room_description: str | None = None
 
     @abstractmethod

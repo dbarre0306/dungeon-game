@@ -12,7 +12,7 @@ class LookNode:
     def execute(self, state: GameState) -> dict[str, Any]:
         print("LOOK !!!!")
         room_index = state.player.current_room_index
-        room = self._get_room(state)
+        room = state.get_current_room()
         if room.room_description is None:
             print("--- generate a new description")
             description = self._get_room_description_on_entry(room)
@@ -24,9 +24,6 @@ class LookNode:
             print("--- generate a simple looking around the room description")
             description = self._get_room_description(room)
             return {"narration": description}
-
-    def _get_room(self, state: GameState) -> DungeonRoom:
-        return state.dungeon.get_room(state.player.current_room_index)
 
     def _get_room_description_on_entry(self, room: DungeonRoom) -> str:
         msg = {

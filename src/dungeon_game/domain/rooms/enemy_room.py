@@ -1,22 +1,10 @@
 from typing import Literal
 
-from pydantic import BaseModel
-
 from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.npc.enemy import Enemy
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 _NUMBER_OF_GOLD_COINS = 5
-
-
-class Enemy(BaseModel):
-    name: str
-    description: str
-    health_points: int
-
-    def __init__(self, name, description, health_points):
-        super().__init__(
-            name=name, description=description, health_points=health_points
-        )
 
 
 class EnemyRoom(DungeonRoom):
@@ -28,11 +16,13 @@ class EnemyRoom(DungeonRoom):
         super().__init__(enemy=enemy)
 
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.type == "explore" and self.enemy.health_points > 0:
+        if action.type == "explore" and self.enemy.is_alive():
             return (False, f"The {self.enemy.name} will not let you pass.")
         # elif action.type == "get_coins":
-        elif action.type == "combat":
-            return (True, None)
+        elif action.type == "attack":
+            if self.enemy.is_alive():
+                return (True, None)
+            return (False, f"The {self.enemy.name} is already dead. You can stop now.")
         elif action.type == "drink_potion":
             return (True, None)
         return (False, "I have no idea what you trying to do.")

@@ -5,13 +5,6 @@ from pydantic import BaseModel
 from dungeon_game.domain.player.player import Player
 
 
-class Staff(BaseModel):
-    name: str
-
-    def __init__(self, name: str):
-        super().__init__(name=name)
-
-
 class FireBoltSpell(BaseModel):
     name: str
     additional_damage_points: int
@@ -23,8 +16,18 @@ class HealingSpell(BaseModel):
     quantity: int
 
 
+class Staff(BaseModel):
+    name: str
+    fire_bolt_spell: FireBoltSpell
+    healing_spell: HealingSpell
+
+
 class Mage(Player):
     type: Literal["mage"] = "mage"
     staff: Staff
-    fire_bolt_spell: FireBoltSpell
-    healing_spell: HealingSpell
+
+    def get_weapon(self) -> str:
+        return "firebolt"
+
+    def get_extra_weapon_damage(self) -> int:
+        return self.staff.fire_bolt_spell.additional_damage_points

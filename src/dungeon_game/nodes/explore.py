@@ -10,12 +10,12 @@ class ExploreNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print(f"EXPLORE : {state.intent.type}")
-        next_room = self._get_next_room(state)
+        print(f"EXPLORE : {state.intent.explore_direction}")
+        next_room = state.get_next_room()
         if next_room == None:
             return {"narration": "There is nowhere further to go."}
 
-        room = self._get_room(state)
+        room = state.get_current_room()
         is_valid, err_msg = room.is_valid_action(state.intent)
         if is_valid:
             next_room_index = state.player.current_room_index + 1
@@ -29,12 +29,6 @@ class ExploreNode:
             return {"narration": description, "player": player, "dungeon": new_dungeon}
         else:
             return {"narration": err_msg}
-
-    def _get_room(self, state: GameState) -> DungeonRoom:
-        return state.dungeon.get_room(state.player.current_room_index)
-
-    def _get_next_room(self, state: GameState) -> DungeonRoom | None:
-        return state.dungeon.get_next_room(state.player.current_room_index)
 
     def _get_room_description(self, room: DungeonRoom) -> str:
         msg = {

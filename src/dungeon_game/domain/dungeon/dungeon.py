@@ -33,8 +33,21 @@ class Dungeon(BaseModel):
 
     def with_room_updated(self, index: int, **updates: Any) -> "Dungeon":
         """Return a new Dungeon with the room at `index` replaced by a copy
-        of that room with `updates` applied."""
-        updated_room = self.rooms[index].model_copy(update=updates)
+        of that room with `updates` applied.
+
+        A field whose type is `Annotated[T, reducer]` is merged via
+        `reducer(current, update)` instead of being overwritten, mirroring
+        LangGraph's reducer semantics for plain (non-graph-state) models.
+        """
+        room = self.rooms[index]
+        for field_name, field_info in type(room).model_fields.items():
+            if field_name not in updates:
+                continue
+            for reducer in field_info.metadata:
+                if callable(reducer):
+                    updates[field_name] = reducer(getattr(room, field_name), updates[field_name])
+                    break
+        updated_room = room.model_copy(update=updates)
         new_rooms = list(self.rooms)
         new_rooms[index] = updated_room
         return self.model_copy(update={"rooms": new_rooms})

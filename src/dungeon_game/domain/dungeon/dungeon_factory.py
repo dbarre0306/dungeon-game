@@ -1,10 +1,11 @@
 import random
 
 from dungeon_game.domain.dungeon.dungeon import Dungeon
+from dungeon_game.domain.npc.enemy import Enemy
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
-from dungeon_game.domain.rooms.enemy_room import Enemy, EnemyRoom
+from dungeon_game.domain.rooms.enemy_room import EnemyRoom
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
@@ -49,9 +50,9 @@ class DungeonFactory:
                 enemy_name = random.choice(["goblin", "orc", "rat"])
                 return EnemyRoom(
                     enemy=Enemy(
-                        enemy_name,
-                        DungeonFactory._get_enemy_description(enemy_name),
-                        10,
+                        name=enemy_name,
+                        description=DungeonFactory._get_enemy_description(enemy_name),
+                        health_points=10,
                     )
                 )
             case "trap":
