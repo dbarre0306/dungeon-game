@@ -20,11 +20,11 @@ class LookNode:
             new_dungeon = state.dungeon.with_room_updated(
                 room_index, room_description=description
             )
-            return {"narration": description, "dungeon": new_dungeon}
+            return {"narration": [description], "dungeon": new_dungeon}
         else:
             print("--- generate a simple looking around the room description")
             description = self._get_room_description(room)
-            return {"narration": description}
+            return {"narration": [description]}
 
     def _get_room_description_on_entry(self, room: DungeonRoom) -> str:
         msg = (

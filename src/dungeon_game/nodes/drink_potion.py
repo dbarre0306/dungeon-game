@@ -17,7 +17,7 @@ class DrinkPotionNode:
         if is_valid:
             return self._drink_potion(state)
         else:
-            return {"narration": err_msg}
+            return {"narration": [err_msg]}
 
     def _drink_potion(self, state: GameState) -> dict[str, Any]:
         player = state.player
@@ -27,17 +27,9 @@ class DrinkPotionNode:
 
     def _out_of_potions(self, state: GameState) -> dict[str, Any]:
         return {
-            "player": state.player.model_copy(
-                update={
-                    "last_action": (
-                        "The player tried to drink a potion "
-                        "but didn't have any potions left to drink."
-                    ),
-                }
-            ),
-            "narration": self._get_narration(
-                "You don't have anymore potions to drink."
-            ),
+            "narration": [
+                self._get_narration("You don't have anymore potions to drink.")
+            ],
         }
 
     def _drink_one_potion(self, player: Player) -> dict[str, Any]:
@@ -62,14 +54,13 @@ class DrinkPotionNode:
                     "potions": player.potions.model_copy(
                         update={"quantity": new_quantity}
                     ),
-                    "last_action": (
-                        "The player drank a potion but gained no extra strength."
-                    ),
                 }
             ),
-            "narration": self._get_narration(
-                "The player drank a potion but gained no extra strength."
-            ),
+            "narration": [
+                self._get_narration(
+                    "The player drank a potion but gained no extra strength."
+                )
+            ],
         }
 
     def _potion_helped(
@@ -82,12 +73,13 @@ class DrinkPotionNode:
                     "potions": player.potions.model_copy(
                         update={"quantity": new_quantity}
                     ),
-                    "last_action": ("The player drank a potion gained strength."),
                 }
             ),
-            "narration": self._get_narration(
-                "The player gained strength by drinking the potion."
-            ),
+            "narration": [
+                self._get_narration(
+                    "The player gained strength by drinking the potion."
+                )
+            ],
         }
 
     def _get_narration(self, msg: str) -> str:

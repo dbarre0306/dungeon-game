@@ -33,7 +33,7 @@ class Game:
 
         state = GameState(player=self.player, dungeon=self.dungeon, command="look")
         state = self.game_graph.invoke(state)
-        print(state.narration)
+        self._print_narration(state.narration)
         pprint.pprint(f"Room: {state.get_current_room().type}")
         pprint.pprint(f"Player HP: {state.player.health_points}")
 
@@ -41,8 +41,11 @@ class Game:
         while command != "x":
             state = state.model_copy(update={"command": command})
             state = self.game_graph.invoke(state)
-            print(state.narration)
+            self._print_narration(state.narration)
             pprint.pprint(f"Room: {state.get_current_room().type}")
             pprint.pprint(f"Player HP: {state.player.health_points}")
             pprint.pprint(f"Player potions: {state.player.potions.quantity}")
             command = input("> ")
+
+    def _print_narration(self, narration: list[str]):
+        print("\n".join(narration))

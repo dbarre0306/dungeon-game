@@ -12,7 +12,7 @@ class GameState(BaseModel):
     dungeon: Dungeon
     command: str
     intent: Intent = Field(default_factory=Intent)
-    narration: str = ""
+    narration: list[str] = Field(default_factory=list)
 
     def get_current_room(self) -> DungeonRoom:
         return self.dungeon.get_room(self.player.current_room_index)

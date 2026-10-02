@@ -14,7 +14,7 @@ class ExploreNode:
         print(f"EXPLORE : {state.intent.explore_direction}")
         next_room = state.get_next_room()
         if next_room is None:
-            return {"narration": "There is nowhere further to go."}
+            return {"narration": ["There is nowhere further to go."]}
 
         room = state.get_current_room()
         is_valid, err_msg = room.is_valid_action(state.intent)
@@ -27,9 +27,13 @@ class ExploreNode:
             new_dungeon = state.dungeon.with_room_updated(
                 next_room_index, room_description=description
             )
-            return {"narration": description, "player": player, "dungeon": new_dungeon}
+            return {
+                "narration": [description],
+                "player": player,
+                "dungeon": new_dungeon,
+            }
         else:
-            return {"narration": err_msg}
+            return {"narration": [err_msg]}
 
     def _get_room_description(self, room: DungeonRoom) -> str:
         msg = (

@@ -17,7 +17,6 @@ class Player(BaseModel):
     potions: Potions
     current_room_index: int
     hit_bonus: int
-    last_action: str | None = None
 
     @abstractmethod
     def get_facts(self) -> str:

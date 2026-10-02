@@ -64,14 +64,18 @@ class AttackNode:
             "player": player.model_copy(
                 update={
                     "is_fighting": True,
-                    "last_action": (
-                        f"The player (a {player.type}) attacked the {room.enemy.name} "
-                        f"with a {player.get_weapon()}, but missed."
-                    ),
                 }
             ),
-            "narration": "",
+            "narration": [self._missed_enemy_narration(player, room)],
         }
+
+    def _missed_enemy_narration(self, player: Player, room: EnemyRoom) -> str:
+        msg = (
+            f"The player (a {player.type}) attacked the {room.enemy.name} "
+            f"with a {player.get_weapon()}, but missed."
+        )
+
+        return self._dungeon_master_agent.invoke(msg).narration
 
     def _enemy_wounded_update(
         self,
@@ -84,10 +88,6 @@ class AttackNode:
             "player": player.model_copy(
                 update={
                     "is_fighting": True,
-                    "last_action": (
-                        f"The player (a {player.type}) attacked the {room.enemy.name} "
-                        f"with a {player.get_weapon()} and wounded the {room.enemy.name}."
-                    ),
                 }
             ),
             "dungeon": dungeon.with_room_updated(
@@ -96,8 +96,16 @@ class AttackNode:
                     update={"health_points": enemy_health_points}
                 ),
             ),
-            "narration": "",
+            "narration": [self._enemy_wounded_narration(player, room)],
         }
+
+    def _enemy_wounded_narration(self, player: Player, room: EnemyRoom) -> str:
+        msg = (
+            f"The player (a {player.type}) attacked the {room.enemy.name} "
+            f"with a {player.get_weapon()}.  The {room.enemy.name} was wounded."
+        )
+
+        return self._dungeon_master_agent.invoke(msg).narration
 
     def _enemy_dead_update(
         self, dungeon: Dungeon, player: Player, room: EnemyRoom
@@ -113,16 +121,14 @@ class AttackNode:
                 events=[f"The {room.enemy.name} was killed (dead)."],
                 enemy=room.enemy.model_copy(update={"health_points": 0}),
             ),
-            "narration": self._get_narration(player, room),
+            "narration": [self._enemy_dead_narration(player, room)],
         }
 
-    def _get_narration(self, player: Player, room: EnemyRoom) -> str:
+    def _enemy_dead_narration(self, player: Player, room: EnemyRoom) -> str:
         msg = (
             f"The player (a {player.type}) has killed the {room.enemy.name} "
-            f"with a {player.get_weapon()}.  You are speaking to the player. "
-            "Don't go crazy.  Keep it to a couple of sentences at most. "
-            "Do NOT make up any facts such as the sound of dragons or the "
-            "scent of iron. Stick to what it would feel like after a brutal battle. "
+            f"with a {player.get_weapon()}.  "
+            "Stick to what it would feel like after a brutal battle. "
             "Do NOT say anything about what the player should do next."
         )
 

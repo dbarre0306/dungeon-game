@@ -88,10 +88,10 @@ class GameGraph:
         return GameState.model_validate(self.agent.invoke(state))
 
     def _multiple(self, state: GameState) -> dict[str, Any]:
-        return {"narration": "You can only perform one action at a time."}
+        return {"narration": ["You can only perform one action at a time."]}
 
     def _unknown(self, state: GameState) -> dict[str, Any]:
-        return {"narration": "I don't understand what you are saying."}
+        return {"narration": ["I don't understand what you are saying."]}
 
     def _next_action(self, state: GameState) -> ActionType:
         return state.intent.type
