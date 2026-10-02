@@ -1,6 +1,7 @@
 import random
 from typing import Any, cast
 
+from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.player.player import Player
 from dungeon_game.domain.rooms.enemy_room import EnemyRoom
@@ -12,7 +13,7 @@ HIT_TARGET = 12
 
 class AttackNode:
 
-    def __init__(self, dungeon_master_agent):
+    def __init__(self, dungeon_master_agent: DungeonMasterAgent):
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
@@ -116,21 +117,13 @@ class AttackNode:
         }
 
     def _get_narration(self, player: Player, room: EnemyRoom) -> str:
-        msg = {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": "Construct a narrative based on the "
-                    f"player (a {player.type}) having killed the {room.enemy.name} "
-                    f"with a {player.get_weapon()}.  You are speaking to the player. "
-                    "Don't go crazy.  Keep it to a couple of sentences at most. "
-                    "Do NOT make up any facts such as the sound of dragons or the "
-                    "scent of iron. Stick to what it would feel like after a brutal battle. "
-                    "Do NOT say anything about what the player should do next.",
-                }
-            ]
-        }
+        msg = (
+            f"The player (a {player.type}) has killed the {room.enemy.name} "
+            f"with a {player.get_weapon()}.  You are speaking to the player. "
+            "Don't go crazy.  Keep it to a couple of sentences at most. "
+            "Do NOT make up any facts such as the sound of dragons or the "
+            "scent of iron. Stick to what it would feel like after a brutal battle. "
+            "Do NOT say anything about what the player should do next."
+        )
 
-        result = self._dungeon_master_agent.invoke(msg)
-        response = result["structured_response"]
-        return response.narration
+        return self._dungeon_master_agent.invoke(msg).narration

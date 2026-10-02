@@ -23,6 +23,7 @@ class Game:
         state = self.game_graph.invoke(state)
         print(state.narration)
         pprint.pprint(f"Room: {state.get_current_room().type}")
+        pprint.pprint(f"Player HP: {state.player.health_points}")
 
         command = input("> ")
         while command != "x":
@@ -30,6 +31,8 @@ class Game:
             state = self.game_graph.invoke(state)
             print(state.narration)
             pprint.pprint(f"Room: {state.get_current_room().type}")
+            pprint.pprint(f"Player HP: {state.player.health_points}")
+            pprint.pprint(f"Player potions: {state.player.potions.quantity}")
             command = input("> ")
 
     def initial_game_state(self, dungeon: Dungeon, command: str) -> GameState:

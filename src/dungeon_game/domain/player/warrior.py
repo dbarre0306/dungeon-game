@@ -37,7 +37,7 @@ class Warrior(Player):
 def create_default_warrior() -> Player:
     return Warrior(
         max_health_points=25,
-        health_points=25,
+        health_points=20,
         is_fighting=False,
         potions=Potions(health_points=8, quantity=2),
         sword=Sword("Bronze Sword", 0),

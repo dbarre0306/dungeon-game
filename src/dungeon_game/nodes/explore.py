@@ -1,18 +1,19 @@
 from typing import Any
 
+from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
 
 class ExploreNode:
 
-    def __init__(self, dungeon_master_agent):
+    def __init__(self, dungeon_master_agent: DungeonMasterAgent):
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
         print(f"EXPLORE : {state.intent.explore_direction}")
         next_room = state.get_next_room()
-        if next_room == None:
+        if next_room is None:
             return {"narration": "There is nowhere further to go."}
 
         room = state.get_current_room()
@@ -31,26 +32,19 @@ class ExploreNode:
             return {"narration": err_msg}
 
     def _get_room_description(self, room: DungeonRoom) -> str:
-        msg = {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": "Describe the room to the player using only the initial facts "
-                    "as well as the events that have occurred. Do not be overdramatic. The player "
-                    "needs to clearly understand what is there in order to make a decison on what "
-                    "do to next.  Try to keep it to a few sentences or less. Do not invent new "
-                    "rooms, paths, exits, creatures, or other plot details that are not listed "
-                    "below — if the facts and events don't mention something, leave it out."
-                    "\n\nThe initial facts are: "
-                    f"{self._format_list(room.get_initial_facts())}"
-                    f"\n\nThe events are: "
-                    f"{self._format_list(room.events)}",
-                }
-            ]
-        }
-        result = self._dungeon_master_agent.invoke(msg)
-        response = result["structured_response"]
-        return response.narration
+        msg = (
+            "Describe the room to the player using only the initial facts "
+            "as well as the events that have occurred. Do not be overdramatic. The player "
+            "needs to clearly understand what is there in order to make a decison on what "
+            "do to next.  Try to keep it to a few sentences or less. Do not invent new "
+            "rooms, paths, exits, creatures, or other plot details that are not listed "
+            "below — if the facts and events don't mention something, leave it out."
+            "\n\nThe initial facts are:\n"
+            f"{self._format_list(room.get_initial_facts())}"
+            f"\n\nThe events are:\n"
+            f"{self._format_list(room.events)}"
+        )
+        return self._dungeon_master_agent.invoke(msg).narration
 
     @staticmethod
     def _format_list(items: list[str]) -> str:
