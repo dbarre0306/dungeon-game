@@ -20,6 +20,10 @@ class Player(BaseModel):
     last_action: str | None = None
 
     @abstractmethod
+    def get_facts(self) -> str:
+        pass
+
+    @abstractmethod
     def get_weapon(self) -> str:
         pass
 

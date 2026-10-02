@@ -1,4 +1,3 @@
-import os
 from typing import Any
 
 from dotenv import load_dotenv
@@ -22,10 +21,9 @@ load_dotenv()
 
 class GameGraph:
 
-    def __init__(self):
-        model = f"openai:{os.getenv("MODEL", "gpt-4o-mini")}"
-        router_agent = RouterAgent(model)
-        dungeon_master_agent = DungeonMasterAgent(model)
+    def __init__(
+        self, router_agent: RouterAgent, dungeon_master_agent: DungeonMasterAgent
+    ):
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)

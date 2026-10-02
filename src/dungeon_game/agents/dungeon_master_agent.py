@@ -7,7 +7,8 @@ class DungeonMasterResponse(BaseModel):
 
 
 class DungeonMasterAgent:
-    def __init__(self, model):
+    def __init__(self, model, game_facts: list[str]):
+        self.game_facts = game_facts
         self._agent = create_agent(
             model=model,
             system_prompt="You are the Dungeon Master for this game. "
@@ -24,17 +25,27 @@ class DungeonMasterAgent:
             "messages": [
                 {
                     "role": "user",
-                    "content": "Construct a narrative which addresses the "
-                    "player based on the following: \n\n"
-                    f"{msg}"
-                    "\n\n"
-                    "The Dungeon Master Narration Rules to live by:\n"
+                    "content": "The Dungeon Master Narration Rules are:\n"
                     "- Keep it to two or three sentences at most. \n"
                     "- Do NOT be overdramatic!!!\n"
-                    "- Do NOT make up any facts.",
+                    "- Do NOT make up any facts."
+                    "\n\n"
+                    "Game Facts:\n"
+                    f"{self._format_list(self.game_facts)}"
+                    "\n\n"
+                    "Construct a narrative which addresses the "
+                    "player based on the following: \n\n"
+                    f"{msg}",
                 }
             ]
         }
 
+        # TODO: remove this comment when it is no longer needed
+        # print(f"TO AGENT: {user_msg['messages'][0]['content']}")
+
         result = self._agent.invoke(user_msg)
         return result["structured_response"]
+
+    @staticmethod
+    def _format_list(items: list[str]) -> str:
+        return "\n".join(map(lambda f: f"- {f}", items))

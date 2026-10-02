@@ -30,7 +30,7 @@ class DrinkPotionNode:
             "player": state.player.model_copy(
                 update={
                     "last_action": (
-                        f"The player tried to drink a potion "
+                        "The player tried to drink a potion "
                         "but didn't have any potions left to drink."
                     ),
                 }

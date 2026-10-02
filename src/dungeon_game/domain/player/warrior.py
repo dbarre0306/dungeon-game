@@ -27,6 +27,9 @@ class Warrior(Player):
     sword: Sword
     shield: Shield
 
+    def get_facts(self) -> str:
+        return "The player is a warrior with a sword and a shield."
+
     def get_weapon(self) -> str:
         return self.sword.name
 

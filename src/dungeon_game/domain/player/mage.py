@@ -26,6 +26,9 @@ class Mage(Player):
     type: Literal["mage"] = "mage"
     staff: Staff
 
+    def get_facts(self) -> str:
+        return "The player is a mage with a magical staff."
+
     def get_weapon(self) -> str:
         return "firebolt"
 
