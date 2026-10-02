@@ -2,15 +2,14 @@ import operator
 from abc import abstractmethod
 from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from dungeon_game.domain.intent import Intent
 
 
 # Base class for all dungeon rooms
 class DungeonRoom(BaseModel):
-    events: Annotated[list[str], operator.add] = []
-    room_description: str | None = None
+    narration: Annotated[list[str], operator.add] = Field(default_factory=list)
 
     @abstractmethod
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
@@ -18,6 +17,6 @@ class DungeonRoom(BaseModel):
         pass
 
     @abstractmethod
-    def get_initial_facts(self) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         """This is an abstract method. Subclasses must implement it."""
         pass

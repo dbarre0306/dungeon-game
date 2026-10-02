@@ -1,12 +1,13 @@
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
+from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.player.player import Player
+from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
 
 class DrinkPotionNode:
-
     def __init__(self, dungeon_master_agent: DungeonMasterAgent):
         self._dungeon_master_agent = dungeon_master_agent
 
@@ -23,16 +24,23 @@ class DrinkPotionNode:
         player = state.player
         if player.potions.quantity <= 0:
             return self._out_of_potions(state)
-        return self._drink_one_potion(player)
+        return self._drink_one_potion(state.dungeon, player, state.get_current_room())
 
     def _out_of_potions(self, state: GameState) -> dict[str, Any]:
+        narration = self._get_narration(
+            state.get_current_room(), "You don't have anymore potions to drink."
+        )
         return {
-            "narration": [
-                self._get_narration("You don't have anymore potions to drink.")
-            ],
+            "dungeon": state.dungeon.with_room_updated(
+                state.player.current_room_index,
+                narration=[narration],
+            ),
+            "narration": [narration],
         }
 
-    def _drink_one_potion(self, player: Player) -> dict[str, Any]:
+    def _drink_one_potion(
+        self, dungeon: Dungeon, player: Player, room: DungeonRoom
+    ) -> dict[str, Any]:
         print(f"Current health points: {player.health_points}")
         new_quantity = player.potions.quantity - 1
         new_health_points = min(
@@ -44,10 +52,17 @@ class DrinkPotionNode:
         print(f"New health points: {new_health_points}")
         print(f"Potion health points: {player.potions.health_points}")
         if player.health_points >= player.max_health_points:
-            return self._potion_did_not_help(player, new_quantity)
-        return self._potion_helped(player, new_quantity, new_health_points)
+            return self._potion_did_not_help(dungeon, player, room, new_quantity)
+        return self._potion_helped(
+            dungeon, player, room, new_quantity, new_health_points
+        )
 
-    def _potion_did_not_help(self, player: Player, new_quantity: int) -> dict[str, Any]:
+    def _potion_did_not_help(
+        self, dungeon: Dungeon, player: Player, room: DungeonRoom, new_quantity: int
+    ) -> dict[str, Any]:
+        narration = self._get_narration(
+            room, "The player drank a potion but gained no extra strength."
+        )
         return {
             "player": player.model_copy(
                 update={
@@ -56,16 +71,24 @@ class DrinkPotionNode:
                     ),
                 }
             ),
-            "narration": [
-                self._get_narration(
-                    "The player drank a potion but gained no extra strength."
-                )
-            ],
+            "dungeon": dungeon.with_room_updated(
+                player.current_room_index,
+                narration=[narration],
+            ),
+            "narration": [narration],
         }
 
     def _potion_helped(
-        self, player: Player, new_quantity: int, new_health_points: int
+        self,
+        dungeon: Dungeon,
+        player: Player,
+        room: DungeonRoom,
+        new_quantity: int,
+        new_health_points: int,
     ) -> dict[str, Any]:
+        narration = self._get_narration(
+            room, "The player gained strength by drinking the potion."
+        )
         return {
             "player": player.model_copy(
                 update={
@@ -75,12 +98,12 @@ class DrinkPotionNode:
                     ),
                 }
             ),
-            "narration": [
-                self._get_narration(
-                    "The player gained strength by drinking the potion."
-                )
-            ],
+            "dungeon": dungeon.with_room_updated(
+                player.current_room_index,
+                narration=[narration],
+            ),
+            "narration": [narration],
         }
 
-    def _get_narration(self, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(msg).narration
+    def _get_narration(self, room: DungeonRoom, msg: str) -> str:
+        return self._dungeon_master_agent.invoke(room, msg).narration

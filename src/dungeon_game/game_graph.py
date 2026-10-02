@@ -20,10 +20,7 @@ load_dotenv()
 
 
 class GameGraph:
-
-    def __init__(
-        self, router_agent: RouterAgent, dungeon_master_agent: DungeonMasterAgent
-    ):
+    def __init__(self, router_agent: RouterAgent, dungeon_master_agent: DungeonMasterAgent):
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)

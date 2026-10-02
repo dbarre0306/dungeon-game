@@ -12,7 +12,6 @@ HIT_TARGET = 12
 
 
 class AttackNode:
-
     def __init__(self, dungeon_master_agent: DungeonMasterAgent):
         self._dungeon_master_agent = dungeon_master_agent
 
@@ -23,7 +22,7 @@ class AttackNode:
         if is_valid:
             return self._attack_enemy(state)
         else:
-            return {"narration": err_msg}
+            return {"narration": [err_msg]}
 
     def _attack_enemy(self, state: GameState) -> dict[str, Any]:
 
@@ -59,14 +58,21 @@ class AttackNode:
     def _roll_die(_, num_sides: int) -> int:
         return random.randint(1, num_sides)
 
-    def _missed_enemy_update(self, player: Player, room: EnemyRoom) -> dict[str, Any]:
+    def _missed_enemy_update(
+        self, dungeon: Dungeon, player: Player, room: EnemyRoom
+    ) -> dict[str, Any]:
+        narration = self._missed_enemy_narration(player, room)
         return {
             "player": player.model_copy(
                 update={
                     "is_fighting": True,
                 }
             ),
-            "narration": [self._missed_enemy_narration(player, room)],
+            "dungeon": dungeon.with_room_updated(
+                player.current_room_index,
+                narration=[narration],
+            ),
+            "narration": [narration],
         }
 
     def _missed_enemy_narration(self, player: Player, room: EnemyRoom) -> str:
@@ -75,7 +81,7 @@ class AttackNode:
             f"with a {player.get_weapon()}, but missed."
         )
 
-        return self._dungeon_master_agent.invoke(msg).narration
+        return self._dungeon_master_agent.invoke(room, msg).narration
 
     def _enemy_wounded_update(
         self,
@@ -84,6 +90,8 @@ class AttackNode:
         room: EnemyRoom,
         enemy_health_points: int,
     ) -> dict[str, Any]:
+
+        narration = self._enemy_wounded_narration(player, room)
         return {
             "player": player.model_copy(
                 update={
@@ -95,8 +103,9 @@ class AttackNode:
                 enemy=room.enemy.model_copy(
                     update={"health_points": enemy_health_points}
                 ),
+                narration=[narration],
             ),
-            "narration": [self._enemy_wounded_narration(player, room)],
+            "narration": [narration],
         }
 
     def _enemy_wounded_narration(self, player: Player, room: EnemyRoom) -> str:
@@ -105,11 +114,13 @@ class AttackNode:
             f"with a {player.get_weapon()}.  The {room.enemy.name} was wounded."
         )
 
-        return self._dungeon_master_agent.invoke(msg).narration
+        return self._dungeon_master_agent.invoke(room, msg).narration
 
     def _enemy_dead_update(
         self, dungeon: Dungeon, player: Player, room: EnemyRoom
     ) -> dict[str, Any]:
+
+        narration = self._enemy_dead_narration(player, room)
         return {
             "player": player.model_copy(
                 update={
@@ -120,8 +131,9 @@ class AttackNode:
                 player.current_room_index,
                 events=[f"The {room.enemy.name} was killed (dead)."],
                 enemy=room.enemy.model_copy(update={"health_points": 0}),
+                narration=[narration],
             ),
-            "narration": [self._enemy_dead_narration(player, room)],
+            "narration": [narration],
         }
 
     def _enemy_dead_narration(self, player: Player, room: EnemyRoom) -> str:
@@ -132,4 +144,4 @@ class AttackNode:
             "Do NOT say anything about what the player should do next."
         )
 
-        return self._dungeon_master_agent.invoke(msg).narration
+        return self._dungeon_master_agent.invoke(room, msg).narration

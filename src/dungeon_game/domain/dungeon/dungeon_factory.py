@@ -13,7 +13,6 @@ from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 
 
 class DungeonFactory:
-
     def generate(self) -> Dungeon:
         remaining_rooms = ["treasure", "enemy", "trap"]
         first_room, remaining_rooms = self._pick_first_challenge_room(remaining_rooms)
@@ -62,8 +61,8 @@ class DungeonFactory:
     def _get_enemy_description(enemy: str) -> str:
         match enemy:
             case "goblin":
-                return "goblin"
+                return "goblin with a dagger"
             case "orc":
                 return "orc with a battle ax"
             case "rat":
-                return "giant rat"
+                return "giant rat with razor sharp teeth"

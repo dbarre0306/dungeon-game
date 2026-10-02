@@ -16,7 +16,7 @@ class CaveChamber(DungeonRoom):
             return (True, None)
         return False, "You must go either left or right."
 
-    def get_initial_facts(self) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         return [
             "The player is in the cave chamber.",
             "The chamber has a passageway to the left and another the right.",

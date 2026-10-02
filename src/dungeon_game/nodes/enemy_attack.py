@@ -4,7 +4,6 @@ from dungeon_game.game_state import GameState
 
 
 class EnemyAttackNode:
-
     def execute(self, state: GameState) -> dict[str, Any]:
         narration = state.narration + ["The enemy has struck back."]
         return {"narration": narration}

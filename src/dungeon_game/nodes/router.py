@@ -5,7 +5,6 @@ from dungeon_game.game_state import GameState
 
 
 class RouterNode:
-
     def __init__(self, router_agent: RouterAgent):
         self._router_agent = router_agent
 

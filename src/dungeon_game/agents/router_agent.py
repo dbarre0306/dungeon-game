@@ -39,7 +39,6 @@ def retry_on_invalid_structured_output(
 
 
 class RouterAgent:
-
     def __init__(self, model):
         self._agent = create_agent(
             model=model,
@@ -50,9 +49,7 @@ class RouterAgent:
 
     def invoke(self, msg: str) -> RouterState:
         try:
-            result = self._agent.invoke(
-                {"messages": [{"role": "user", "content": msg}]}
-            )
+            result = self._agent.invoke({"messages": [{"role": "user", "content": msg}]})
             return result["structured_response"]
         except StructuredOutputError:
             # The model occasionally returns malformed structured output

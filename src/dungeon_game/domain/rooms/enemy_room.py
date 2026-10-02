@@ -27,7 +27,7 @@ class EnemyRoom(DungeonRoom):
             return (True, None)
         return (False, "I have no idea what you trying to do.")
 
-    def get_initial_facts(self) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         return [
             f"An {self.enemy.description} is in this room and he's itching for a fight.",
             "The player cannot go back the way they came.",

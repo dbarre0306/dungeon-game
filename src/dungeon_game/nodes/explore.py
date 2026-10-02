@@ -6,7 +6,6 @@ from dungeon_game.game_state import GameState
 
 
 class ExploreNode:
-
     def __init__(self, dungeon_master_agent: DungeonMasterAgent):
         self._dungeon_master_agent = dungeon_master_agent
 
@@ -25,7 +24,7 @@ class ExploreNode:
                 update={"current_room_index": next_room_index}
             )
             new_dungeon = state.dungeon.with_room_updated(
-                next_room_index, room_description=description
+                next_room_index, narration=[description]
             )
             return {
                 "narration": [description],
@@ -37,19 +36,11 @@ class ExploreNode:
 
     def _get_room_description(self, room: DungeonRoom) -> str:
         msg = (
-            "Describe the room to the player using only the initial facts "
-            "as well as the events that have occurred. Do not be overdramatic. The player "
+            "Describe the room to the player using only the room facts "
+            "The player "
             "needs to clearly understand what is there in order to make a decison on what "
-            "do to next.  Try to keep it to a few sentences or less. Do not invent new "
-            "rooms, paths, exits, creatures, or other plot details that are not listed "
-            "below — if the facts and events don't mention something, leave it out."
-            "\n\nThe initial facts are:\n"
-            f"{self._format_list(room.get_initial_facts())}"
-            f"\n\nThe events are:\n"
-            f"{self._format_list(room.events)}"
+            "do to next.  Do not invent new "
+            "rooms, paths, exits, creatures, or other plot details that are not listed."
+            "If the facts and events don't mention something, leave it out."
         )
-        return self._dungeon_master_agent.invoke(msg).narration
-
-    @staticmethod
-    def _format_list(items: list[str]) -> str:
-        return "\n".join(map(lambda f: f"- {f}", items))
+        return self._dungeon_master_agent.invoke(room, msg).narration

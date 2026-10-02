@@ -14,7 +14,7 @@ class CaveEntrance(DungeonRoom):
             return (True, None)
         return False, "You cannot run away.  You must enter the cave."
 
-    def get_initial_facts(self) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         return [
             "The player is standing at the entrance of the cave.",
             "The cave entrance is directly in front of the player.",

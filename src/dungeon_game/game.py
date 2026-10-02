@@ -11,7 +11,6 @@ from dungeon_game.game_state import GameState
 
 
 class Game:
-
     def __init__(self):
         print("Generating Dungeon")
         dungeon_factory = DungeonFactory()
@@ -20,7 +19,7 @@ class Game:
 
         self.player = create_default_warrior()
 
-        model = f"openai:{os.getenv("MODEL", "gpt-4o-mini")}"
+        model = f"openai:{os.getenv('MODEL', 'gpt-4o-mini')}"
         router_agent = RouterAgent(model)
         dungeon_master_agent = DungeonMasterAgent(model, self.game_facts(self.player))
 

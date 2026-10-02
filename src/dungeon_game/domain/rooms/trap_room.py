@@ -10,7 +10,7 @@ class TrapRoom(DungeonRoom):
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         return (True, None)
 
-    def get_initial_facts(self) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         return [
             "There are gold coins on the other side of the room.",
             "There is only one passageway forward.",

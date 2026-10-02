@@ -1,6 +1,8 @@
 from langchain.agents import create_agent
 from pydantic import BaseModel
 
+from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+
 
 class DungeonMasterResponse(BaseModel):
     narration: str
@@ -20,7 +22,7 @@ class DungeonMasterAgent:
             response_format=DungeonMasterResponse,
         )
 
-    def invoke(self, msg: str) -> DungeonMasterResponse:
+    def invoke(self, room: DungeonRoom, msg: str) -> DungeonMasterResponse:
         user_msg = {
             "messages": [
                 {
@@ -33,8 +35,14 @@ class DungeonMasterAgent:
                     "Game Facts:\n"
                     f"{self._format_list(self.game_facts)}"
                     "\n\n"
+                    "Room Facts:\n"
+                    f"{self._room_facts(room)}"
+                    "\n\n"
+                    "Room Narration: (The word `you` refers to the player):\n"
+                    f"{self._room_narration(room)}"
+                    "\n\n"
                     "Construct a narrative which addresses the "
-                    "player based on the following: \n\n"
+                    "player based on the following (try not to repeat previous narrations): \n\n"
                     f"{msg}",
                 }
             ]
@@ -49,3 +57,9 @@ class DungeonMasterAgent:
     @staticmethod
     def _format_list(items: list[str]) -> str:
         return "\n".join(map(lambda f: f"- {f}", items))
+
+    def _room_facts(self, room: DungeonRoom) -> str:
+        return self._format_list(room.get_room_facts())
+
+    def _room_narration(self, room: DungeonRoom) -> str:
+        return self._format_list(room.narration)
