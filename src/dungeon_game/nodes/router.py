@@ -1,13 +1,12 @@
 from typing import Any
 
-from langchain.agents.structured_output import StructuredOutputError
-
+from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.game_state import GameState
 
 
 class RouterNode:
 
-    def __init__(self, router_agent):
+    def __init__(self, router_agent: RouterAgent):
         self._router_agent = router_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
@@ -25,18 +24,10 @@ class RouterNode:
             "the direction, then use `forward` by default.  If a player refers to exiting "
             "a room, they are indicating that they want to move forward through the only door."
         )
-        try:
-            result = self._router_agent.invoke(
-                {"messages": [{"role": "user", "content": content}]}
-            )
-        except StructuredOutputError:
-            # The model occasionally returns malformed structured output
-            # (e.g. for typos or ambiguous commands). Treat it as unknown
-            # rather than crashing the whole game loop.
-            return {"intent": {"type": "unknown", "explore_direction": None}}
+        result = self._router_agent.invoke(content)
         return {
             "intent": {
-                "type": result["structured_response"].action,
-                "explore_direction": result["structured_response"].explore_direction,
+                "type": result.action,
+                "explore_direction": result.explore_direction,
             }
         }

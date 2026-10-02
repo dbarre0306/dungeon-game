@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
-from dungeon_game.agents.router_agent import create_router_agent
+from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.intent import ActionType
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.attack import AttackNode
@@ -24,7 +24,7 @@ class GameGraph:
 
     def __init__(self):
         model = f"openai:{os.getenv("MODEL", "gpt-4o-mini")}"
-        router_agent = create_router_agent(model)
+        router_agent = RouterAgent(model)
         dungeon_master_agent = DungeonMasterAgent(model)
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)

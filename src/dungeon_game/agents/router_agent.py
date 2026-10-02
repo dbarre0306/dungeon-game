@@ -38,10 +38,24 @@ def retry_on_invalid_structured_output(
                 raise
 
 
-def create_router_agent(model: str):
-    return create_agent(
-        model=model,
-        system_prompt="You are great at categorizing commands from the player.",
-        response_format=RouterState,
-        middleware=[retry_on_invalid_structured_output],
-    )
+class RouterAgent:
+
+    def __init__(self, model):
+        self._agent = create_agent(
+            model=model,
+            system_prompt="You are great at categorizing commands from the player.",
+            response_format=RouterState,
+            middleware=[retry_on_invalid_structured_output],
+        )
+
+    def invoke(self, msg: str) -> RouterState:
+        try:
+            result = self._agent.invoke(
+                {"messages": [{"role": "user", "content": msg}]}
+            )
+            return result["structured_response"]
+        except StructuredOutputError:
+            # The model occasionally returns malformed structured output
+            # (e.g. for typos or ambiguous commands). Treat it as unknown
+            # rather than crashing the whole game loop.
+            return RouterState(action="unknown", explore_direction=None)
