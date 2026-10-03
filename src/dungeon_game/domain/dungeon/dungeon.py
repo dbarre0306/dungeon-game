@@ -5,14 +5,14 @@ from pydantic import BaseModel, Field
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
-from dungeon_game.domain.rooms.enemy_room import EnemyRoom
+from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 
 Room = Annotated[
-    CaveEntrance | CaveChamber | EnemyRoom | TreasureRoom | TrapRoom | ShopRoom | ThroneRoom,
+    CaveEntrance | CaveChamber | MonsterRoom | TreasureRoom | TrapRoom | ShopRoom | ThroneRoom,
     Field(discriminator="type"),
 ]
 

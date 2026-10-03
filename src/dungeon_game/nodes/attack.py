@@ -3,8 +3,11 @@ from typing import Any, cast
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.domain.dungeon.dungeon import Dungeon
+from dungeon_game.domain.npc.enemy import Enemy
 from dungeon_game.domain.player.player import Player
-from dungeon_game.domain.rooms.enemy_room import EnemyRoom
+from dungeon_game.domain.rooms.combat_room import CombatRoom
+from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.game_state import GameState
 
 # Simple d20 "hit" target: roll + to_hit_bonus >= HIT_TARGET means a hit
@@ -28,22 +31,26 @@ class AttackNode:
 
         dungeon = state.dungeon
         player = state.player
-        current_room = state.get_current_room()
-        if not isinstance(current_room, EnemyRoom):
-            raise TypeError("The room must be an EnemyRoom")
-        room = cast(EnemyRoom, current_room)
-        enemy = room.enemy
+        room = self._get_combat_room(state)
 
         if self._missed_enemy(state):
-            return self._missed_enemy_update(player, room)
+            return self._missed_enemy_update(dungeon, player, room)
 
-        enemy_health_points = enemy.health_points - self._lost_health_points(player)
+        enemy_health_points = room.enemy.health_points - self._lost_health_points(
+            player
+        )
         if enemy_health_points <= 0:
             return self._enemy_dead_update(dungeon, player, room)
 
         return self._enemy_wounded_update(
             state.dungeon, player, room, enemy_health_points
         )
+
+    def _get_combat_room(self, state: GameState) -> CombatRoom:
+        current_room = state.get_current_room()
+        if not isinstance(current_room, CombatRoom):
+            raise TypeError("The room must be an CombatRoom")
+        return cast(CombatRoom, current_room)
 
     def _lost_health_points(self, player: Player) -> int:
         return self._roll_die(6) + player.get_extra_weapon_damage()
@@ -59,7 +66,7 @@ class AttackNode:
         return random.randint(1, num_sides)
 
     def _missed_enemy_update(
-        self, dungeon: Dungeon, player: Player, room: EnemyRoom
+        self, dungeon: Dungeon, player: Player, room: CombatRoom
     ) -> dict[str, Any]:
         narration = self._missed_enemy_narration(player, room)
         return {
@@ -75,7 +82,7 @@ class AttackNode:
             "narration": [narration],
         }
 
-    def _missed_enemy_narration(self, player: Player, room: EnemyRoom) -> str:
+    def _missed_enemy_narration(self, player: Player, room: CombatRoom) -> str:
         msg = (
             f"The player (a {player.type}) attacked the {room.enemy.name} "
             f"with a {player.get_weapon()}, but missed."
@@ -87,7 +94,7 @@ class AttackNode:
         self,
         dungeon: Dungeon,
         player: Player,
-        room: EnemyRoom,
+        room: CombatRoom,
         enemy_health_points: int,
     ) -> dict[str, Any]:
 
@@ -108,7 +115,7 @@ class AttackNode:
             "narration": [narration],
         }
 
-    def _enemy_wounded_narration(self, player: Player, room: EnemyRoom) -> str:
+    def _enemy_wounded_narration(self, player: Player, room: CombatRoom) -> str:
         msg = (
             f"The player (a {player.type}) attacked the {room.enemy.name} "
             f"with a {player.get_weapon()}.  The {room.enemy.name} was wounded."
@@ -117,7 +124,7 @@ class AttackNode:
         return self._dungeon_master_agent.invoke(room, msg).narration
 
     def _enemy_dead_update(
-        self, dungeon: Dungeon, player: Player, room: EnemyRoom
+        self, dungeon: Dungeon, player: Player, room: CombatRoom
     ) -> dict[str, Any]:
 
         narration = self._enemy_dead_narration(player, room)
@@ -136,7 +143,7 @@ class AttackNode:
             "narration": [narration],
         }
 
-    def _enemy_dead_narration(self, player: Player, room: EnemyRoom) -> str:
+    def _enemy_dead_narration(self, player: Player, room: CombatRoom) -> str:
         msg = (
             f"The player (a {player.type}) has killed the {room.enemy.name} "
             f"with a {player.get_weapon()}.  "

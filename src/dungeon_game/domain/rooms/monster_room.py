@@ -2,14 +2,13 @@ from typing import Literal
 
 from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.npc.enemy import Enemy
-from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+from dungeon_game.domain.rooms.combat_room import CombatRoom
 
 _NUMBER_OF_GOLD_COINS = 5
 
 
-class EnemyRoom(DungeonRoom):
-    type: Literal["enemy_room"] = "enemy_room"
-    enemy: Enemy
+class MonsterRoom(CombatRoom):
+    type: Literal["monster_room"] = "monster_room"
     gold_coins: int = _NUMBER_OF_GOLD_COINS
 
     def __init__(self, enemy: Enemy):
@@ -18,7 +17,6 @@ class EnemyRoom(DungeonRoom):
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         if action.type == "explore" and self.enemy.is_alive():
             return (False, f"The {self.enemy.name} will not let you pass.")
-        # elif action.type == "get_coins":
         elif action.type == "attack":
             if self.enemy.is_alive():
                 return (True, None)
