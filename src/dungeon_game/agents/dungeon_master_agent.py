@@ -38,9 +38,7 @@ class DungeonMasterAgent:
                     "Room Facts:\n"
                     f"{self._room_facts(room)}"
                     "\n\n"
-                    "Room Narration: (The word `you` refers to the player):\n"
                     f"{self._room_narration(room)}"
-                    "\n\n"
                     "Construct a narrative which addresses the "
                     "player based on the following (try not to repeat previous narrations): \n\n"
                     f"{msg}",
@@ -50,6 +48,7 @@ class DungeonMasterAgent:
 
         # TODO: remove this comment when it is no longer needed
         # print(f"TO AGENT: {user_msg['messages'][0]['content']}")
+        # print("-----------")
 
         result = self._agent.invoke(user_msg)
         return result["structured_response"]
@@ -62,4 +61,10 @@ class DungeonMasterAgent:
         return self._format_list(room.get_room_facts())
 
     def _room_narration(self, room: DungeonRoom) -> str:
-        return self._format_list(room.narration)
+        if len(room.narration) == 0:
+            return ""
+        return (
+            "Room Narration: (The word `you` refers to the player):\n"
+            f"{self._format_list(room.narration)}"
+            "\n\n"
+        )
