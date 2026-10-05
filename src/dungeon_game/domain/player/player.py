@@ -29,3 +29,9 @@ class Player(BaseModel):
     @abstractmethod
     def get_extra_weapon_damage(self) -> int:
         pass
+
+    def is_alive(self) -> bool:
+        return self.health_points > 0
+
+    def is_dead(self) -> bool:
+        return not self.is_alive()

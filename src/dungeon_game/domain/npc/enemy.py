@@ -5,6 +5,7 @@ class Enemy(BaseModel):
     name: str
     description: str
     health_points: int
+    hit_bonus: int
 
     def is_alive(self) -> bool:
         return self.health_points > 0

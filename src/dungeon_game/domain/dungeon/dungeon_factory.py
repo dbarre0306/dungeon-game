@@ -54,6 +54,7 @@ class DungeonFactory:
                             monster_name
                         ),
                         health_points=10,
+                        hit_bonus=0,
                     )
                 )
             case "trap":
