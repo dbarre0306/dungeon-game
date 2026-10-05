@@ -12,11 +12,11 @@ class LookNode:
     def execute(self, state: GameState) -> dict[str, Any]:
         print("LOOK !!!!")
         room = state.get_current_room()
-        if len(room.narration) == 0:
+        if len(room.history) == 0:
             print("--- generate a new description")
             description = self._get_room_description_on_entry(room)
             new_dungeon = state.dungeon.with_room_updated(
-                state.player.current_room_index, narration=[description]
+                state.player.current_room_index, history=[description]
             )
             return {"narration": [description], "dungeon": new_dungeon}
         else:
@@ -31,7 +31,7 @@ class LookNode:
             "needs to clearly understand what is there in order to make a decison on what "
             "do to next.  Do not invent new "
             "rooms, paths, exits, creatures, or other plot details that are not listed."
-            "If the facts and events don't mention something, leave it out."
+            "If the facts or room history don't mention something, leave it out."
         )
         return self._dungeon_master_agent.invoke(room, msg).narration
 

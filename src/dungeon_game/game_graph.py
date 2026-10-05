@@ -25,7 +25,7 @@ class GameGraph:
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
         self.attack_node = AttackNode(dungeon_master_agent)
-        self.enemy_attack_node = EnemyAttackNode()
+        self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent)
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
         self.open_chest_node = OpenChestNode()

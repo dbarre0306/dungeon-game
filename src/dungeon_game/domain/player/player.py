@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Self
 
 from pydantic import BaseModel
 
@@ -29,6 +30,21 @@ class Player(BaseModel):
     @abstractmethod
     def get_extra_weapon_damage(self) -> int:
         pass
+
+    @abstractmethod
+    def get_damage_reduction(self) -> int:
+        pass
+
+    def take_damage(self, points: int) -> Self:
+        """Return a copy of the player that lost `points` health (never below zero).
+        A player who dies stops fighting."""
+        health_points = max(0, self.health_points - points)
+        return self.model_copy(
+            update={
+                "health_points": health_points,
+                "is_fighting": self.is_fighting and health_points > 0,
+            }
+        )
 
     def is_alive(self) -> bool:
         return self.health_points > 0

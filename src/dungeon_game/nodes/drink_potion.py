@@ -33,7 +33,7 @@ class DrinkPotionNode:
         return {
             "dungeon": state.dungeon.with_room_updated(
                 state.player.current_room_index,
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }
@@ -73,7 +73,7 @@ class DrinkPotionNode:
             ),
             "dungeon": dungeon.with_room_updated(
                 player.current_room_index,
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }
@@ -100,7 +100,7 @@ class DrinkPotionNode:
             ),
             "dungeon": dungeon.with_room_updated(
                 player.current_room_index,
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }

@@ -36,6 +36,9 @@ class Warrior(Player):
     def get_extra_weapon_damage(self) -> int:
         return self.sword.additional_damage_points
 
+    def get_damage_reduction(self) -> int:
+        return self.shield.defensive_health_points
+
 
 def create_default_warrior() -> Player:
     return Warrior(

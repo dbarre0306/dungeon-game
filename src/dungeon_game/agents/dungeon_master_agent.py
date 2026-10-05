@@ -38,9 +38,9 @@ class DungeonMasterAgent:
                     "Room Facts:\n"
                     f"{self._room_facts(room)}"
                     "\n\n"
-                    f"{self._room_narration(room)}"
+                    f"{self._room_history(room)}"
                     "Construct a narrative which addresses the "
-                    "player based on the following (try not to repeat previous narrations): \n\n"
+                    "player based on the following (try not to repeat previous stuff from the room's history): \n\n"
                     f"{msg}",
                 }
             ]
@@ -60,11 +60,11 @@ class DungeonMasterAgent:
     def _room_facts(self, room: DungeonRoom) -> str:
         return self._format_list(room.get_room_facts())
 
-    def _room_narration(self, room: DungeonRoom) -> str:
-        if len(room.narration) == 0:
+    def _room_history(self, room: DungeonRoom) -> str:
+        if len(room.history) == 0:
             return ""
         return (
-            "Room Narration: (The word `you` refers to the player):\n"
-            f"{self._format_list(room.narration)}"
+            "Room History: (The word `you` refers to the player):\n"
+            f"{self._format_list(room.history)}"
             "\n\n"
         )

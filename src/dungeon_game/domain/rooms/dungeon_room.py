@@ -9,7 +9,7 @@ from dungeon_game.domain.intent import Intent
 
 # Base class for all dungeon rooms
 class DungeonRoom(BaseModel):
-    narration: Annotated[list[str], operator.add] = Field(default_factory=list)
+    history: Annotated[list[str], operator.add] = Field(default_factory=list)
 
     @abstractmethod
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:

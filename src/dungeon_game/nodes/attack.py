@@ -77,7 +77,7 @@ class AttackNode:
             ),
             "dungeon": dungeon.with_room_updated(
                 player.current_room_index,
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }
@@ -86,6 +86,8 @@ class AttackNode:
         msg = (
             f"The player (a {player.type}) attacked the {room.enemy.name} "
             f"with a {player.get_weapon()}, but missed."
+            "Ignore the gold coins; stay focused on the battle. "
+            "Do NOT say anything about the doorway out."
         )
 
         return self._dungeon_master_agent.invoke(room, msg).narration
@@ -110,7 +112,7 @@ class AttackNode:
                 enemy=room.enemy.model_copy(
                     update={"health_points": enemy_health_points}
                 ),
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }
@@ -119,6 +121,10 @@ class AttackNode:
         msg = (
             f"The player (a {player.type}) attacked the {room.enemy.name} "
             f"with a {player.get_weapon()}.  The {room.enemy.name} was wounded."
+            f"Describe how the player attacked the {room.enemy.name} "
+            f"and how the {room.enemy.name} was wounded. "
+            "Ignore the gold coins; stay focused on the battle. "
+            "Do NOT say anything about the doorway out."
         )
 
         return self._dungeon_master_agent.invoke(room, msg).narration
@@ -136,9 +142,8 @@ class AttackNode:
             ),
             "dungeon": dungeon.with_room_updated(
                 player.current_room_index,
-                events=[f"The {room.enemy.name} was killed (dead)."],
                 enemy=room.enemy.model_copy(update={"health_points": 0}),
-                narration=[narration],
+                history=[narration],
             ),
             "narration": [narration],
         }

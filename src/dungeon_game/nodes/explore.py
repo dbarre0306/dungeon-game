@@ -24,7 +24,7 @@ class ExploreNode:
                 update={"current_room_index": next_room_index}
             )
             new_dungeon = state.dungeon.with_room_updated(
-                next_room_index, narration=[description]
+                next_room_index, history=[description]
             )
             return {
                 "narration": [description],
@@ -41,6 +41,6 @@ class ExploreNode:
             "needs to clearly understand what is there in order to make a decison on what "
             "do to next.  Do not invent new "
             "rooms, paths, exits, creatures, or other plot details that are not listed."
-            "If the facts and events don't mention something, leave it out."
+            "If the facts or room history don't mention something, leave it out."
         )
         return self._dungeon_master_agent.invoke(room, msg).narration
