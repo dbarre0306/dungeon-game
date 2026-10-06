@@ -53,6 +53,7 @@ class DungeonFactory:
                         description=DungeonFactory._get_monster_description(
                             monster_name
                         ),
+                        max_health_points=10,
                         health_points=10,
                         hit_bonus=0,
                     )

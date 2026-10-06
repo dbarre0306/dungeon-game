@@ -26,7 +26,13 @@ class FakeDungeonMaster:
 
 
 def _state(player_hp: int = 20, enemy_hp: int = 5) -> GameState:
-    enemy = Enemy(name="goblin", description="goblin", health_points=enemy_hp, hit_bonus=2)
+    enemy = Enemy(
+        name="goblin",
+        description="goblin",
+        max_health_points=10,
+        health_points=enemy_hp,
+        hit_bonus=2,
+    )
     player = create_default_warrior().model_copy(
         update={"health_points": player_hp, "is_fighting": True}
     )
