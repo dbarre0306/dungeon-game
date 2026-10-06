@@ -63,7 +63,7 @@ class DungeonMasterAgent:
         if len(room.history) == 0:
             return ""
         return (
-            "Room History: (The word `you` refers to the player):\n"
+            "Room History in chronological order: (The word `you` refers to the player):\n"
             f"{self._format_list(room.history)}"
             "\n\n"
         )
