@@ -28,7 +28,7 @@ class FakeDungeonMaster:
 def _state(player_hp: int = 20, enemy_hp: int = 5) -> GameState:
     enemy = Enemy(
         name="goblin",
-        description="goblin",
+        weapon="dagger",
         max_health_points=10,
         health_points=enemy_hp,
         hit_bonus=2,

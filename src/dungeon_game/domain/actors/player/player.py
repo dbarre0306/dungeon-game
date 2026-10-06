@@ -19,7 +19,3 @@ class Player(Combatant):
     @abstractmethod
     def get_facts(self) -> str:
         pass
-
-    @abstractmethod
-    def get_weapon(self) -> str:
-        pass

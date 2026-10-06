@@ -10,7 +10,9 @@ from dungeon_game.nodes.attack import HIT_TARGET
 class EnemyAttackNode:
     """The enemy strikes back at the player; the mirror image of `AttackNode`."""
 
-    def __init__(self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None):
+    def __init__(
+        self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None
+    ):
         self._dungeon_master_agent = dungeon_master_agent
         self._dice = dice or Dice()
 
@@ -19,7 +21,9 @@ class EnemyAttackNode:
         room = self._get_combat_room(state)
         if room.enemy.is_dead():
             return {}
-        return _EnemyStrike(state, room, self._dungeon_master_agent, self._dice).resolve()
+        return _EnemyStrike(
+            state, room, self._dungeon_master_agent, self._dice
+        ).resolve()
 
     @staticmethod
     def _get_combat_room(state: GameState) -> CombatRoom:
@@ -71,7 +75,7 @@ class _EnemyStrike:
         return self._update(
             player,
             f"The {self._enemy.name} attacked the player (a {player.type}) and wounded them."
-            f"Describe how the {self._enemy.name} attacked the player "
+            f"You must describe how the {self._enemy.name} attacked the player "
             f"and how the player was wounded. "
             "Do NOT say anything about the doorway out.",
         )
@@ -80,6 +84,7 @@ class _EnemyStrike:
         return self._update(
             player,
             f"The {self._enemy.name} has killed the player (a {player.type}). "
+            "You must describe how the player was attacked. "
             "Describe the player's final moments. "
             "Do NOT say anything about what the player should do next.",
         )

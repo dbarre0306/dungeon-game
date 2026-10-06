@@ -12,7 +12,9 @@ HIT_TARGET = 12
 class AttackNode:
     """The player strikes at the enemy; `EnemyAttackNode` is its mirror image."""
 
-    def __init__(self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None):
+    def __init__(
+        self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None
+    ):
         self._dungeon_master_agent = dungeon_master_agent
         self._dice = dice or Dice()
 
@@ -69,7 +71,7 @@ class _PlayerStrike:
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_weapon()}, but missed."
+            f"with a {self._player.get_attack()}, but missed."
             "Ignore the gold coins; stay focused on the battle. "
             "Do NOT say anything about the doorway out.",
         )
@@ -78,8 +80,8 @@ class _PlayerStrike:
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_weapon()}.  The {self._enemy.name} was wounded."
-            f"Describe how the player attacked the {self._enemy.name} "
+            f"with a {self._player.get_attack()}.  The {self._enemy.name} was wounded."
+            f"You must describe how the player attacked the {self._enemy.name} "
             f"and how the {self._enemy.name} was wounded. "
             "Ignore the gold coins; stay focused on the battle. "
             "Do NOT say anything about the doorway out.",
@@ -90,13 +92,16 @@ class _PlayerStrike:
         return self._update(
             False,
             f"The player (a {self._player.type}) has killed the {self._enemy.name} "
-            f"with a {self._player.get_weapon()}.  "
+            f"with a {self._player.get_attack()}.  "
+            f"You must describe how the player attacked the {self._enemy.name}. "
             "Stick to what it would feel like after a brutal battle. "
             "Do NOT say anything about what the player should do next.",
             enemy=self._enemy.model_copy(update={"health_points": 0}),
         )
 
-    def _update(self, is_fighting: bool, msg: str, **room_updates: Any) -> dict[str, Any]:
+    def _update(
+        self, is_fighting: bool, msg: str, **room_updates: Any
+    ) -> dict[str, Any]:
         narration = self._dungeon_master_agent.invoke(self._room, msg).narration
         return {
             "player": self._player.model_copy(update={"is_fighting": is_fighting}),

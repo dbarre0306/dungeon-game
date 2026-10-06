@@ -30,7 +30,10 @@ class Mage(Player):
         return "The player is a mage with a magical staff."
 
     def get_weapon(self) -> str:
-        return "firebolt"
+        return self.staff.name
+
+    def get_attack(self) -> str:
+        return self.staff.fire_bolt_spell.name
 
     def get_extra_damage(self) -> int:
         return self.staff.fire_bolt_spell.additional_damage_points

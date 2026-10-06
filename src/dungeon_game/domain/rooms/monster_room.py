@@ -27,7 +27,7 @@ class MonsterRoom(CombatRoom):
 
     def get_room_facts(self) -> list[str]:
         return [
-            f"An {self.enemy.description} is in this room and he's itching for a fight.",
+            f"An {self.enemy.name} with {self.enemy.get_weapon} is in this room and he's itching for a fight.",
             "The player cannot go back the way they came.",
             "There is only one exit, doorway, or passageway to the next room.",
             f"There are {_NUMBER_OF_GOLD_COINS} gold coins behind the {self.enemy.name}.",

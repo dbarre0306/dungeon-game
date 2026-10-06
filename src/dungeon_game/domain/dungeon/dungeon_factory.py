@@ -46,13 +46,11 @@ class DungeonFactory:
             case "treasure":
                 return TreasureRoom()
             case "monster":
-                monster_name = random.choice(["goblin", "orc", "rat"])
+                monster_name = random.choice(["goblin", "orc", "giant rat"])
                 return MonsterRoom(
                     enemy=Enemy(
                         name=monster_name,
-                        description=DungeonFactory._get_monster_description(
-                            monster_name
-                        ),
+                        weapon=DungeonFactory._get_monster_weapon(monster_name),
                         max_health_points=10,
                         health_points=10,
                         hit_bonus=0,
@@ -62,11 +60,11 @@ class DungeonFactory:
                 return TrapRoom()
 
     @staticmethod
-    def _get_monster_description(monster: str) -> str:
+    def _get_monster_weapon(monster: str) -> str:
         match monster:
             case "goblin":
-                return "goblin with a dagger"
+                return "dagger"
             case "orc":
-                return "orc with a battle ax"
-            case "rat":
-                return "giant rat with razor sharp teeth"
+                return "battle ax"
+            case "giant rat":
+                return "razor sharp teeth"
