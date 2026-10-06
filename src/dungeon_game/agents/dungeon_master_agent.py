@@ -22,7 +22,9 @@ class DungeonMasterAgent:
             response_format=DungeonMasterResponse,
         )
 
-    def invoke(self, room: DungeonRoom, player: Player, msg: str) -> DungeonMasterResponse:
+    def invoke(
+        self, room: DungeonRoom, player: Player, msg: str
+    ) -> DungeonMasterResponse:
         user_msg = {
             "messages": [
                 {
@@ -36,7 +38,7 @@ class DungeonMasterAgent:
                     f"{self._format_list([player.get_facts()])}"
                     "\n\n"
                     "Room Facts:\n"
-                    f"{self._room_facts(room)}"
+                    f"{self._format_list(room.get_room_facts())}"
                     "\n\n"
                     f"{self._room_history(room)}"
                     "Construct a narrative which addresses the "
@@ -56,9 +58,6 @@ class DungeonMasterAgent:
     @staticmethod
     def _format_list(items: list[str]) -> str:
         return "\n".join(map(lambda f: f"- {f}", items))
-
-    def _room_facts(self, room: DungeonRoom) -> str:
-        return self._format_list(room.get_room_facts())
 
     def _room_history(self, room: DungeonRoom) -> str:
         if len(room.history) == 0:
