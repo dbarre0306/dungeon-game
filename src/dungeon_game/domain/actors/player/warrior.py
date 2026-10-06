@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.player.player import Player, Potions
+from dungeon_game.domain.actors.player.player import Player, Potions
 
 
 class Sword(BaseModel):

@@ -1,4 +1,4 @@
-from dungeon_game.domain.npc.enemy import Enemy
+from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 

@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 
+from dungeon_game.domain.actors.enemy import Enemy
+from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
-from dungeon_game.domain.npc.enemy import Enemy
-from dungeon_game.domain.player.warrior import create_default_warrior
 from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode

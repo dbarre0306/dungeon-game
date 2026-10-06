@@ -3,9 +3,9 @@ import pprint
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
+from dungeon_game.domain.actors.player.player import Player
+from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
-from dungeon_game.domain.player.player import Player
-from dungeon_game.domain.player.warrior import create_default_warrior
 from dungeon_game.game_graph import GameGraph
 from dungeon_game.game_state import GameState
 

@@ -1,7 +1,7 @@
 from typing import Literal
 
+from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.intent import Intent
-from dungeon_game.domain.npc.enemy import Enemy
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 
 _NUMBER_OF_GOLD_COINS = 5

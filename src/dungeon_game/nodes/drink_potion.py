@@ -1,8 +1,8 @@
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.dungeon.dungeon import Dungeon
-from dungeon_game.domain.player.player import Player
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 

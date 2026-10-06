@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.player.player import Player
+from dungeon_game.domain.actors.player.player import Player
 
 
 class FireBoltSpell(BaseModel):

@@ -1,7 +1,7 @@
 import random
 
+from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.dungeon.dungeon import Dungeon
-from dungeon_game.domain.npc.enemy import Enemy
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
