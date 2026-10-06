@@ -1,7 +1,7 @@
 from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.actors.player.mage import FireBoltSpell, HealingSpell, Mage, Staff
 from dungeon_game.domain.actors.player.player import Potions
-from dungeon_game.domain.actors.player.warrior import create_default_warrior
+from dungeon_game.domain.actors.player.warrior import Sword, create_default_warrior
 
 
 def _mage() -> Mage:
@@ -14,7 +14,7 @@ def _mage() -> Mage:
         hit_bonus=2,
         current_room_index=0,
         staff=Staff(
-            name="oak staff",
+            name="wooden staff",
             fire_bolt_spell=FireBoltSpell(name="firebolt", additional_damage_points=2),
             healing_spell=HealingSpell(name="mend", health_points=5, quantity=1),
         ),
@@ -29,7 +29,7 @@ def test_warrior_attacks_with_its_sword():
 
 def test_mage_carries_a_staff_but_attacks_with_firebolt():
     mage = _mage()
-    assert mage.get_weapon() == "oak staff"
+    assert mage.get_weapon() == "wooden staff"
     assert mage.get_attack() == "firebolt"
 
 
@@ -43,3 +43,16 @@ def test_enemy_attacks_with_its_weapon():
     )
     assert enemy.get_weapon() == "battle ax"
     assert enemy.get_attack() == "battle ax"
+
+
+def test_warrior_facts_name_the_current_equipment():
+    warrior = create_default_warrior()
+    assert warrior.get_facts() == "The player is a warrior with a bronze sword and a bronze shield."
+
+    upgraded = warrior.model_copy(update={"sword": Sword("steel sword", 2)})
+    assert "steel sword" in upgraded.get_facts()
+    assert "bronze sword" not in upgraded.get_facts()
+
+
+def test_mage_facts_name_the_staff():
+    assert _mage().get_facts() == "The player is a mage with a wooden staff."

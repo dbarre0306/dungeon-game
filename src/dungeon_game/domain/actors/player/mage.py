@@ -27,7 +27,7 @@ class Mage(Player):
     staff: Staff
 
     def get_facts(self) -> str:
-        return "The player is a mage with a magical staff."
+        return f"The player is a mage with a {self.staff.name}."
 
     def get_weapon(self) -> str:
         return self.staff.name
