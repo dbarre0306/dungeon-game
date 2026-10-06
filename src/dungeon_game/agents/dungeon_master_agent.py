@@ -1,6 +1,7 @@
 from langchain.agents import create_agent
 from pydantic import BaseModel
 
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
@@ -9,8 +10,7 @@ class DungeonMasterResponse(BaseModel):
 
 
 class DungeonMasterAgent:
-    def __init__(self, model, game_facts: list[str]):
-        self.game_facts = game_facts
+    def __init__(self, model):
         self._agent = create_agent(
             model=model,
             system_prompt="You are the Dungeon Master for this game. "
@@ -22,7 +22,7 @@ class DungeonMasterAgent:
             response_format=DungeonMasterResponse,
         )
 
-    def invoke(self, room: DungeonRoom, msg: str) -> DungeonMasterResponse:
+    def invoke(self, room: DungeonRoom, player: Player, msg: str) -> DungeonMasterResponse:
         user_msg = {
             "messages": [
                 {
@@ -32,8 +32,8 @@ class DungeonMasterAgent:
                     "- Do NOT be overdramatic!!!\n"
                     "- Do NOT make up any facts."
                     "\n\n"
-                    "Game Facts:\n"
-                    f"{self._format_list(self.game_facts)}"
+                    "Player Facts:\n"
+                    f"{self._format_list([player.get_facts()])}"
                     "\n\n"
                     "Room Facts:\n"
                     f"{self._room_facts(room)}"

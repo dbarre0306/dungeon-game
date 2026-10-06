@@ -102,7 +102,7 @@ class _PlayerStrike:
     def _update(
         self, is_fighting: bool, msg: str, **room_updates: Any
     ) -> dict[str, Any]:
-        narration = self._dungeon_master_agent.invoke(self._room, msg).narration
+        narration = self._dungeon_master_agent.invoke(self._room, self._player, msg).narration
         return {
             "player": self._player.model_copy(update={"is_fighting": is_fighting}),
             "dungeon": self._state.dungeon.with_room_updated(

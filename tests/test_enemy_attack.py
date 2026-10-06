@@ -20,7 +20,7 @@ class FakeDungeonMaster:
     def __init__(self):
         self.messages: list[str] = []
 
-    def invoke(self, room, msg):
+    def invoke(self, room, player, msg):
         self.messages.append(msg)
         return SimpleNamespace(narration="narrated")
 

@@ -90,7 +90,7 @@ class _EnemyStrike:
         )
 
     def _update(self, player, msg: str) -> dict[str, Any]:
-        narration = self._dungeon_master_agent.invoke(self._room, msg).narration
+        narration = self._dungeon_master_agent.invoke(self._room, self._player, msg).narration
         return {
             "player": player,
             "dungeon": self._state.dungeon.with_room_updated(

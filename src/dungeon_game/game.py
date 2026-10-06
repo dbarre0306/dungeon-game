@@ -2,7 +2,6 @@ import os
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
-from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
 from dungeon_game.game_graph import GameGraph
@@ -20,12 +19,9 @@ class Game:
 
         model = f"openai:{os.getenv('MODEL', 'gpt-4o-mini')}"
         router_agent = RouterAgent(model)
-        dungeon_master_agent = DungeonMasterAgent(model, self.game_facts(self.player))
+        dungeon_master_agent = DungeonMasterAgent(model)
 
         self.game_graph = GameGraph(router_agent, dungeon_master_agent)
-
-    def game_facts(self, player: Player) -> list[str]:
-        return [player.get_facts()]
 
     def run(self) -> None:
 

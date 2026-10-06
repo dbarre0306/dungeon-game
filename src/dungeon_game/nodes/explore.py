@@ -1,6 +1,7 @@
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
@@ -19,7 +20,7 @@ class ExploreNode:
         is_valid, err_msg = room.is_valid_action(state.intent)
         if is_valid:
             next_room_index = state.player.current_room_index + 1
-            description = self._get_room_description(next_room)
+            description = self._get_room_description(next_room, state.player)
             player = state.player.model_copy(
                 update={"current_room_index": next_room_index}
             )
@@ -34,7 +35,7 @@ class ExploreNode:
         else:
             return {"narration": [err_msg]}
 
-    def _get_room_description(self, room: DungeonRoom) -> str:
+    def _get_room_description(self, room: DungeonRoom, player: Player) -> str:
         msg = (
             "Describe the room to the player using only the room facts "
             "The player "
@@ -43,4 +44,4 @@ class ExploreNode:
             "rooms, paths, exits, creatures, or other plot details that are not listed."
             "If the facts or room history don't mention something, leave it out."
         )
-        return self._dungeon_master_agent.invoke(room, msg).narration
+        return self._dungeon_master_agent.invoke(room, player, msg).narration

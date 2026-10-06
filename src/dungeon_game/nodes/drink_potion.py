@@ -28,7 +28,7 @@ class DrinkPotionNode:
 
     def _out_of_potions(self, state: GameState) -> dict[str, Any]:
         narration = self._get_narration(
-            state.get_current_room(), "You don't have anymore potions to drink."
+            state.get_current_room(), state.player, "You don't have anymore potions to drink."
         )
         return {
             "dungeon": state.dungeon.with_room_updated(
@@ -61,7 +61,7 @@ class DrinkPotionNode:
         self, dungeon: Dungeon, player: Player, room: DungeonRoom, new_quantity: int
     ) -> dict[str, Any]:
         narration = self._get_narration(
-            room, "The player drank a potion but gained no extra strength."
+            room, player, "The player drank a potion but gained no extra strength."
         )
         return {
             "player": player.model_copy(
@@ -87,7 +87,7 @@ class DrinkPotionNode:
         new_health_points: int,
     ) -> dict[str, Any]:
         narration = self._get_narration(
-            room, "The player gained strength by drinking the potion."
+            room, player, "The player gained strength by drinking the potion."
         )
         return {
             "player": player.model_copy(
@@ -105,5 +105,5 @@ class DrinkPotionNode:
             "narration": [narration],
         }
 
-    def _get_narration(self, room: DungeonRoom, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(room, msg).narration
+    def _get_narration(self, room: DungeonRoom, player: Player, msg: str) -> str:
+        return self._dungeon_master_agent.invoke(room, player, msg).narration
