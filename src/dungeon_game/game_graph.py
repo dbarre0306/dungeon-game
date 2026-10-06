@@ -7,12 +7,12 @@ from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.intent import ActionType
 from dungeon_game.game_state import GameState
-from dungeon_game.nodes.attack import AttackNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
 from dungeon_game.nodes.look import LookNode
 from dungeon_game.nodes.open_chest import OpenChestNode
+from dungeon_game.nodes.player_attack import PlayerAttackNode
 from dungeon_game.nodes.router import RouterNode
 from dungeon_game.nodes.shop import ShopNode
 
@@ -24,7 +24,7 @@ class GameGraph:
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
-        self.attack_node = AttackNode(dungeon_master_agent)
+        self.attack_node = PlayerAttackNode(dungeon_master_agent)
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent)
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)

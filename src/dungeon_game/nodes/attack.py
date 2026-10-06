@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
@@ -9,24 +10,29 @@ from dungeon_game.game_state import GameState
 HIT_TARGET = 12
 
 
-class AttackNode:
-    """The player strikes at the enemy; `EnemyAttackNode` is its mirror image."""
+class AttackNode(ABC):
+    """One side strikes at the other. `PlayerAttackNode` and `EnemyAttackNode` are mirror images."""
 
-    def __init__(
-        self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None
-    ):
+    _label: str
+
+    def __init__(self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None):
         self._dungeon_master_agent = dungeon_master_agent
         self._dice = dice or Dice()
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("ATTACK")
-        room = state.get_current_room()
-        is_valid, err_msg = room.is_valid_action(state.intent)
-        if not is_valid:
-            return {"narration": [err_msg]}
-        return _PlayerStrike(
-            state, self._get_combat_room(state), self._dungeon_master_agent, self._dice
-        ).resolve()
+        print(self._label)
+        early_result = self._early_result(state)
+        if early_result is not None:
+            return early_result
+        return self._new_strike(state, self._get_combat_room(state)).resolve()
+
+    @abstractmethod
+    def _early_result(self, state: GameState) -> dict[str, Any] | None:
+        """A state update that ends the node before any strike, or None to carry on."""
+
+    @abstractmethod
+    def _new_strike(self, state: GameState, room: CombatRoom) -> "_Strike":
+        """The strike this node resolves."""
 
     @staticmethod
     def _get_combat_room(state: GameState) -> CombatRoom:
@@ -36,8 +42,11 @@ class AttackNode:
         return room
 
 
-class _PlayerStrike:
-    """One player attack against the enemy: roll to hit, apply damage, narrate the result."""
+class _Strike[Defender](ABC):
+    """One attack: roll to hit, apply damage, narrate the result.
+
+    Subclasses supply the attacker's rolls, how damage lands on the defender,
+    and the narration prompt for each outcome."""
 
     def __init__(
         self,
@@ -56,57 +65,32 @@ class _PlayerStrike:
     def resolve(self) -> dict[str, Any]:
         if not self._hits():
             return self._missed()
-        enemy_health_points = self._enemy.health_points - self._damage()
-        if enemy_health_points <= 0:
-            return self._enemy_dead()
-        return self._enemy_wounded(enemy_health_points)
+        defender = self._apply_damage(self._damage())
+        if self._is_dead(defender):
+            return self._defender_dead(defender)
+        return self._defender_wounded(defender)
 
-    def _hits(self) -> bool:
-        return self._dice.roll(20) + self._player.hit_bonus >= HIT_TARGET
+    @abstractmethod
+    def _hits(self) -> bool: ...
 
-    def _damage(self) -> int:
-        return self._dice.roll(6) + self._player.get_extra_damage()
+    @abstractmethod
+    def _damage(self) -> int: ...
 
-    def _missed(self) -> dict[str, Any]:
-        return self._update(
-            True,
-            f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}, but missed."
-            "Ignore the gold coins; stay focused on the battle. "
-            "Do NOT say anything about the doorway out.",
-        )
+    @abstractmethod
+    def _apply_damage(self, damage: int) -> Defender:
+        """The defender after taking `damage`."""
 
-    def _enemy_wounded(self, enemy_health_points: int) -> dict[str, Any]:
-        return self._update(
-            True,
-            f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}.  The {self._enemy.name} was wounded."
-            f"You must describe how the player attacked the {self._enemy.name} "
-            f"and how the {self._enemy.name} was wounded. "
-            "Ignore the gold coins; stay focused on the battle. "
-            "Do NOT say anything about the doorway out.",
-            enemy=self._enemy.model_copy(update={"health_points": enemy_health_points}),
-        )
+    @abstractmethod
+    def _is_dead(self, defender: Defender) -> bool: ...
 
-    def _enemy_dead(self) -> dict[str, Any]:
-        return self._update(
-            False,
-            f"The player (a {self._player.type}) has killed the {self._enemy.name} "
-            f"with a {self._player.get_attack()}.  "
-            f"You must describe how the player attacked the {self._enemy.name}. "
-            "Stick to what it would feel like after a brutal battle. "
-            "Do NOT say anything about what the player should do next.",
-            enemy=self._enemy.model_copy(update={"health_points": 0}),
-        )
+    @abstractmethod
+    def _missed(self) -> dict[str, Any]: ...
 
-    def _update(
-        self, is_fighting: bool, msg: str, **room_updates: Any
-    ) -> dict[str, Any]:
-        narration = self._dungeon_master_agent.invoke(self._room, self._player, msg).narration
-        return {
-            "player": self._player.model_copy(update={"is_fighting": is_fighting}),
-            "dungeon": self._state.dungeon.with_room_updated(
-                self._player.current_room_index, history=[narration], **room_updates
-            ),
-            "narration": [narration],
-        }
+    @abstractmethod
+    def _defender_wounded(self, defender: Defender) -> dict[str, Any]: ...
+
+    @abstractmethod
+    def _defender_dead(self, defender: Defender) -> dict[str, Any]: ...
+
+    def _narrate(self, msg: str) -> str:
+        return self._dungeon_master_agent.invoke(self._room, self._player, msg).narration
