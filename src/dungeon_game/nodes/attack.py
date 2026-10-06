@@ -63,7 +63,7 @@ class _PlayerStrike:
         return self._dice.roll(20) + self._player.hit_bonus >= HIT_TARGET
 
     def _damage(self) -> int:
-        return self._dice.roll(6) + self._player.get_extra_weapon_damage()
+        return self._dice.roll(6) + self._player.get_extra_damage()
 
     def _missed(self) -> dict[str, Any]:
         return self._update(

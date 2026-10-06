@@ -33,7 +33,7 @@ class Warrior(Player):
     def get_weapon(self) -> str:
         return self.sword.name
 
-    def get_extra_weapon_damage(self) -> int:
+    def get_extra_damage(self) -> int:
         return self.sword.additional_damage_points
 
     def get_damage_reduction(self) -> int:

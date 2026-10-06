@@ -26,9 +26,7 @@ class FakeDungeonMaster:
 
 
 def _state(player_hp: int = 20, enemy_hp: int = 5) -> GameState:
-    enemy = Enemy(
-        name="goblin", description="goblin", health_points=enemy_hp, hit_bonus=2, damage_bonus=1
-    )
+    enemy = Enemy(name="goblin", description="goblin", health_points=enemy_hp, hit_bonus=2)
     player = create_default_warrior().model_copy(
         update={"health_points": player_hp, "is_fighting": True}
     )
@@ -48,9 +46,9 @@ def test_miss_leaves_player_unharmed():
 
 
 def test_hit_applies_damage_minus_shield():
-    # d20=20 hits; d6=6 + damage_bonus 1 - shield 2 = 5
+    # d20=20 hits; d6=6 - shield 2 = 4
     update, _ = _execute(_state(), 20, 6)
-    assert update["player"].health_points == 15
+    assert update["player"].health_points == 16
     assert update["player"].is_fighting
     assert update["dungeon"].rooms[0].history == ["narrated"]
 

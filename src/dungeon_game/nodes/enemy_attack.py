@@ -58,7 +58,7 @@ class _EnemyStrike:
         return self._dice.roll(20) + self._enemy.hit_bonus >= HIT_TARGET
 
     def _damage(self) -> int:
-        raw = self._dice.roll(6) + self._enemy.damage_bonus
+        raw = self._dice.roll(6) + self._enemy.get_extra_damage()
         return max(1, raw - self._player.get_damage_reduction())
 
     def _missed(self) -> dict[str, Any]:

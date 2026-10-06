@@ -1,15 +1,9 @@
-from pydantic import BaseModel
+from dungeon_game.domain.actors.combatant import Combatant
 
 
-class Enemy(BaseModel):
+class Enemy(Combatant):
     name: str
     description: str
-    health_points: int
-    hit_bonus: int
-    damage_bonus: int = 0
 
-    def is_alive(self) -> bool:
-        return self.health_points > 0
-
-    def is_dead(self) -> bool:
-        return not self.is_alive()
+    def get_extra_damage(self) -> int:
+        return 0
