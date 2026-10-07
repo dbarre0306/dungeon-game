@@ -77,7 +77,6 @@ class GameGraph:
         graph_builder.add_edge("enemy_attack", "game_over")
         graph_builder.add_edge("game_over", END)
         graph_builder.add_edge("shop", END)
-        graph_builder.add_edge("drink_potion", END)
         graph_builder.add_conditional_edges(
             "drink_potion", self._player_is_fighting, ["enemy_attack", END]
         )
