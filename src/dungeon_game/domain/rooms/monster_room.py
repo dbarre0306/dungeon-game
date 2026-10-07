@@ -29,14 +29,20 @@ class MonsterRoom(CombatRoom):
             else:
                 return (
                     False,
-                    "Tell the player that the only way out is forward through the passageway.",
+                    (
+                        "Tell the player that the only way out is forward through "
+                        "the passageway."
+                    ),
                 )
         elif action.type == "attack":
             if self.enemy.is_alive():
                 return (True, None)
             return (
                 False,
-                f"Tell the player that the {self.enemy.name} is already dead and they can stop attacking.",
+                (
+                    f"Tell the player that the {self.enemy.name} is already dead "
+                    "and they can stop attacking."
+                ),
             )
         elif action.type == "drink_potion":
             return (True, None)
