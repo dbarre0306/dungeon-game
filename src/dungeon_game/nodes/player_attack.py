@@ -10,16 +10,22 @@ from dungeon_game.nodes.attack import AttackNode, _Strike
 class PlayerAttackNode(AttackNode):
     """The player strikes at the enemy; `EnemyAttackNode` is its mirror image."""
 
-    _label = "ATTACK"
+    _label = "PLAYER ATTACK"
 
     def _early_result(self, state: GameState) -> dict[str, Any] | None:
         is_valid, err_msg = state.get_current_room().is_valid_action(state.intent)
         if not is_valid:
-            return {"narration": [err_msg]}
+            return self._narrate(err_msg, state)
         return None
 
     def _new_strike(self, state: GameState, room: CombatRoom) -> "_PlayerStrike":
         return _PlayerStrike(state, room, self._dungeon_master_agent, self._dice)
+
+    def _narrate(self, msg: str, state: GameState) -> dict[str, Any]:
+        print(f"***** narrate player attack on invalid: {msg} ***")
+        return self._dungeon_master_agent.invoke(
+            state.get_current_room(), state.player, msg
+        )
 
 
 class _PlayerStrike(_Strike[Enemy]):
