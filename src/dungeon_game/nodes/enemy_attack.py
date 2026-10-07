@@ -28,7 +28,7 @@ class _EnemyStrike(_Strike[Player]):
 
     def _damage(self) -> int:
         raw = self._dice.roll(6) + self._enemy.get_extra_damage()
-        return max(1, raw - self._player.get_damage_reduction())
+        return max(0, raw - self._player.get_damage_reduction())
 
     def _apply_damage(self, damage: int) -> Player:
         return self._player.take_damage(damage)

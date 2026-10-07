@@ -67,9 +67,9 @@ def test_narration_is_appended_to_existing_narration():
     assert update["narration"] == ["You swing your sword.", "narrated"]
 
 
-def test_hit_always_does_at_least_one_damage():
+def test_damage_is_never_negative():
     update, _ = _execute(_state(), 20, 1)
-    assert update["player"].health_points == 19
+    assert update["player"].health_points == 20
 
 
 def test_killing_blow_ends_the_fight():
