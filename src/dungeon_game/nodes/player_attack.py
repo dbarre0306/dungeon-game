@@ -13,7 +13,7 @@ class PlayerAttackNode(AttackNode):
     _label = "PLAYER ATTACK"
 
     def _early_result(self, state: GameState) -> dict[str, Any] | None:
-        is_valid, err_msg = state.get_current_room().is_valid_action(state.intent)
+        is_valid, err_msg = state.get_current_room().is_valid_intent(state.intent)
         if not is_valid:
             return self._narrate(err_msg, state)
         return None

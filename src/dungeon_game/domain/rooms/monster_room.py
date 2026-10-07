@@ -14,8 +14,8 @@ class MonsterRoom(CombatRoom):
     def __init__(self, enemy: Enemy):
         super().__init__(enemy=enemy)
 
-    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.type == "explore":
+    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+        if intent.is_explore():
             if self.enemy.is_alive():
                 return (
                     False,
@@ -24,7 +24,7 @@ class MonsterRoom(CombatRoom):
                         "will not let them pass."
                     ),
                 )
-            elif self._is_forward(action):
+            elif intent.is_explore_forward():
                 return (True, None)
             else:
                 return (
@@ -34,7 +34,7 @@ class MonsterRoom(CombatRoom):
                         "the passageway."
                     ),
                 )
-        elif action.type == "attack":
+        elif intent.is_attack():
             if self.enemy.is_alive():
                 return (True, None)
             return (
@@ -44,15 +44,12 @@ class MonsterRoom(CombatRoom):
                     "and they can stop attacking."
                 ),
             )
-        elif action.type == "drink_potion":
+        elif intent.is_drink_potion():
             return (True, None)
         return (
             False,
             "Tell the player that you don't understand what they have asked.",
         )
-
-    def _is_forward(self, action: Intent) -> bool:
-        return action.explore_direction == "forward" or action.explore_direction is None
 
     def get_room_facts(self) -> list[str]:
         return [

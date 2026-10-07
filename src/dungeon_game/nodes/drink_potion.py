@@ -14,7 +14,7 @@ class DrinkPotionNode:
     def execute(self, state: GameState) -> dict[str, Any]:
         print("DRINK POTION")
         room = state.get_current_room()
-        is_valid, err_msg = room.is_valid_action(state.intent)
+        is_valid, err_msg = room.is_valid_intent(state.intent)
         if is_valid:
             return self._drink_potion(state)
         else:

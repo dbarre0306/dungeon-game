@@ -17,7 +17,7 @@ class ExploreNode:
             return {"narration": ["There is nowhere further to go."]}
 
         room = state.get_current_room()
-        is_valid, msg = room.is_valid_action(state.intent)
+        is_valid, msg = room.is_valid_intent(state.intent)
         if is_valid:
             next_room_index = state.player.current_room_index + 1
             description = self._get_room_description(next_room, state.player)

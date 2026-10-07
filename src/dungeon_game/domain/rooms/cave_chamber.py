@@ -7,12 +7,12 @@ from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 class CaveChamber(DungeonRoom):
     type: Literal["cave_chamber"] = "cave_chamber"
 
-    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.explore_direction == "look":
+    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+        if intent.is_look():
             return (True, None)
-        elif action.explore_direction == "left":
+        elif intent.is_explore_left():
             return (True, None)
-        elif action.explore_direction == "right":
+        elif intent.is_explore_right():
             return (True, None)
         return False, "Tell the player they must go either left or right."
 

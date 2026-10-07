@@ -12,7 +12,7 @@ class DungeonRoom(BaseModel, ABC):
     history: Annotated[list[str], operator.add] = Field(default_factory=list)
 
     @abstractmethod
-    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
+    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
         """This is an abstract method. Subclasses must implement it."""
         ...
 

@@ -9,8 +9,8 @@ from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 class CaveEntrance(DungeonRoom):
     type: Literal["cave_entrance"] = "cave_entrance"
 
-    def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
-        if action.explore_direction == "forward":
+    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+        if intent.is_explore_forward():
             return (True, None)
         return False, (
             "Tell the player that they cannot go that way "
