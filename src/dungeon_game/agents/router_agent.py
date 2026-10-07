@@ -3,6 +3,7 @@ from collections.abc import Callable
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelRequest, ModelResponse, wrap_model_call
 from langchain.agents.structured_output import StructuredOutputError
+from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
 from dungeon_game.domain.intent import ActionType, ExploreDirection
@@ -19,26 +20,59 @@ class RouterState(BaseModel):
     )
 
 
+_MAX_ATTEMPTS = 3
+_DIRECTION_HINT = (
+    "When the action is explore, explore_direction must be one of: "
+    "left, right, forward, backward. If you cannot tell which direction "
+    "the player means, set the action to unknown."
+)
+
+
+def _is_explore_without_direction(response: ModelResponse) -> bool:
+    router_state = response.structured_response
+    return (
+        router_state is not None
+        and router_state.action == "explore"
+        and router_state.explore_direction is None
+    )
+
+
 @wrap_model_call
-def retry_on_invalid_structured_output(
+def retry_on_invalid_router_output(
     request: ModelRequest,
     handler: Callable[[ModelRequest], ModelResponse],
 ) -> ModelResponse:
-    """Guardrail: retry a model call that returns malformed structured output.
+    """Guardrail: retry a model call that returns an unusable routing decision.
 
-    Small models occasionally hallucinate invalid tool-call arguments for
-    optional Literal fields (e.g. echoing back the field's JSON schema
-    instead of a real value), which raises StructuredOutputError. Retrying
-    gives the model another chance to produce a valid response before we
-    give up on the whole turn.
+    Two failures are retried:
+
+    - Malformed structured output. Small models occasionally hallucinate
+      invalid tool-call arguments for optional Literal fields (e.g. echoing
+      back the field's JSON schema instead of a real value), which raises
+      StructuredOutputError. Once retries are exhausted the error is raised.
+    - An explore action with no direction. Retries include a hint listing the
+      valid directions. Once retries are exhausted the action is downgraded to
+      unknown, so an explore that reaches the game always has a direction.
     """
-    max_attempts = 3
-    for attempt in range(max_attempts):
+    for attempt in range(_MAX_ATTEMPTS):
+        is_last_attempt = attempt == _MAX_ATTEMPTS - 1
         try:
-            return handler(request)
+            response = handler(request)
         except StructuredOutputError:
-            if attempt == max_attempts - 1:
+            if is_last_attempt:
                 raise
+            continue
+        if not _is_explore_without_direction(response):
+            return response
+        if is_last_attempt:
+            return ModelResponse(
+                result=response.result,
+                structured_response=RouterState(action="unknown"),
+            )
+        request = request.override(
+            messages=[*request.messages, HumanMessage(content=_DIRECTION_HINT)]
+        )
+    raise AssertionError("unreachable")  # pragma: no cover
 
 
 class RouterAgent:
@@ -47,7 +81,7 @@ class RouterAgent:
             model=model,
             system_prompt="You are great at categorizing commands from the player.",
             response_format=RouterState,
-            middleware=[retry_on_invalid_structured_output],
+            middleware=[retry_on_invalid_router_output],
         )
 
     def invoke(self, msg: str) -> RouterState:

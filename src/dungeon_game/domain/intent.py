@@ -16,6 +16,8 @@ ExploreDirection = Literal["left", "right", "forward", "backward"]
 
 
 class Intent(BaseModel):
+    """The explore_direction is always set when the type is `explore`."""
+
     type: ActionType | None = None
     explore_direction: ExploreDirection | None = None
 
