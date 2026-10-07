@@ -31,9 +31,7 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._dice.roll(6) + self._player.get_extra_damage()
 
     def _apply_damage(self, damage: int) -> Enemy:
-        return self._enemy.model_copy(
-            update={"health_points": max(0, self._enemy.health_points - damage)}
-        )
+        return self._enemy.take_damage(damage)
 
     def _is_dead(self, defender: Enemy) -> bool:
         return defender.is_dead()
