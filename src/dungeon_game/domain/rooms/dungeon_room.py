@@ -14,9 +14,9 @@ class DungeonRoom(BaseModel, ABC):
     @abstractmethod
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         """This is an abstract method. Subclasses must implement it."""
-        pass
+        ...
 
     @abstractmethod
     def get_room_facts(self) -> list[str]:
         """This is an abstract method. Subclasses must implement it."""
-        pass
+        ...

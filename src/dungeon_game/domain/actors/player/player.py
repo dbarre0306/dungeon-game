@@ -18,4 +18,4 @@ class Player(Combatant):
 
     @abstractmethod
     def get_facts(self) -> str:
-        pass
+        ...

@@ -23,7 +23,7 @@ class Combatant(BaseModel, ABC):
 
     @abstractmethod
     def get_extra_damage(self) -> int:
-        pass
+        ...
 
     def get_damage_reduction(self) -> int:
         return 0
