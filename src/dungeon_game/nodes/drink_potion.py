@@ -28,7 +28,9 @@ class DrinkPotionNode:
 
     def _out_of_potions(self, state: GameState) -> dict[str, Any]:
         narration = self._get_narration(
-            state.get_current_room(), state.player, "You don't have anymore potions to drink."
+            state.get_current_room(),
+            state.player,
+            "You don't have anymore potions to drink.",
         )
         return {
             "dungeon": state.dungeon.with_room_updated(

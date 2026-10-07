@@ -12,7 +12,13 @@ from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 
 Room = Annotated[
-    CaveEntrance | CaveChamber | MonsterRoom | TreasureRoom | TrapRoom | ShopRoom | ThroneRoom,
+    CaveEntrance
+    | CaveChamber
+    | MonsterRoom
+    | TreasureRoom
+    | TrapRoom
+    | ShopRoom
+    | ThroneRoom,
     Field(discriminator="type"),
 ]
 
@@ -45,7 +51,9 @@ class Dungeon(BaseModel):
                 continue
             for reducer in field_info.metadata:
                 if callable(reducer):
-                    updates[field_name] = reducer(getattr(room, field_name), updates[field_name])
+                    updates[field_name] = reducer(
+                        getattr(room, field_name), updates[field_name]
+                    )
                     break
         updated_room = room.model_copy(update=updates)
         new_rooms = list(self.rooms)

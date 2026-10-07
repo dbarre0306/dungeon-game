@@ -39,13 +39,15 @@ class _EnemyStrike(_Strike[Player]):
     def _missed(self) -> dict[str, Any]:
         return self._update(
             self._player,
-            f"The {self._enemy.name} attacked the player (a {self._player.type}), but missed.",
+            f"The {self._enemy.name} attacked the player (a {self._player.type}), "
+            "but missed.",
         )
 
     def _defender_wounded(self, defender: Player) -> dict[str, Any]:
         return self._update(
             defender,
-            f"The {self._enemy.name} attacked the player (a {defender.type}) and wounded them."
+            f"The {self._enemy.name} attacked the player (a {defender.type}) "
+            "and wounded them."
             f"You must describe how the {self._enemy.name} attacked the player "
             f"and how the player was wounded. "
             "Do NOT say anything about the doorway out.",

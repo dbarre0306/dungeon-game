@@ -36,7 +36,9 @@ def _state(player_hp: int = 20, enemy_hp: int = 5) -> GameState:
     player = create_default_warrior().model_copy(
         update={"health_points": player_hp, "is_fighting": True}
     )
-    return GameState(player=player, dungeon=Dungeon(rooms=[MonsterRoom(enemy)]), command="attack")
+    return GameState(
+        player=player, dungeon=Dungeon(rooms=[MonsterRoom(enemy)]), command="attack"
+    )
 
 
 def _execute(state: GameState, *rolls: int):

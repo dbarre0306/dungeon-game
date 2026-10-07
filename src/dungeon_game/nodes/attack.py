@@ -11,11 +11,16 @@ HIT_TARGET = 12
 
 
 class AttackNode(ABC):
-    """One side strikes at the other. `PlayerAttackNode` and `EnemyAttackNode` are mirror images."""
+    """One side strikes at the other.
+
+    `PlayerAttackNode` and `EnemyAttackNode` are mirror images.
+    """
 
     _label: str
 
-    def __init__(self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None):
+    def __init__(
+        self, dungeon_master_agent: DungeonMasterAgent, dice: Dice | None = None
+    ):
         self._dungeon_master_agent = dungeon_master_agent
         self._dice = dice or Dice()
 
@@ -93,4 +98,6 @@ class _Strike[Defender](ABC):
     def _defender_dead(self, defender: Defender) -> dict[str, Any]: ...
 
     def _narrate(self, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(self._room, self._player, msg).narration
+        return self._dungeon_master_agent.invoke(
+            self._room, self._player, msg
+        ).narration

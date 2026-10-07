@@ -68,7 +68,9 @@ class _PlayerStrike(_Strike[Enemy]):
             enemy=defender,
         )
 
-    def _update(self, is_fighting: bool, msg: str, **room_updates: Any) -> dict[str, Any]:
+    def _update(
+        self, is_fighting: bool, msg: str, **room_updates: Any
+    ) -> dict[str, Any]:
         narration = self._narrate(msg)
         return {
             "player": self._player.model_copy(update={"is_fighting": is_fighting}),

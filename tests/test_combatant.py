@@ -1,5 +1,10 @@
 from dungeon_game.domain.actors.enemy import Enemy
-from dungeon_game.domain.actors.player.mage import FireBoltSpell, HealingSpell, Mage, Staff
+from dungeon_game.domain.actors.player.mage import (
+    FireBoltSpell,
+    HealingSpell,
+    Mage,
+    Staff,
+)
 from dungeon_game.domain.actors.player.player import Potions
 from dungeon_game.domain.actors.player.warrior import Sword, create_default_warrior
 
@@ -47,7 +52,10 @@ def test_enemy_attacks_with_its_weapon():
 
 def test_warrior_facts_name_the_current_equipment():
     warrior = create_default_warrior()
-    assert warrior.get_facts() == "The player is a warrior with a bronze sword and a bronze shield."
+    assert (
+        warrior.get_facts()
+        == "The player is a warrior with a bronze sword and a bronze shield."
+    )
 
     upgraded = warrior.model_copy(update={"sword": Sword("steel sword", 2)})
     assert "steel sword" in upgraded.get_facts()

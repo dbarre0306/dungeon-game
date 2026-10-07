@@ -12,7 +12,10 @@ class RouterState(BaseModel):
     action: ActionType = Field(description="Action")
     explore_direction: ExploreDirection | None = Field(
         default=None,
-        description="Which direction the player wants to move or if they are just looking around.",
+        description=(
+            "Which direction the player wants to move "
+            "or if they are just looking around."
+        ),
     )
 
 
@@ -49,7 +52,9 @@ class RouterAgent:
 
     def invoke(self, msg: str) -> RouterState:
         try:
-            result = self._agent.invoke({"messages": [{"role": "user", "content": msg}]})
+            result = self._agent.invoke(
+                {"messages": [{"role": "user", "content": msg}]}
+            )
             return result["structured_response"]
         except StructuredOutputError:
             # The model occasionally returns malformed structured output

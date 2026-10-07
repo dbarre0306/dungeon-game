@@ -42,7 +42,8 @@ class DungeonMasterAgent:
                     "\n\n"
                     f"{self._room_history(room)}"
                     "Construct a narrative which addresses the "
-                    "player based on the following (try not to repeat previous stuff from the room's history): \n\n"
+                    "player based on the following "
+                    "(try not to repeat previous stuff from the room's history): \n\n"
                     f"{msg}",
                 }
             ]
@@ -63,7 +64,8 @@ class DungeonMasterAgent:
         if len(room.history) == 0:
             return ""
         return (
-            "Room History in chronological order: (The word `you` refers to the player):\n"
+            "Room History in chronological order: "
+            "(The word `you` refers to the player):\n"
             f"{self._format_list(room.history)}"
             "\n\n"
         )

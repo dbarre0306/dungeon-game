@@ -12,7 +12,7 @@ def test_room_facts_name_the_enemy_and_its_weapon():
     )
     facts = MonsterRoom(enemy).get_room_facts()
     assert (
-        "The rat, armed with razor sharp teeth, is in this room and is itching for a fight."
-        in facts
+        "The rat, armed with razor sharp teeth, is in this room "
+        "and is itching for a fight." in facts
     )
     assert not any("bound method" in fact for fact in facts)

@@ -28,7 +28,10 @@ class Warrior(Player):
     shield: Shield
 
     def get_facts(self) -> str:
-        return f"The player is a warrior with a {self.sword.name} and a {self.shield.name}."
+        return (
+            f"The player is a warrior with a {self.sword.name} "
+            f"and a {self.shield.name}."
+        )
 
     def get_weapon(self) -> str:
         return self.sword.name

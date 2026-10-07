@@ -1,6 +1,9 @@
 from types import SimpleNamespace
 
-from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent, DungeonMasterResponse
+from dungeon_game.agents.dungeon_master_agent import (
+    DungeonMasterAgent,
+    DungeonMasterResponse,
+)
 from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.rooms.monster_room import MonsterRoom
 
@@ -22,7 +25,9 @@ def _agent_with_fake() -> tuple[DungeonMasterAgent, FakeAgent]:
 
 
 def _room() -> MonsterRoom:
-    enemy = Enemy(name="rat", weapon="teeth", max_health_points=10, health_points=10, hit_bonus=0)
+    enemy = Enemy(
+        name="rat", weapon="teeth", max_health_points=10, health_points=10, hit_bonus=0
+    )
     return MonsterRoom(enemy)
 
 

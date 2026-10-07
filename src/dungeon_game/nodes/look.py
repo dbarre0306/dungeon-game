@@ -29,7 +29,8 @@ class LookNode:
         msg = (
             "Describe the room to the player using only the room facts "
             "The player "
-            "needs to clearly understand what is there in order to make a decison on what "
+            "needs to clearly understand what is there in order to make a decison "
+            "on what "
             "do to next.  Do not invent new "
             "rooms, paths, exits, creatures, or other plot details that are not listed."
             "If the facts or room history don't mention something, leave it out."

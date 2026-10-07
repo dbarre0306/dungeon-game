@@ -23,7 +23,7 @@ This project uses `uv` for dependency management and packaging (Python >=3.13, s
 
 ## Code style
 
-Ruff is configured in `pyproject.toml` with `line-length = 100` and lint rules `E, F, I, UP, B`
+Ruff is configured in `pyproject.toml` with `line-length = 88` and lint rules `E, F, I, UP, B`
 (pycodestyle, pyflakes, isort, pyupgrade, bugbear). Keep new code compatible with these.
 
 ## Structure
