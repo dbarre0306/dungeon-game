@@ -85,6 +85,7 @@ class GameGraph:
         return graph_builder.compile()
 
     def invoke(self, state: GameState) -> GameState:
+        state = state.model_copy(update={"narration": []})
         return GameState.model_validate(self.agent.invoke(state))
 
     def _multiple(self, state: GameState) -> dict[str, Any]:
