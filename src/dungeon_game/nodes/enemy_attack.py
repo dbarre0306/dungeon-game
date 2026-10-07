@@ -56,8 +56,7 @@ class _EnemyStrike(_Strike[Player]):
             defender,
             f"The {self._enemy.name} has killed the player (a {defender.type}). "
             "You must describe how the player was attacked. "
-            "Describe the player's final moments. "
-            "Do NOT say anything about what the player should do next.",
+            "Describe the player's final moments.",
         )
 
     def _update(self, player: Player, msg: str) -> dict[str, Any]:

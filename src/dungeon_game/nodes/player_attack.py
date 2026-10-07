@@ -64,7 +64,7 @@ class _PlayerStrike(_Strike[Enemy]):
             f"with a {self._player.get_attack()}.  "
             f"You must describe how the player attacked the {self._enemy.name}. "
             "Stick to what it would feel like after a brutal battle. "
-            "Do NOT say anything about what the player should do next.",
+            "Do say something about the doorway out.",
             enemy=defender,
         )
 
