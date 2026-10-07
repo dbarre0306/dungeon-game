@@ -1,9 +1,10 @@
 from typing import Any
 
 from dungeon_game.domain.actors.enemy import Enemy
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 from dungeon_game.game_state import GameState
-from dungeon_game.nodes.attack import HIT_TARGET, AttackNode, _Strike
+from dungeon_game.nodes.attack import AttackNode, _Strike
 
 
 class PlayerAttackNode(AttackNode):
@@ -24,18 +25,13 @@ class PlayerAttackNode(AttackNode):
 class _PlayerStrike(_Strike[Enemy]):
     """One player attack against the enemy."""
 
-    def _hits(self) -> bool:
-        return self._dice.roll(20) + self._player.hit_bonus >= HIT_TARGET
+    @property
+    def _attacker(self) -> Player:
+        return self._player
 
-    def _damage(self) -> int:
-        raw = self._dice.roll(6) + self._player.get_extra_damage()
-        return max(0, raw - self._enemy.get_damage_reduction())
-
-    def _apply_damage(self, damage: int) -> Enemy:
-        return self._enemy.take_damage(damage)
-
-    def _is_dead(self, defender: Enemy) -> bool:
-        return defender.is_dead()
+    @property
+    def _defender(self) -> Enemy:
+        return self._enemy
 
     def _missed(self) -> dict[str, Any]:
         return self._update(

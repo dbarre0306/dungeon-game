@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
+from dungeon_game.domain.actors.combatant import Combatant
 from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 from dungeon_game.game_state import GameState
@@ -47,11 +48,11 @@ class AttackNode(ABC):
         return room
 
 
-class _Strike[Defender](ABC):
+class _Strike[Defender: Combatant](ABC):
     """One attack: roll to hit, apply damage, narrate the result.
 
-    Subclasses supply the attacker's rolls, how damage lands on the defender,
-    and the narration prompt for each outcome."""
+    Subclasses say who attacks and who defends, and supply the narration prompt
+    for each outcome."""
 
     def __init__(
         self,
@@ -70,23 +71,25 @@ class _Strike[Defender](ABC):
     def resolve(self) -> dict[str, Any]:
         if not self._hits():
             return self._missed()
-        defender = self._apply_damage(self._damage())
-        if self._is_dead(defender):
+        defender = self._defender.take_damage(self._damage())
+        if defender.is_dead():
             return self._defender_dead(defender)
         return self._defender_wounded(defender)
 
+    @property
     @abstractmethod
-    def _hits(self) -> bool: ...
+    def _attacker(self) -> Combatant: ...
 
+    @property
     @abstractmethod
-    def _damage(self) -> int: ...
+    def _defender(self) -> Defender: ...
 
-    @abstractmethod
-    def _apply_damage(self, damage: int) -> Defender:
-        """The defender after taking `damage`."""
+    def _hits(self) -> bool:
+        return self._dice.roll(20) + self._attacker.hit_bonus >= HIT_TARGET
 
-    @abstractmethod
-    def _is_dead(self, defender: Defender) -> bool: ...
+    def _damage(self) -> int:
+        raw = self._dice.roll(6) + self._attacker.get_extra_damage()
+        return max(0, raw - self._defender.get_damage_reduction())
 
     @abstractmethod
     def _missed(self) -> dict[str, Any]: ...
