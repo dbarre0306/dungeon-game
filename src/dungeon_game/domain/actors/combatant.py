@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Self
 
 from pydantic import BaseModel
 
 
-class Combatant(BaseModel):
+class Combatant(BaseModel, ABC):
     """Anything that can fight: it has health, a to-hit bonus, and damage modifiers."""
 
     max_health_points: int

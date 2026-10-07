@@ -1,5 +1,5 @@
 import operator
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Annotated
 
 from pydantic import BaseModel, Field
@@ -8,7 +8,7 @@ from dungeon_game.domain.intent import Intent
 
 
 # Base class for all dungeon rooms
-class DungeonRoom(BaseModel):
+class DungeonRoom(BaseModel, ABC):
     history: Annotated[list[str], operator.add] = Field(default_factory=list)
 
     @abstractmethod
