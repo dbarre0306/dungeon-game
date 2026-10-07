@@ -17,7 +17,13 @@ class MonsterRoom(CombatRoom):
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         if action.type == "explore":
             if self.enemy.is_alive():
-                return (False, f"The {self.enemy.name} will not let you pass.")
+                return (
+                    False,
+                    (
+                        f"Tell the player that the {self.enemy.name} "
+                        "will not let them pass."
+                    ),
+                )
             elif self._is_forward(action):
                 return (True, None)
             else:
@@ -36,7 +42,7 @@ class MonsterRoom(CombatRoom):
             return (True, None)
         return (
             False,
-            "Tell the player that the you don't understand what they has asked.",
+            "Tell the player that you don't understand what they have asked.",
         )
 
     def _is_forward(self, action: Intent) -> bool:
