@@ -71,7 +71,10 @@ class _Strike[Defender: Combatant](ABC):
     def resolve(self) -> dict[str, Any]:
         if not self._hits():
             return self._defender_missed()
-        defender = self._defender.take_damage(self._damage())
+        damage = self._damage()
+        if damage == 0:
+            return self._defender_unharmed()
+        defender = self._defender.take_damage(damage)
         if defender.is_dead():
             return self._defender_dead(defender)
         return self._defender_wounded(defender)
@@ -93,6 +96,10 @@ class _Strike[Defender: Combatant](ABC):
 
     @abstractmethod
     def _defender_missed(self) -> dict[str, Any]: ...
+
+    @abstractmethod
+    def _defender_unharmed(self) -> dict[str, Any]:
+        """A hit that was fully absorbed (e.g. by armor), so no health was lost."""
 
     @abstractmethod
     def _defender_wounded(self, defender: Defender) -> dict[str, Any]: ...

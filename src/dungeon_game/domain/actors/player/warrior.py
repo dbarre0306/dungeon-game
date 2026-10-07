@@ -33,6 +33,9 @@ class Warrior(Player):
     def get_extra_damage(self) -> int:
         return self.sword.additional_damage_points
 
+    def get_defense(self) -> str | None:
+        return self.shield.name
+
     def get_damage_reduction(self) -> int:
         return self.shield.defensive_health_points
 

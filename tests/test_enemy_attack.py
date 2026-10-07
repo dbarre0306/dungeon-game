@@ -74,6 +74,15 @@ def test_damage_is_never_negative():
     assert update["player"].health_points == 20
 
 
+def test_fully_absorbed_hit_is_not_narrated_as_a_wound():
+    # d20=20 hits; d6=2 - shield 2 = 0 damage
+    update, dm = _execute(_state(), 20, 2)
+    assert update["player"].health_points == 20
+    assert "bronze shield absorbed the blow" in dm.messages[0]
+    assert "took no damage" in dm.messages[0]
+    assert "wounded them" not in dm.messages[0]
+
+
 def test_killing_blow_ends_the_fight():
     update, dm = _execute(_state(player_hp=3), 20, 6)
     assert update["player"].health_points == 0

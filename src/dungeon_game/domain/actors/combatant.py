@@ -25,6 +25,11 @@ class Combatant(BaseModel, ABC):
     def get_extra_damage(self) -> int:
         ...
 
+    def get_defense(self) -> str | None:
+        """What protects this combatant from damage, as it should appear in
+        narration (e.g. a shield), or None if nothing does."""
+        return None
+
     def get_damage_reduction(self) -> int:
         return 0
 

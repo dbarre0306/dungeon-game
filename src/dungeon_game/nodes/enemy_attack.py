@@ -39,6 +39,17 @@ class _EnemyStrike(_Strike[Player]):
             "but missed.",
         )
 
+    def _defender_unharmed(self) -> dict[str, Any]:
+        defense = self._player.get_defense()
+        absorbed_by = f"the player's {defense} absorbed the blow and" if defense else ""
+        return self._update(
+            self._player,
+            f"The {self._enemy.name} attacked the player (a {self._player.type}) "
+            f"and hit, but {absorbed_by} the player took no damage. "
+            "Do NOT say the player was wounded. "
+            "Do NOT say anything about the doorway out.",
+        )
+
     def _defender_wounded(self, defender: Player) -> dict[str, Any]:
         return self._update(
             defender,

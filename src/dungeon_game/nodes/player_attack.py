@@ -48,6 +48,16 @@ class _PlayerStrike(_Strike[Enemy]):
             "Do NOT say anything about the doorway out.",
         )
 
+    def _defender_unharmed(self) -> dict[str, Any]:
+        return self._update(
+            True,
+            f"The player (a {self._player.type}) attacked the {self._enemy.name} "
+            f"with a {self._player.get_attack()} and hit, but the blow did no "
+            f"damage. Do NOT say the {self._enemy.name} was wounded. "
+            "Ignore the gold coins; stay focused on the battle. "
+            "Do NOT say anything about the doorway out.",
+        )
+
     def _defender_wounded(self, defender: Enemy) -> dict[str, Any]:
         return self._update(
             True,
