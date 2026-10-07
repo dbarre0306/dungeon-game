@@ -32,7 +32,7 @@ class _EnemyStrike(_Strike[Player]):
     def _defender(self) -> Player:
         return self._player
 
-    def _missed(self) -> dict[str, Any]:
+    def _defender_missed(self) -> dict[str, Any]:
         return self._update(
             self._player,
             f"The {self._enemy.name} attacked the player (a {self._player.type}), "

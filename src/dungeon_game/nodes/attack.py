@@ -70,7 +70,7 @@ class _Strike[Defender: Combatant](ABC):
 
     def resolve(self) -> dict[str, Any]:
         if not self._hits():
-            return self._missed()
+            return self._defender_missed()
         defender = self._defender.take_damage(self._damage())
         if defender.is_dead():
             return self._defender_dead(defender)
@@ -92,7 +92,7 @@ class _Strike[Defender: Combatant](ABC):
         return max(0, raw - self._defender.get_damage_reduction())
 
     @abstractmethod
-    def _missed(self) -> dict[str, Any]: ...
+    def _defender_missed(self) -> dict[str, Any]: ...
 
     @abstractmethod
     def _defender_wounded(self, defender: Defender) -> dict[str, Any]: ...
