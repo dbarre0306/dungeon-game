@@ -17,7 +17,7 @@ class ExploreNode:
             return {"narration": ["There is nowhere further to go."]}
 
         room = state.get_current_room()
-        is_valid, err_msg = room.is_valid_action(state.intent)
+        is_valid, msg = room.is_valid_action(state.intent)
         if is_valid:
             next_room_index = state.player.current_room_index + 1
             description = self._get_room_description(next_room, state.player)
@@ -33,7 +33,8 @@ class ExploreNode:
                 "dungeon": new_dungeon,
             }
         else:
-            return {"narration": [err_msg]}
+            response = self._dungeon_master_agent.invoke(room, state.player, msg)
+            return {"narration": [response.narration]}
 
     def _get_room_description(self, room: DungeonRoom, player: Player) -> str:
         msg = (

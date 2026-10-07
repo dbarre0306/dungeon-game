@@ -22,10 +22,10 @@ class PlayerAttackNode(AttackNode):
         return _PlayerStrike(state, room, self._dungeon_master_agent, self._dice)
 
     def _narrate(self, msg: str, state: GameState) -> dict[str, Any]:
-        print(f"***** narrate player attack on invalid: {msg} ***")
-        return self._dungeon_master_agent.invoke(
+        response = self._dungeon_master_agent.invoke(
             state.get_current_room(), state.player, msg
         )
+        return {"narration": [response.narration]}
 
 
 class _PlayerStrike(_Strike[Enemy]):

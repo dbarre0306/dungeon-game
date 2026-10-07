@@ -23,6 +23,7 @@ class GameGraph:
     def __init__(
         self, router_agent: RouterAgent, dungeon_master_agent: DungeonMasterAgent
     ):
+        self._dungeon_master_agent = dungeon_master_agent
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
@@ -90,7 +91,14 @@ class GameGraph:
         return {"narration": ["You can only perform one action at a time."]}
 
     def _unknown(self, state: GameState) -> dict[str, Any]:
-        return {"narration": ["I don't understand what you are saying."]}
+        msg = (
+            "Tell the player that what they want to do "
+            "doesn't make any sense given the room they are in."
+        )
+        response = self._dungeon_master_agent.invoke(
+            state.get_current_room(), state.player, msg
+        )
+        return {"narration": [response.narration]}
 
     def _next_action(self, state: GameState) -> ActionType:
         return state.intent.type

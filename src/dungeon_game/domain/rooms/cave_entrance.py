@@ -12,7 +12,10 @@ class CaveEntrance(DungeonRoom):
     def is_valid_action(self, action: Intent) -> tuple[bool, str | None]:
         if action.explore_direction == "forward":
             return (True, None)
-        return False, "You cannot run away.  You must enter the cave."
+        return False, (
+            "Tell the player that they cannot go that way "
+            "and that they must enter the cave."
+        )
 
     def get_room_facts(self) -> list[str]:
         return [

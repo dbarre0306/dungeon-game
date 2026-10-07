@@ -14,7 +14,7 @@ class CaveChamber(DungeonRoom):
             return (True, None)
         elif action.explore_direction == "right":
             return (True, None)
-        return False, "You must go either left or right."
+        return False, "Tell the player they must go either left or right."
 
     def get_room_facts(self) -> list[str]:
         return [
