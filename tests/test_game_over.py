@@ -28,7 +28,7 @@ def _state(player_hp: int) -> GameState:
     player = create_default_warrior().model_copy(update={"health_points": player_hp})
     return GameState(
         player=player,
-        dungeon=Dungeon(rooms=[MonsterRoom(enemy)]),
+        dungeon=Dungeon(rooms=[MonsterRoom(enemy=enemy)]),
         command="attack",
         narration=["the goblin struck"],
     )

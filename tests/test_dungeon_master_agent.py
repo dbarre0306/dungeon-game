@@ -28,7 +28,7 @@ def _room() -> MonsterRoom:
     enemy = Enemy(
         name="rat", weapon="teeth", max_health_points=10, health_points=10, hit_bonus=0
     )
-    return MonsterRoom(enemy)
+    return MonsterRoom(enemy=enemy)
 
 
 def test_prompt_includes_the_players_current_facts_on_every_call():

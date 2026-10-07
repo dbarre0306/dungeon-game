@@ -9,17 +9,11 @@ class Sword(BaseModel):
     name: str
     additional_damage_points: int
 
-    def __init__(self, name: str, additional_damage_points: int):
-        super().__init__(name=name, additional_damage_points=additional_damage_points)
-
 
 class Shield(BaseModel):
     name: str
     defensive_health_points: int
     # TODO: support condition (good, damaged, broken)
-
-    def __init__(self, name: str, defensive_health_points: int):
-        super().__init__(name=name, defensive_health_points=defensive_health_points)
 
 
 class Warrior(Player):
@@ -49,8 +43,8 @@ def create_default_warrior() -> Player:
         health_points=20,
         is_fighting=False,
         potions=Potions(health_points=8, quantity=2),
-        sword=Sword("bronze sword", 0),
-        shield=Shield("bronze shield", 2),
+        sword=Sword(name="bronze sword", additional_damage_points=0),
+        shield=Shield(name="bronze shield", defensive_health_points=2),
         gold_coins=10,
         hit_bonus=3,
         current_room_index=0,

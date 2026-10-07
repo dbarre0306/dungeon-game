@@ -57,7 +57,8 @@ def test_warrior_facts_name_the_current_equipment():
         == "The player is a warrior with a bronze sword and a bronze shield."
     )
 
-    upgraded = warrior.model_copy(update={"sword": Sword("steel sword", 2)})
+    steel_sword = Sword(name="steel sword", additional_damage_points=2)
+    upgraded = warrior.model_copy(update={"sword": steel_sword})
     assert "steel sword" in upgraded.get_facts()
     assert "bronze sword" not in upgraded.get_facts()
 

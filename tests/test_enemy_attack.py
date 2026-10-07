@@ -37,7 +37,9 @@ def _state(player_hp: int = 20, enemy_hp: int = 5) -> GameState:
         update={"health_points": player_hp, "is_fighting": True}
     )
     return GameState(
-        player=player, dungeon=Dungeon(rooms=[MonsterRoom(enemy)]), command="attack"
+        player=player,
+        dungeon=Dungeon(rooms=[MonsterRoom(enemy=enemy)]),
+        command="attack",
     )
 
 

@@ -10,7 +10,7 @@ def test_room_facts_name_the_enemy_and_its_weapon():
         health_points=10,
         hit_bonus=0,
     )
-    facts = MonsterRoom(enemy).get_room_facts()
+    facts = MonsterRoom(enemy=enemy).get_room_facts()
     assert (
         "The rat, armed with razor sharp teeth, is in this room "
         "and is itching for a fight." in facts
