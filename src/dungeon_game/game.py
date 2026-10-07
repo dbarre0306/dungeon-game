@@ -31,15 +31,19 @@ class Game:
         print(f"Room: {state.get_current_room().type}")
         print(f"Player HP: {state.player.health_points}")
 
-        command = input("> ")
-        while command != "x":
+        while not state.game_over:
+            command = input("> ")
+            if command == "x":
+                break
             state = state.model_copy(update={"command": command})
             state = self.game_graph.invoke(state)
             self._print_narration(state.narration)
             print(f"Room: {state.get_current_room().type}")
             print(f"Player HP: {state.player.health_points}")
             print(f"Player potions: {state.player.potions.quantity}")
-            command = input("> ")
+
+        if state.game_over:
+            print("GAME OVER")
 
     def _print_narration(self, narration: list[str]):
         print("\n".join(narration))

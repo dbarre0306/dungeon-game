@@ -9,6 +9,7 @@ from dungeon_game.game_state import GameState
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
+from dungeon_game.nodes.game_over import GameOverNode
 from dungeon_game.nodes.look import LookNode
 from dungeon_game.nodes.open_chest import OpenChestNode
 from dungeon_game.nodes.player_attack import PlayerAttackNode
@@ -31,6 +32,7 @@ class GameGraph:
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
         self.open_chest_node = OpenChestNode()
+        self.game_over_node = GameOverNode(dungeon_master_agent)
 
         self.agent = self._build_graph()
 
@@ -46,6 +48,7 @@ class GameGraph:
         graph_builder.add_node("shop", self.shop_node.execute)
         graph_builder.add_node("drink_potion", self.drink_potion_node.execute)
         graph_builder.add_node("open_chest", self.open_chest_node.execute)
+        graph_builder.add_node("game_over", self.game_over_node.execute)
         graph_builder.add_node("multiple", self._multiple)
         graph_builder.add_node("unknown", self._unknown)
 
@@ -71,7 +74,8 @@ class GameGraph:
         graph_builder.add_conditional_edges(
             "player_attack", self._player_is_fighting, ["enemy_attack", END]
         )
-        graph_builder.add_edge("enemy_attack", END)  # If enemy is dead, do not go here
+        graph_builder.add_edge("enemy_attack", "game_over")
+        graph_builder.add_edge("game_over", END)
         graph_builder.add_edge("shop", END)
         graph_builder.add_edge("drink_potion", END)
         graph_builder.add_conditional_edges(
