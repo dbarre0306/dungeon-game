@@ -34,24 +34,24 @@ def _call(handler: _FakeHandler) -> ModelResponse:
 
 
 def test_valid_explore_is_not_retried():
-    handler = _FakeHandler([RouterState(action="explore", explore_direction="left")])
+    handler = _FakeHandler([RouterState(intent="explore", explore_direction="left")])
     response = _call(handler)
     assert response.structured_response.explore_direction == "left"
     assert len(handler.requests) == 1
 
 
 def test_non_explore_without_direction_is_not_retried():
-    handler = _FakeHandler([RouterState(action="attack")])
+    handler = _FakeHandler([RouterState(intent="attack")])
     response = _call(handler)
-    assert response.structured_response.action == "attack"
+    assert response.structured_response.intent == "attack"
     assert len(handler.requests) == 1
 
 
 def test_explore_without_direction_retries_with_hint():
     handler = _FakeHandler(
         [
-            RouterState(action="explore"),
-            RouterState(action="explore", explore_direction="forward"),
+            RouterState(intent="explore"),
+            RouterState(intent="explore", explore_direction="forward"),
         ]
     )
     response = _call(handler)
@@ -61,9 +61,9 @@ def test_explore_without_direction_retries_with_hint():
 
 
 def test_explore_without_direction_becomes_unknown_after_retries():
-    handler = _FakeHandler([RouterState(action="explore")] * 3)
+    handler = _FakeHandler([RouterState(intent="explore")] * 3)
     response = _call(handler)
-    assert response.structured_response.action == "unknown"
+    assert response.structured_response.intent == "unknown"
     assert response.structured_response.explore_direction is None
     assert len(handler.requests) == 3
 
@@ -73,11 +73,11 @@ def test_structured_output_error_is_retried():
         [
             StructuredOutputError(),
             StructuredOutputError(),
-            RouterState(action="attack"),
+            RouterState(intent="attack"),
         ]
     )
     response = _call(handler)
-    assert response.structured_response.action == "attack"
+    assert response.structured_response.intent == "attack"
     assert len(handler.requests) == 3
 
 

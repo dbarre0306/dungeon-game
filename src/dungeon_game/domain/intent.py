@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-ActionType = Literal[
+IntentType = Literal[
     "explore",
     "look",
     "attack",
@@ -18,7 +18,7 @@ ExploreDirection = Literal["left", "right", "forward", "backward"]
 class Intent(BaseModel):
     """The explore_direction is always set when the type is `explore`."""
 
-    type: ActionType | None = None
+    type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
 
     def is_explore(self) -> bool:

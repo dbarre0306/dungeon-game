@@ -6,11 +6,11 @@ from langchain.agents.structured_output import StructuredOutputError
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
-from dungeon_game.domain.intent import ActionType, ExploreDirection
+from dungeon_game.domain.intent import ExploreDirection, IntentType
 
 
 class RouterState(BaseModel):
-    action: ActionType = Field(description="Action")
+    intent: IntentType = Field(description="Intent")
     explore_direction: ExploreDirection | None = Field(
         default=None,
         description=(
@@ -22,9 +22,9 @@ class RouterState(BaseModel):
 
 _MAX_ATTEMPTS = 3
 _DIRECTION_HINT = (
-    "When the action is explore, explore_direction must be one of: "
+    "When the intent is explore, explore_direction must be one of: "
     "left, right, forward, backward. If you cannot tell which direction "
-    "the player means, set the action to unknown."
+    "the player means, set the intent to unknown."
 )
 
 
@@ -32,7 +32,7 @@ def _is_explore_without_direction(response: ModelResponse) -> bool:
     router_state = response.structured_response
     return (
         router_state is not None
-        and router_state.action == "explore"
+        and router_state.intent == "explore"
         and router_state.explore_direction is None
     )
 
@@ -50,8 +50,8 @@ def retry_on_invalid_router_output(
       invalid tool-call arguments for optional Literal fields (e.g. echoing
       back the field's JSON schema instead of a real value), which raises
       StructuredOutputError. Once retries are exhausted the error is raised.
-    - An explore action with no direction. Retries include a hint listing the
-      valid directions. Once retries are exhausted the action is downgraded to
+    - An explore intent with no direction. Retries include a hint listing the
+      valid directions. Once retries are exhausted the intent is downgraded to
       unknown, so an explore that reaches the game always has a direction.
     """
     for attempt in range(_MAX_ATTEMPTS):
@@ -67,7 +67,7 @@ def retry_on_invalid_router_output(
         if is_last_attempt:
             return ModelResponse(
                 result=response.result,
-                structured_response=RouterState(action="unknown"),
+                structured_response=RouterState(intent="unknown"),
             )
         request = request.override(
             messages=[*request.messages, HumanMessage(content=_DIRECTION_HINT)]
@@ -94,4 +94,4 @@ class RouterAgent:
             # The model occasionally returns malformed structured output
             # (e.g. for typos or ambiguous commands). Treat it as unknown
             # rather than crashing the whole game loop.
-            return RouterState(action="unknown", explore_direction=None)
+            return RouterState(intent="unknown", explore_direction=None)

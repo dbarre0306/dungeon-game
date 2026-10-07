@@ -29,7 +29,7 @@ class RouterNode:
         result = self._router_agent.invoke(content)
         return {
             "intent": {
-                "type": result.action,
+                "type": result.intent,
                 "explore_direction": result.explore_direction,
             }
         }
