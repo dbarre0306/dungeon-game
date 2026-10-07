@@ -54,21 +54,3 @@ class LookNode:
             "BE BORING!"
         )
         return self._dungeon_master_agent.invoke(room, player, msg).narration
-
-    @staticmethod
-    def _format_list(items: list[str]) -> str:
-        return "\n".join(map(lambda f: f"- {f}", items))
-
-    def _initial_room_description(self, room: DungeonRoom) -> str:
-        if room.room_description is None:
-            return ""
-        return (
-            "This is the initial description of the room: "
-            f"\n{room.room_description} "
-            "\n\nDon't repeat this initial description.  Just give a "
-            "simple list of what the player would be seeing. "
-            "Do not describe the walls, ground, floor, or ceiling. "
-            "Do NOT tell the player what they can smell, taste, or hear.  "
-            "Stick to what is in the room. "
-            "BE BORING!"
-        )
