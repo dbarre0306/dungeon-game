@@ -5,7 +5,6 @@ from langgraph.graph import END, START, StateGraph
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
-from dungeon_game.domain.intent import ActionType
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
@@ -27,7 +26,7 @@ class GameGraph:
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
-        self.attack_node = PlayerAttackNode(dungeon_master_agent)
+        self.player_attack_node = PlayerAttackNode(dungeon_master_agent)
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent)
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
@@ -42,7 +41,7 @@ class GameGraph:
         graph_builder.add_node("router", self.router_node.execute)
         graph_builder.add_node("explore", self.explore_node.execute)
         graph_builder.add_node("look", self.look_node.execute)
-        graph_builder.add_node("attack", self.attack_node.execute)
+        graph_builder.add_node("player_attack", self.player_attack_node.execute)
         graph_builder.add_node("enemy_attack", self.enemy_attack_node.execute)
         graph_builder.add_node("shop", self.shop_node.execute)
         graph_builder.add_node("drink_potion", self.drink_potion_node.execute)
@@ -58,7 +57,7 @@ class GameGraph:
             [
                 "explore",
                 "look",
-                "attack",
+                "player_attack",
                 "shop",
                 "drink_potion",
                 "open_chest",
@@ -70,7 +69,7 @@ class GameGraph:
         graph_builder.add_edge("explore", END)
         graph_builder.add_edge("look", END)
         graph_builder.add_conditional_edges(
-            "attack", self._player_is_fighting, ["enemy_attack", END]
+            "player_attack", self._player_is_fighting, ["enemy_attack", END]
         )
         graph_builder.add_edge("enemy_attack", END)  # If enemy is dead, do not go here
         graph_builder.add_edge("shop", END)
@@ -101,7 +100,9 @@ class GameGraph:
         )
         return {"narration": [response.narration]}
 
-    def _next_action(self, state: GameState) -> ActionType:
+    def _next_action(self, state: GameState) -> str:
+        if state.intent.type == "attack":
+            return "player_attack"
         return state.intent.type
 
     def _player_is_fighting(self, state: GameState) -> str:
