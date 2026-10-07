@@ -69,9 +69,9 @@ class _Strike[Defender: Combatant](ABC):
         self._dice = dice
 
     def resolve(self) -> dict[str, Any]:
-        if not self._hits():
+        if not self._is_defender_hit():
             return self._defender_missed()
-        damage = self._damage()
+        damage = self._defender_damage_points()
         if damage == 0:
             return self._defender_unharmed()
         defender = self._defender.take_damage(damage)
@@ -87,10 +87,10 @@ class _Strike[Defender: Combatant](ABC):
     @abstractmethod
     def _defender(self) -> Defender: ...
 
-    def _hits(self) -> bool:
+    def _is_defender_hit(self) -> bool:
         return self._dice.roll(20) + self._attacker.hit_bonus >= HIT_TARGET
 
-    def _damage(self) -> int:
+    def _defender_damage_points(self) -> int:
         raw = self._dice.roll(6) + self._attacker.get_extra_damage()
         return max(0, raw - self._defender.get_damage_reduction())
 
