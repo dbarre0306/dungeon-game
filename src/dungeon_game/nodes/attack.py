@@ -7,7 +7,7 @@ from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 from dungeon_game.game_state import GameState
 
-# Simple d20 "hit" target: roll + to_hit_bonus >= HIT_TARGET means a hit
+# Simple d20 "hit" target: roll + hit_bonus >= HIT_TARGET means a hit
 HIT_TARGET = 12
 
 
@@ -70,14 +70,14 @@ class _Strike[Defender: Combatant](ABC):
 
     def resolve(self) -> dict[str, Any]:
         if not self._is_defender_hit():
-            return self._defender_missed()
+            return self._on_defender_missed()
         damage = self._defender_damage_points()
         if damage == 0:
-            return self._defender_unharmed()
+            return self._on_defender_unharmed()
         defender = self._defender.take_damage(damage)
         if defender.is_dead():
-            return self._defender_dead(defender)
-        return self._defender_wounded(defender)
+            return self._on_defender_dead(defender)
+        return self._on_defender_wounded(defender)
 
     @property
     @abstractmethod
@@ -95,17 +95,17 @@ class _Strike[Defender: Combatant](ABC):
         return max(0, raw - self._defender.get_damage_reduction())
 
     @abstractmethod
-    def _defender_missed(self) -> dict[str, Any]: ...
+    def _on_defender_missed(self) -> dict[str, Any]: ...
 
     @abstractmethod
-    def _defender_unharmed(self) -> dict[str, Any]:
+    def _on_defender_unharmed(self) -> dict[str, Any]:
         """A hit that was fully absorbed (e.g. by armor), so no health was lost."""
 
     @abstractmethod
-    def _defender_wounded(self, defender: Defender) -> dict[str, Any]: ...
+    def _on_defender_wounded(self, defender: Defender) -> dict[str, Any]: ...
 
     @abstractmethod
-    def _defender_dead(self, defender: Defender) -> dict[str, Any]: ...
+    def _on_defender_dead(self, defender: Defender) -> dict[str, Any]: ...
 
     def _narrate(self, msg: str) -> str:
         return self._dungeon_master_agent.invoke(

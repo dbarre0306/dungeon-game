@@ -39,7 +39,7 @@ class _PlayerStrike(_Strike[Enemy]):
     def _defender(self) -> Enemy:
         return self._enemy
 
-    def _defender_missed(self) -> dict[str, Any]:
+    def _on_defender_missed(self) -> dict[str, Any]:
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
@@ -48,7 +48,7 @@ class _PlayerStrike(_Strike[Enemy]):
             "Do NOT say anything about the doorway out.",
         )
 
-    def _defender_unharmed(self) -> dict[str, Any]:
+    def _on_defender_unharmed(self) -> dict[str, Any]:
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
@@ -58,7 +58,7 @@ class _PlayerStrike(_Strike[Enemy]):
             "Do NOT say anything about the doorway out.",
         )
 
-    def _defender_wounded(self, defender: Enemy) -> dict[str, Any]:
+    def _on_defender_wounded(self, defender: Enemy) -> dict[str, Any]:
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
@@ -70,7 +70,7 @@ class _PlayerStrike(_Strike[Enemy]):
             enemy=defender,
         )
 
-    def _defender_dead(self, defender: Enemy) -> dict[str, Any]:
+    def _on_defender_dead(self, defender: Enemy) -> dict[str, Any]:
         return self._update(
             False,
             f"The player (a {self._player.type}) has killed the {self._enemy.name} "

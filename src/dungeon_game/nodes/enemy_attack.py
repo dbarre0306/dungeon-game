@@ -32,14 +32,14 @@ class _EnemyStrike(_Strike[Player]):
     def _defender(self) -> Player:
         return self._player
 
-    def _defender_missed(self) -> dict[str, Any]:
+    def _on_defender_missed(self) -> dict[str, Any]:
         return self._update(
             self._player,
             f"The {self._enemy.name} attacked the player (a {self._player.type}), "
             "but missed.",
         )
 
-    def _defender_unharmed(self) -> dict[str, Any]:
+    def _on_defender_unharmed(self) -> dict[str, Any]:
         defense = self._player.get_defense()
         absorbed_by = f"the player's {defense} absorbed the blow and" if defense else ""
         return self._update(
@@ -50,7 +50,7 @@ class _EnemyStrike(_Strike[Player]):
             "Do NOT say anything about the doorway out.",
         )
 
-    def _defender_wounded(self, defender: Player) -> dict[str, Any]:
+    def _on_defender_wounded(self, defender: Player) -> dict[str, Any]:
         return self._update(
             defender,
             f"The {self._enemy.name} attacked the player (a {defender.type}) "
@@ -60,7 +60,7 @@ class _EnemyStrike(_Strike[Player]):
             "Do NOT say anything about the doorway out.",
         )
 
-    def _defender_dead(self, defender: Player) -> dict[str, Any]:
+    def _on_defender_dead(self, defender: Player) -> dict[str, Any]:
         return self._update(
             defender,
             f"The {self._enemy.name} has killed the player (a {defender.type}). "
