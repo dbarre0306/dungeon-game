@@ -6,6 +6,7 @@ from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 class TrapRoom(DungeonRoom):
     type: Literal["trap_room"] = "trap_room"
+    trap_type: str
 
     def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
         return (True, None)
