@@ -41,6 +41,19 @@ def test_one_round_of_combat(rolls, goblin_hp, player_hp):
     game.dice.assert_exhausted()
 
 
+@pytest.mark.parametrize("damage_roll", [1, 2])
+def test_a_hit_absorbed_by_the_shield_is_not_narrated_as_a_wound(damage_roll):
+    game = fight(5, 12, damage_roll)  # the player misses, the goblin hits weakly
+
+    state = game.say("attack")
+
+    assert state.player.health_points == 20
+    goblin_strike = game.dm.messages[-1]
+    assert "took no damage" in goblin_strike
+    assert "bronze shield absorbed the blow" in goblin_strike
+    assert "Do NOT say the player was wounded" in goblin_strike
+
+
 def test_a_round_narrates_both_strikes_and_adds_them_to_the_room_history():
     game = fight(15, 4, 14, 5)
 
