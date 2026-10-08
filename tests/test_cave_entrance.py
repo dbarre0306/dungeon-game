@@ -4,11 +4,7 @@ forward; any other direction is refused and they stay where they are."""
 import pytest
 
 from dungeon_game.agents.router_agent import RouterState
-from dungeon_game.domain.actors.player.warrior import create_default_warrior
-from dungeon_game.game_graph import GameGraph
-from dungeon_game.game_state import GameState
-from tests.support.builders import monster_dungeon
-from tests.support.fakes import FakeDice, FakeDungeonMaster, FakeRouterAgent
+from tests.support.scenario import Scenario
 
 ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
@@ -19,32 +15,9 @@ ROUTES = {
 }
 
 
-class Scenario:
-    """A game at the cave entrance, driven one player command at a time."""
-
-    def __init__(self):
-        self.dm = FakeDungeonMaster()
-        self.graph = GameGraph(FakeRouterAgent(ROUTES), self.dm, FakeDice())
-        self.state = GameState(
-            player=create_default_warrior(),
-            dungeon=monster_dungeon(),
-            command="",
-        )
-
-    def say(self, command: str) -> GameState:
-        self.state = self.graph.invoke(
-            self.state.model_copy(update={"command": command})
-        )
-        return self.state
-
-    @property
-    def room_type(self) -> str:
-        return self.state.get_current_room().type
-
-
 @pytest.fixture
 def game() -> Scenario:
-    return Scenario()
+    return Scenario(ROUTES)
 
 
 def test_player_starts_at_the_cave_entrance(game):
