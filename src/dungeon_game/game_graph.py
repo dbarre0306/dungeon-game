@@ -34,9 +34,9 @@ class GameGraph:
         self.look_node = LookNode(dungeon_master_agent)
         self.player_attack_node = PlayerAttackNode(dungeon_master_agent, dice)
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent, dice)
-        self.shop_node = ShopNode()
+        self.shop_node = ShopNode(dungeon_master_agent)
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
-        self.open_chest_node = OpenChestNode()
+        self.open_chest_node = OpenChestNode(dungeon_master_agent)
         self.game_over_node = GameOverNode(dungeon_master_agent)
 
         self.agent = self._build_graph()
