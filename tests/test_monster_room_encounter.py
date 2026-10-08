@@ -17,6 +17,8 @@ ROUTES = {
     "go back": RouterState(intent="explore", explore_direction="backward"),
     "look around": RouterState(intent="look"),
     "attack": RouterState(intent="attack"),
+    "buy something": RouterState(intent="shop"),
+    "open the chest": RouterState(intent="open_chest"),
 }
 
 # A player hit (15 + 3 >= 12) for 6 damage kills a one-hit-point goblin outright.
@@ -68,6 +70,18 @@ def test_refusing_to_let_the_player_pass_costs_nothing(game):
 
     assert game.state.dungeon == before.dungeon
     assert game.state.player == before.player
+
+
+@pytest.mark.parametrize("command", ["buy something", "open the chest"])
+def test_there_is_no_shop_or_chest_here(game, command):
+    before = game.state
+
+    state = game.say(command)
+
+    assert len(state.narration) == 1
+    assert "don't understand" in game.dm.messages[0]
+    assert state.dungeon == before.dungeon
+    assert state.player == before.player
 
 
 def test_killing_the_goblin_leaves_the_player_in_the_room():
