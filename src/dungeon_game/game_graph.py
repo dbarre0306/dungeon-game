@@ -5,6 +5,7 @@ from langgraph.graph import END, START, StateGraph
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
+from dungeon_game.domain.dice import Dice
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
@@ -21,14 +22,18 @@ load_dotenv()
 
 class GameGraph:
     def __init__(
-        self, router_agent: RouterAgent, dungeon_master_agent: DungeonMasterAgent
+        self,
+        router_agent: RouterAgent,
+        dungeon_master_agent: DungeonMasterAgent,
+        dice: Dice | None = None,
     ):
+        dice = dice or Dice()
         self._dungeon_master_agent = dungeon_master_agent
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.look_node = LookNode(dungeon_master_agent)
-        self.player_attack_node = PlayerAttackNode(dungeon_master_agent)
-        self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent)
+        self.player_attack_node = PlayerAttackNode(dungeon_master_agent, dice)
+        self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent, dice)
         self.shop_node = ShopNode()
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
         self.open_chest_node = OpenChestNode()
