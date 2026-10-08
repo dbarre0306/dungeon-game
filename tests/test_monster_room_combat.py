@@ -1,5 +1,6 @@
-"""Fighting the goblin one command at a time. Each attack is the player's strike
-followed, if the goblin is still standing, by the goblin's strike back.
+"""Fighting the goblin one command at a time, then in whole fights. Each attack
+is the player's strike followed, if the goblin is still standing, by the goblin's
+strike back.
 
 The warrior has 20 of 25 HP, +3 to hit (so a d20 roll of 9 or more hits), and a
 shield absorbing 2 damage. The goblin has 10 HP and +0 to hit (12 or more hits).
@@ -8,16 +9,7 @@ then the same for the goblin."""
 
 import pytest
 
-from dungeon_game.agents.router_agent import RouterState
-from tests.support.fakes import FakeDice
-from tests.support.scenario import Scenario
-
-MONSTER_ROOM = 2
-
-ROUTES = {
-    "attack": RouterState(intent="attack"),
-    "drink": RouterState(intent="drink_potion"),
-}
+from tests.support.scenario import fight
 
 # (rolls, goblin HP left, player HP left)
 ROUNDS = {
@@ -32,24 +24,6 @@ ROUNDS = {
     "shield absorbs a weak goblin hit": ((5, 12, 2), 10, 20),
     "shield absorbs all but one point": ((5, 12, 3), 10, 19),
 }
-
-
-def fight(*rolls: int, health_points: int = 20, potions: int = 2) -> Scenario:
-    """A fight in the monster room against a full-health goblin, with the dice
-    scripted and the warrior's health and potions as given."""
-    game = Scenario(ROUTES, room_index=MONSTER_ROOM, dice=FakeDice(*rolls))
-    player = game.state.player
-    game.state = game.state.model_copy(
-        update={
-            "player": player.model_copy(
-                update={
-                    "health_points": health_points,
-                    "potions": player.potions.model_copy(update={"quantity": potions}),
-                }
-            )
-        }
-    )
-    return game
 
 
 @pytest.mark.parametrize(
@@ -146,3 +120,79 @@ def test_with_no_potions_left_nothing_is_healed():
     assert state.player.health_points == 10
     assert state.player.potions.quantity == 0
     assert "anymore potions" in game.dm.messages[0]
+
+
+# Whole fights: every dice roll scripted, from the first blow to the last.
+
+
+def test_a_flawless_victory():
+    game = fight(
+        15, 4, 5,  # goblin 10 -> 6, the goblin misses
+        15, 4, 5,  # goblin 6 -> 2, the goblin misses
+        15, 2,  # goblin 2 -> 0, dead before it can strike
+    )  # fmt: skip
+
+    for _ in range(3):
+        game.say("attack")
+    state = game.say("go forward")
+
+    assert state.player.health_points == 20
+    assert game.room_type == "shop_room"
+    game.dice.assert_exhausted()
+
+
+def test_a_close_win_with_a_potion_mid_fight():
+    game = fight(
+        15, 3, 14, 6,  # goblin 10 -> 7, the goblin hits for 4: player 6 -> 2
+        14, 6,  # potion first: player 2 -> 10, then the goblin hits for 4: -> 6
+        15, 6, 14, 4,  # goblin 7 -> 1, the goblin hits for 2: player 6 -> 4
+        15, 1,  # goblin 1 -> 0, dead
+        health_points=6,
+    )  # fmt: skip
+
+    game.say("attack")
+    game.say("drink")
+    game.say("attack")
+    state = game.say("attack")
+
+    assert state.get_current_room().enemy.is_dead()
+    assert state.player.health_points == 4
+    assert state.player.potions.quantity == 1
+    assert not state.game_over
+    game.dice.assert_exhausted()
+
+
+def test_a_defeat_ends_the_game_with_a_farewell():
+    game = fight(
+        5, 14, 6,  # the player misses, the goblin hits for 4: player 6 -> 2
+        5, 14, 6,  # the player misses, the goblin hits for 4: player 2 -> 0
+        health_points=6,
+    )  # fmt: skip
+
+    first = game.say("attack")
+    assert first.player.is_alive()
+    assert not first.game_over
+
+    state = game.say("attack")
+
+    assert state.player.is_dead()
+    assert state.game_over
+    assert len(state.narration) == 3  # the player's miss, the killing blow, farewell
+    assert "has killed the player" in game.dm.messages[-2]
+    assert "farewell" in game.dm.messages[-1]
+    game.dice.assert_exhausted()
+
+
+def test_the_players_blow_lands_before_the_goblins_so_a_double_kill_spares_the_player():
+    game = fight(
+        15, 6,  # the player kills the goblin, so the goblin never rolls
+        health_points=1,
+        goblin_health_points=1,
+    )  # fmt: skip
+
+    state = game.say("attack")
+
+    assert state.get_current_room().enemy.is_dead()
+    assert state.player.health_points == 1
+    assert not state.game_over
+    game.dice.assert_exhausted()

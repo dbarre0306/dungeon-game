@@ -3,7 +3,7 @@ from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.game_graph import GameGraph
 from dungeon_game.game_state import GameState
-from tests.support.builders import monster_dungeon
+from tests.support.builders import goblin, monster_dungeon
 from tests.support.fakes import FakeDice, FakeDungeonMaster, FakeRouterAgent
 
 
@@ -37,3 +37,41 @@ class Scenario:
     @property
     def room_type(self) -> str:
         return self.state.get_current_room().type
+
+
+MONSTER_ROOM = 2
+
+FIGHT_ROUTES = {
+    "attack": RouterState(intent="attack"),
+    "drink": RouterState(intent="drink_potion"),
+    "go forward": RouterState(intent="explore", explore_direction="forward"),
+}
+
+
+def fight(
+    *rolls: int,
+    health_points: int = 20,
+    potions: int = 2,
+    goblin_health_points: int = 10,
+) -> Scenario:
+    """A fight in the monster room with the dice scripted and the warrior's
+    health and potions, and the goblin's health, as given. The commands are
+    "attack", "drink" and "go forward"."""
+    game = Scenario(
+        FIGHT_ROUTES,
+        dungeon=monster_dungeon(goblin(health_points=goblin_health_points)),
+        room_index=MONSTER_ROOM,
+        dice=FakeDice(*rolls),
+    )
+    player = game.state.player
+    game.state = game.state.model_copy(
+        update={
+            "player": player.model_copy(
+                update={
+                    "health_points": health_points,
+                    "potions": player.potions.model_copy(update={"quantity": potions}),
+                }
+            )
+        }
+    )
+    return game
