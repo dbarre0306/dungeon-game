@@ -1,5 +1,5 @@
-"""A command that makes no sense is narrated back to the player, in any room,
-and leaves the game exactly as it was."""
+"""Commands the router cannot act on, an unknown command or several at once,
+are answered in any room and leave the game exactly as it was."""
 
 import pytest
 
@@ -8,6 +8,7 @@ from tests.support.scenario import Scenario
 
 ROUTES = {
     "dance wildly": RouterState(intent="unknown"),
+    "look and go forward": RouterState(intent="multiple"),
     "go forward": RouterState(intent="explore", explore_direction="forward"),
 }
 
@@ -36,6 +37,29 @@ def test_player_can_carry_on_after_an_unknown_command():
     game = Scenario(ROUTES)
 
     game.say("dance wildly")
+    game.say("go forward")
+
+    assert game.room_type == "cave_chamber"
+
+
+@pytest.mark.parametrize(("room_index", "room_type"), ROOMS)
+def test_multiple_actions_are_refused_and_nothing_changes(room_index, room_type):
+    game = Scenario(ROUTES, room_index=room_index)
+    before = game.state
+
+    state = game.say("look and go forward")
+
+    assert game.room_type == room_type
+    assert state.narration == ["You can only perform one action at a time."]
+    assert game.dm.calls == []
+    assert state.dungeon == before.dungeon
+    assert state.player == before.player
+
+
+def test_player_can_carry_on_after_a_multiple_action_command():
+    game = Scenario(ROUTES)
+
+    game.say("look and go forward")
     game.say("go forward")
 
     assert game.room_type == "cave_chamber"
