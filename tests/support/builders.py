@@ -8,6 +8,7 @@ from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
 from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
+from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.game_state import GameState
 
 
@@ -28,6 +29,19 @@ def monster_dungeon(enemy: Enemy | None = None) -> Dungeon:
             CaveEntrance(),
             CaveChamber(),
             MonsterRoom(enemy=enemy or goblin()),
+            ShopRoom(),
+            ThroneRoom(),
+        ]
+    )
+
+
+def trap_dungeon(trap_type: str = "poison dart") -> Dungeon:
+    """Entrance, chamber, then a trap room."""
+    return Dungeon(
+        rooms=[
+            CaveEntrance(),
+            CaveChamber(),
+            TrapRoom(trap_type=trap_type),
             ShopRoom(),
             ThroneRoom(),
         ]

@@ -6,7 +6,9 @@ from langgraph.graph import END, START, StateGraph
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.dice import Dice
+from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.game_state import GameState
+from dungeon_game.nodes.cross_trap import CrossTrapNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
@@ -31,6 +33,7 @@ class GameGraph:
         self._dungeon_master_agent = dungeon_master_agent
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
+        self.cross_trap_node = CrossTrapNode(dungeon_master_agent, dice)
         self.look_node = LookNode(dungeon_master_agent)
         self.player_attack_node = PlayerAttackNode(dungeon_master_agent, dice)
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent, dice)
@@ -47,6 +50,7 @@ class GameGraph:
         # Add nodes
         graph_builder.add_node("router", self.router_node.execute)
         graph_builder.add_node("explore", self.explore_node.execute)
+        graph_builder.add_node("cross_trap", self.cross_trap_node.execute)
         graph_builder.add_node("look", self.look_node.execute)
         graph_builder.add_node("player_attack", self.player_attack_node.execute)
         graph_builder.add_node("enemy_attack", self.enemy_attack_node.execute)
@@ -64,6 +68,7 @@ class GameGraph:
             self._next_action,
             [
                 "explore",
+                "cross_trap",
                 "look",
                 "player_attack",
                 "shop",
@@ -75,6 +80,7 @@ class GameGraph:
             ],
         )
         graph_builder.add_edge("explore", END)
+        graph_builder.add_edge("cross_trap", "game_over")
         graph_builder.add_edge("look", END)
         graph_builder.add_conditional_edges(
             "player_attack", self._player_is_fighting, ["enemy_attack", END]
@@ -111,7 +117,14 @@ class GameGraph:
     def _next_action(self, state: GameState) -> str:
         if state.intent.type == "attack":
             return "player_attack"
+        if state.intent.is_explore_forward() and self._is_trap_unsprung(state):
+            return "cross_trap"
         return state.intent.type
+
+    @staticmethod
+    def _is_trap_unsprung(state: GameState) -> bool:
+        room = state.get_current_room()
+        return isinstance(room, TrapRoom) and not room.is_sprung
 
     def _player_is_fighting(self, state: GameState) -> str:
         return "enemy_attack" if state.player.is_fighting else END
