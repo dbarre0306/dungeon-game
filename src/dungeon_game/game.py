@@ -17,7 +17,9 @@ class Game:
 
         self.player = create_default_warrior()
 
-        model = f"openai:{os.getenv('MODEL', 'gpt-4o-mini')}"
+        model_name = os.getenv("MODEL", "gpt-4o-mini")
+        # A bare name defaults to OpenAI; "provider:name" is used as given.
+        model = model_name if ":" in model_name else f"openai:{model_name}"
         router_agent = RouterAgent(model)
         dungeon_master_agent = DungeonMasterAgent(model)
 

@@ -17,7 +17,7 @@ class DungeonMasterAgent:
             "The game is similar to Dungeons and Dragons.  As the Dungeon Master "
             "you control the flow of the game through narration.  You have a way "
             "with words in that you can make it fun and scary at the same time. "
-            "In this game, the player must retrieve the Amulet of Valdorin that was "
+            "In this game, the player must retrieve the Amulet of Valdorin that "
             "was stolen by a troll who lives in the Dungeon of Mistwood.",
             response_format=DungeonMasterResponse,
         )

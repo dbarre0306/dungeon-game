@@ -43,16 +43,12 @@ class DrinkPotionNode:
     def _drink_one_potion(
         self, dungeon: Dungeon, player: Player, room: DungeonRoom
     ) -> dict[str, Any]:
-        print(f"Current health points: {player.health_points}")
         new_quantity = player.potions.quantity - 1
         new_health_points = min(
             player.max_health_points,
             player.health_points + player.potions.health_points,
         )
 
-        print(f"Max health points: {player.max_health_points}")
-        print(f"New health points: {new_health_points}")
-        print(f"Potion health points: {player.potions.health_points}")
         if player.health_points >= player.max_health_points:
             return self._potion_did_not_help(dungeon, player, room, new_quantity)
         return self._potion_helped(

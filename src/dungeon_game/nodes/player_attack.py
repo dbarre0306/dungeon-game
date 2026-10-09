@@ -43,7 +43,7 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}, but missed."
+            f"with a {self._player.get_attack()}, but missed. "
             "Ignore the gold coins; stay focused on the battle. "
             "Do NOT say anything about the doorway out.",
         )
@@ -62,7 +62,7 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}.  The {self._enemy.name} was wounded."
+            f"with a {self._player.get_attack()}.  The {self._enemy.name} was wounded. "
             f"You must describe how the player attacked the {self._enemy.name} "
             f"and how the {self._enemy.name} was wounded. "
             "Ignore the gold coins; stay focused on the battle. "

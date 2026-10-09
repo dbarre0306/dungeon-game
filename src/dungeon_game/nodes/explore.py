@@ -38,12 +38,13 @@ class ExploreNode:
 
     def _get_room_description(self, room: DungeonRoom, player: Player) -> str:
         msg = (
-            "Describe the room to the player using only the room facts "
+            "Describe the room to the player using only the room facts. "
             "The player "
-            "needs to clearly understand what is there in order to make a decison "
+            "needs to clearly understand what is there in order to make a decision "
             "on what "
-            "do to next.  Do not invent new "
-            "rooms, paths, exits, creatures, or other plot details that are not listed."
+            "to do next.  Do not invent new "
+            "rooms, paths, exits, creatures, or other plot details that are "
+            "not listed. "
             "If the facts or room history don't mention something, leave it out."
         )
         return self._dungeon_master_agent.invoke(room, player, msg).narration

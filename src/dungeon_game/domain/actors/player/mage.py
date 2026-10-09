@@ -37,6 +37,3 @@ class Mage(Player):
 
     def get_extra_damage(self) -> int:
         return self.staff.fire_bolt_spell.additional_damage_points
-
-    def get_damage_reduction(self) -> int:
-        return 0

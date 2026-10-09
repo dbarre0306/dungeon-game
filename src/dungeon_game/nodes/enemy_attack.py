@@ -41,11 +41,13 @@ class _EnemyStrike(_Strike[Player]):
 
     def _on_defender_unharmed(self) -> dict[str, Any]:
         defense = self._player.get_defense()
-        absorbed_by = f"the player's {defense} absorbed the blow and" if defense else ""
+        absorbed_by = (
+            f"the player's {defense} absorbed the blow and " if defense else ""
+        )
         return self._update(
             self._player,
             f"The {self._enemy.name} attacked the player (a {self._player.type}) "
-            f"and hit, but {absorbed_by} the player took no damage. "
+            f"and hit, but {absorbed_by}the player took no damage. "
             "Do NOT say the player was wounded. "
             "Do NOT say anything about the doorway out.",
         )
@@ -54,9 +56,9 @@ class _EnemyStrike(_Strike[Player]):
         return self._update(
             defender,
             f"The {self._enemy.name} attacked the player (a {defender.type}) "
-            "and wounded them."
+            "and wounded them. "
             f"You must describe how the {self._enemy.name} attacked the player "
-            f"and how the player was wounded. "
+            "and how the player was wounded. "
             "Do NOT say anything about the doorway out.",
         )
 
