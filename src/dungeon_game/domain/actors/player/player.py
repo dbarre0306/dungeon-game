@@ -17,5 +17,4 @@ class Player(Combatant):
     current_room_index: int
 
     @abstractmethod
-    def get_facts(self) -> str:
-        ...
+    def get_facts(self) -> str: ...

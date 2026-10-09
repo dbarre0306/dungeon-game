@@ -22,8 +22,7 @@ class Combatant(BaseModel, ABC):
         return self.get_weapon()
 
     @abstractmethod
-    def get_extra_damage(self) -> int:
-        ...
+    def get_extra_damage(self) -> int: ...
 
     def get_defense(self) -> str | None:
         """What protects this combatant from damage, as it should appear in
