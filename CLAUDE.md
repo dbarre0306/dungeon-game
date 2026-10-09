@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working agreement
+
+Never modify code (source or tests) without specific instructions from the user. Discussing,
+brainstorming, proposing, or answering questions about a design is not a request to implement it.
+Wait for an explicit instruction to make changes before editing any code files.
+
 ## Project state
 
 This is a freshly scaffolded `uv`-managed Python project (`src/dungeon_game/`) with a single
