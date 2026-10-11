@@ -69,9 +69,9 @@ class DungeonMasterAgent:
 
     def _query(self, room: DungeonRoom, msg: str) -> str:
         query = (
-            "Construct a narrative which addresses the player based on the following: "
+            "Construct a narrative which addresses the player based on the following "
         )
         if len(room.history) != 0:
             query += "(try not to repeat previous phrases from the room's history)"
-        query += f"\n\n{msg}"
+        query += f":\n\n{msg}"
         return query
