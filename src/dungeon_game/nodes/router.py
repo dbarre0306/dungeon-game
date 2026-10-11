@@ -24,12 +24,15 @@ class RouterNode:
             "If the player's command doesn't specify "
             "the direction, then use `forward` by default.  "
             "If a player refers to exiting a room, they are indicating that "
-            "they want to move forward through the only door."
+            "they want to move forward through the only door.  "
+            "For `open_chest`, set chest_side to `left` or `right` only if the "
+            "player's command says which chest to open; otherwise leave it unset."
         )
         result = self._router_agent.invoke(content)
         return {
             "intent": {
                 "type": result.intent,
                 "explore_direction": result.explore_direction,
+                "chest_side": result.chest_side,
             }
         }

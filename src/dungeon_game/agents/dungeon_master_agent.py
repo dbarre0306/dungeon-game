@@ -41,10 +41,7 @@ class DungeonMasterAgent:
                     f"{self._format_list(room.get_room_facts())}"
                     "\n\n"
                     f"{self._room_history(room)}"
-                    "Construct a narrative which addresses the "
-                    "player based on the following "
-                    "(try not to repeat previous stuff from the room's history): \n\n"
-                    f"{msg}",
+                    f"{self._query(room, msg)}",
                 }
             ]
         }
@@ -69,3 +66,12 @@ class DungeonMasterAgent:
             f"{self._format_list(room.history)}"
             "\n\n"
         )
+
+    def _query(self, room: DungeonRoom, msg: str) -> str:
+        query = (
+            "Construct a narrative which addresses the player based on the following: "
+        )
+        if len(room.history) != 0:
+            query += "(try not to repeat previous phrases from the room's history)"
+        query += f"\n\n{msg}"
+        return query

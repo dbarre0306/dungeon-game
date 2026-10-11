@@ -33,7 +33,7 @@ class DungeonFactory:
     def _pick_first_combat_room(rooms: list[str]) -> tuple[str, list[str]]:
         # TODO: change this back; it's temporary
         # room = random.choice(rooms)
-        room = "trap"
+        room = "treasure"
         return room, DungeonFactory._other_rooms(rooms, room)
 
     @staticmethod
@@ -44,7 +44,16 @@ class DungeonFactory:
     def _generate_combat_room(room: str) -> DungeonRoom:
         match room:
             case "treasure":
-                return TreasureRoom()
+                return TreasureRoom(
+                    serpent_side=random.choice(["left", "right"]),
+                    enemy=Enemy(
+                        name="serpent",
+                        weapon="fangs",
+                        max_health_points=15,
+                        health_points=15,
+                        hit_bonus=0,
+                    ),
+                )
             case "monster":
                 monster_name = random.choice(["goblin", "orc", "giant rat"])
                 return MonsterRoom(

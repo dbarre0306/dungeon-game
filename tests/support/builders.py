@@ -9,6 +9,7 @@ from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
+from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
 
 
@@ -42,6 +43,34 @@ def trap_dungeon(trap_type: str = "poison dart") -> Dungeon:
             CaveEntrance(),
             CaveChamber(),
             TrapRoom(trap_type=trap_type),
+            ShopRoom(),
+            ThroneRoom(),
+        ]
+    )
+
+
+def serpent(health_points: int = 15) -> Enemy:
+    return Enemy(
+        name="serpent",
+        weapon="fangs",
+        max_health_points=15,
+        health_points=health_points,
+        hit_bonus=0,
+    )
+
+
+def treasure_dungeon(
+    serpent_side: str = "right", serpent_health_points: int = 15
+) -> Dungeon:
+    """Entrance, chamber, then a treasure room with the serpent in the given chest."""
+    return Dungeon(
+        rooms=[
+            CaveEntrance(),
+            CaveChamber(),
+            TreasureRoom(
+                serpent_side=serpent_side,
+                enemy=serpent(health_points=serpent_health_points),
+            ),
             ShopRoom(),
             ThroneRoom(),
         ]

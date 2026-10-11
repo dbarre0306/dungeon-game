@@ -13,13 +13,17 @@ IntentType = Literal[
     "unknown",
 ]
 ExploreDirection = Literal["left", "right", "forward", "backward"]
+ChestSide = Literal["left", "right"]
 
 
 class Intent(BaseModel):
-    """The explore_direction is always set when the type is `explore`."""
+    """The explore_direction is always set when the type is `explore`.
+    The chest_side is set when the type is `open_chest` and the player
+    said which chest to open."""
 
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
+    chest_side: ChestSide | None = None
 
     def is_explore(self) -> bool:
         return self.type == "explore"
@@ -47,6 +51,12 @@ class Intent(BaseModel):
 
     def is_open_chest(self) -> bool:
         return self.type == "open_chest"
+
+    def is_open_left_chest(self) -> bool:
+        return self.type == "open_chest" and self.chest_side == "left"
+
+    def is_open_right_chest(self) -> bool:
+        return self.type == "open_chest" and self.chest_side == "right"
 
     def is_multiple(self) -> bool:
         return self.type == "multiple"

@@ -7,6 +7,7 @@ from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.trap_room import TrapRoom
+from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.cross_trap import CrossTrapNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
@@ -39,7 +40,7 @@ class GameGraph:
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent, dice)
         self.shop_node = ShopNode(dungeon_master_agent)
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
-        self.open_chest_node = OpenChestNode(dungeon_master_agent)
+        self.open_chest_node = OpenChestNode(dungeon_master_agent, dice)
         self.game_over_node = GameOverNode(dungeon_master_agent)
 
         self.agent = self._build_graph()
@@ -79,7 +80,9 @@ class GameGraph:
                 "unknown",
             ],
         )
-        graph_builder.add_edge("explore", END)
+        graph_builder.add_conditional_edges(
+            "explore", self._serpent_blocks_the_way, ["enemy_attack", END]
+        )
         graph_builder.add_edge("cross_trap", "game_over")
         graph_builder.add_edge("look", END)
         graph_builder.add_conditional_edges(
@@ -125,6 +128,16 @@ class GameGraph:
     def _is_trap_unsprung(state: GameState) -> bool:
         room = state.get_current_room()
         return isinstance(room, TrapRoom) and not room.is_sprung
+
+    @staticmethod
+    def _serpent_blocks_the_way(state: GameState) -> str:
+        """A player who tries to leave the treasure room while the serpent is
+        loose stays put, and the serpent strikes."""
+        room = state.get_current_room()
+        is_blocked = isinstance(room, TreasureRoom) and room.is_serpent_loose()
+        return (
+            "enemy_attack" if is_blocked and state.intent.is_explore_forward() else END
+        )
 
     def _player_is_fighting(self, state: GameState) -> str:
         return "enemy_attack" if state.player.is_fighting else END

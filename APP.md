@@ -14,15 +14,15 @@ This is a short, text-based dungeon crawler in the style of a choose-your-own-ad
 
 ### The Dungeon
 
-The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. At the Fork, the player can go left or right — this choice is flavor only. Either way, the game randomly picks **2 of 3 possible challenge rooms** (Goblin Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Boss Room.
+The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. At the Fork, the player can go left or right — this choice is flavor only. Either way, the game randomly picks **2 of 3 possible challenge rooms** (Monster Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Boss Room.
 
-**Path:** `Cave Entrance → Fork → (2 of 3: Goblin Room, Trap Room, Treasure Room, in random order) → Shop Room → Boss Room`
+**Path:** `Cave Entrance → Fork → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Boss Room`
 
 | Room          | What's there                                                                                                |
 | ------------- | ----------------------------------------------------------------------------------------------------------- |
 | Cave Entrance | Starting point. A torch on the wall.                                                                        |
 | Fork          | Tunnel splits left/right — cosmetic only; triggers the random challenge sequence either way.                |
-| Goblin Room   | A random enemy: goblin, orc, or giant rat. Drops 10 gold.                                                   |
+| Monster Room  | A random enemy: goblin, orc, or giant rat. Drops 10 gold.                                                   |
 | Trap Room     | A dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.    |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold. |
@@ -32,7 +32,13 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 **Trap Room details.** The trap is randomly either a dart trap or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. The trap triggers automatically the moment the player attempts to cross the room. A dice roll decides whether they dodge it cleanly, suffer a minor wound, or a major wound. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The die to determine if the player is struck is the same as the monster room. Another die with ten sides determine the extent of the wound. If it is eight or greater, then it is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap automatically collects the gold coins on the far side: a random 4 to 6.
 
-**Treasure Room details.** Two chests are present — one holds real loot (gold and a potion), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the player enters the room, and stays fixed for that playthrough. The player picks a chest by name (e.g. "open the left chest") without knowing in advance which is safe.
+**Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the player enters the room, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both.
+
+- **Gold chest:** the player is awarded a random 3 to 6 gold coins the moment they open it. Nothing else happens, and the player is free to leave the room.
+- **Serpent chest:** combat begins immediately. The serpent starts with 15 HP (tracked internally — the player is not told its HP) and fights using the same logic as the monster room — the same to-hit roll and damage die as the monsters, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. Only when the player opens this chest does the narration tell them they must kill the serpent. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
+- **Trying to leave while the serpent is alive:** the player cannot leave. The attempt costs them their turn, and the serpent can strike them.
+- **Trying to leave before opening a chest:** the player cannot leave until they open one. The attempt is simply refused, with no penalty.
+- If the player's HP reaches 0 in the fight, the game ends as usual.
 
 ### Playable Roles
 
@@ -85,8 +91,7 @@ A full playthrough — Cave Entrance through the boss fight — is designed to t
 ### Tech Stack
 
 - **LangGraph** — the state machine that drives the game: nodes for each type of turn, conditional edges for branching (hit vs. miss, alive vs. dead, in-budget vs. not).
-- **LangChain** — underlying building blocks used inside the graph: the chat model wrapper, tool definitions, and the bridge that turns MCP tools into usable LangChain tools.
-- **MCP (Model Context Protocol)** — used for the dice-rolling tool (and optionally a lore/flavor-text tool), so outcomes are resolved by real code rather than left to the LLM to invent.
+- **LangChain** — underlying building blocks used inside the graph: the chat model wrapper, tool definitions, etc.
 - **Gradio** — the chat-style UI, deployed as a Hugging Face Space, with a sidebar showing HP, inventory, and gold.
 - **Persistence** — LangGraph's checkpointer (SQLite-backed) saves game state per player session (`thread_id`), so a player can leave and resume later.
 
@@ -100,7 +105,7 @@ Each player command triggers exactly one graph invocation — input goes in, flo
 
 1. **Router Node** — classifies the player's free-text input as explore, combat, dialogue, or shop, and routes to the matching node.
 2. **Explore Node** — default handling for movement and looking around; generates the randomized 2-of-3 challenge sequence at the Fork, tracks the player's position in that sequence, and resolves room transitions and traps.
-3. **Combat Node** — resolves the player's attack (calls the dice MCP tool), then the enemy's counterattack, updating HP for both sides.
+3. **Combat Node** — resolves the player's attack, then the enemy's counterattack, updating HP for both sides.
 4. **Shop Node** — checks gold against item price, updates inventory and gold if the purchase is valid.
 5. **Game Over Node** — reached only via a conditional check (HP ≤ 0 for either side) after combat; ends the session or triggers the victory narration and reward.
 
@@ -109,38 +114,3 @@ Each player command triggers exactly one graph invocation — input goes in, flo
 ### Persistence Flow
 
 Each play session is tied to a `thread_id`. Every graph invocation reads the current state (HP, inventory, gold, current room) from the checkpointer at the start and writes the updated state back out at the end. This is what allows a player to close the browser tab and resume later with their character and progress intact, and it doubles as a clean, concrete example of LangGraph's persistence model.
-
----
-
-## Part 3 — Weekly Plan
-
-Assumes a few dedicated part-time weeks (not full-time sprints).
-
-### Week 1 — Core graph, no tools yet
-
-- Learn LangGraph basics: `StateGraph`, nodes, `add_conditional_edges`
-- Build the skeleton: router → explore → combat → shop, with simple conditionals (HP check, intent check)
-- Run it in plain Python via console input — no Gradio yet
-- Highest-value learning week; most of the "aha" moments about LangGraph happen here
-
-### Week 2 — Persistence + Gradio
-
-- Add SQLite-backed checkpointing; learn `thread_id` semantics; test save/resume
-- Wire up a basic Gradio chat interface (chat window + HP/inventory/gold sidebar)
-- Get "New Game" vs. "Continue" working end-to-end locally, using the Space's regular filesystem for the save file
-
-### Week 3 — MCP tools
-
-- Stand up a simple MCP server (a dice roller is a great first one)
-- Wire it in via `langchain-mcp-adapters` / `MultiServerMCPClient`
-- Add a second tool (e.g. a flavor-text or name generator) to prove out multi-tool routing
-- Highest-risk week for unexpected debugging (async/transport issues between MCP and LangGraph)
-
-### Week 4 — Polish + deploy
-
-- Deploy to Hugging Face Spaces
-- If true cross-restart persistence is wanted, swap the save file's path to a mounted Storage Bucket — no other code changes needed
-- UI polish, error handling for bad LLM outputs breaking the state machine
-- Buffer time for the inevitable "one thing doesn't work like the docs say" issue
-
-**Scope risk to watch:** it's tempting to spend extra time making the _game_ better (more rooms, more balance tuning), but the actual goal is learning the _framework_. Keep gameplay content to what's outlined in Part 1 and resist expanding it until the graph itself is solid.

@@ -6,7 +6,7 @@ from langchain.agents.structured_output import StructuredOutputError
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
-from dungeon_game.domain.intent import ExploreDirection, IntentType
+from dungeon_game.domain.intent import ChestSide, ExploreDirection, IntentType
 
 
 class RouterState(BaseModel):
@@ -16,6 +16,13 @@ class RouterState(BaseModel):
         description=(
             "Which direction the player wants to move "
             "or if they are just looking around."
+        ),
+    )
+    chest_side: ChestSide | None = Field(
+        default=None,
+        description=(
+            "Which chest the player wants to open, left or right. "
+            "Leave it unset if the player did not say which chest."
         ),
     )
 
