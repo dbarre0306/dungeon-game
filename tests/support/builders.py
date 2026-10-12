@@ -23,30 +23,28 @@ def goblin(health_points: int = 10) -> Enemy:
     )
 
 
-def monster_dungeon(enemy: Enemy | None = None) -> Dungeon:
-    """Entrance, chamber, then a monster room, as the game currently lays out."""
+def full_dungeon() -> Dungeon:
+    """Entrance, chamber, monster room, shop and throne room, as the game
+    currently lays out."""
     return Dungeon(
         rooms=[
             CaveEntrance(),
             CaveChamber(),
-            MonsterRoom(enemy=enemy or goblin()),
+            MonsterRoom(enemy=goblin()),
             ShopRoom(),
             ThroneRoom(),
         ]
     )
+
+
+def monster_dungeon(enemy: Enemy | None = None) -> Dungeon:
+    """A monster room, then a chamber."""
+    return Dungeon(rooms=[MonsterRoom(enemy=enemy or goblin()), CaveChamber()])
 
 
 def trap_dungeon(trap_type: str = "poison dart") -> Dungeon:
-    """Entrance, chamber, then a trap room."""
-    return Dungeon(
-        rooms=[
-            CaveEntrance(),
-            CaveChamber(),
-            TrapRoom(trap_type=trap_type),
-            ShopRoom(),
-            ThroneRoom(),
-        ]
-    )
+    """A trap room, then a chamber."""
+    return Dungeon(rooms=[TrapRoom(trap_type=trap_type), CaveChamber()])
 
 
 def serpent(health_points: int = 15) -> Enemy:
@@ -62,17 +60,14 @@ def serpent(health_points: int = 15) -> Enemy:
 def treasure_dungeon(
     serpent_side: str = "right", serpent_health_points: int = 15
 ) -> Dungeon:
-    """Entrance, chamber, then a treasure room with the serpent in the given chest."""
+    """A treasure room with the serpent in the given chest, then a chamber."""
     return Dungeon(
         rooms=[
-            CaveEntrance(),
-            CaveChamber(),
             TreasureRoom(
                 serpent_side=serpent_side,
                 enemy=serpent(health_points=serpent_health_points),
             ),
-            ShopRoom(),
-            ThroneRoom(),
+            CaveChamber(),
         ]
     )
 

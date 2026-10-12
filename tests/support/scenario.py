@@ -3,7 +3,7 @@ from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.game_graph import GameGraph
 from dungeon_game.game_state import GameState
-from tests.support.builders import goblin, monster_dungeon
+from tests.support.builders import full_dungeon, goblin, monster_dungeon
 from tests.support.fakes import FakeDice, FakeDungeonMaster, FakeRouterAgent
 
 
@@ -25,7 +25,7 @@ class Scenario:
             update={"current_room_index": room_index}
         )
         self.state = GameState(
-            player=player, dungeon=dungeon or monster_dungeon(), command=""
+            player=player, dungeon=dungeon or full_dungeon(), command=""
         )
 
     def say(self, command: str) -> GameState:
@@ -39,7 +39,7 @@ class Scenario:
         return self.state.get_current_room().type
 
 
-MONSTER_ROOM = 2
+MONSTER_ROOM = 0
 
 FIGHT_ROUTES = {
     "attack": RouterState(intent="attack"),

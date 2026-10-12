@@ -9,7 +9,7 @@ from tests.support.builders import trap_dungeon
 from tests.support.fakes import FakeDice
 from tests.support.scenario import Scenario
 
-TRAP_ROOM = 2
+TRAP_ROOM = 0
 
 ROUTES = {
     "cross": RouterState(intent="explore", explore_direction="forward"),
@@ -85,7 +85,7 @@ def test_once_sprung_the_player_walks_on_without_more_dice():
 
     game.say("cross")
 
-    assert game.room_type == "shop_room"
+    assert game.room_type == "cave_chamber"
     game.dice.assert_exhausted()
 
 

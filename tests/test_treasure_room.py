@@ -10,7 +10,7 @@ from tests.support.builders import treasure_dungeon
 from tests.support.fakes import FakeDice
 from tests.support.scenario import Scenario
 
-TREASURE_ROOM = 2
+TREASURE_ROOM = 0
 
 ROUTES = {
     "open the left chest": RouterState(intent="open_chest", chest_side="left"),
@@ -55,7 +55,7 @@ def test_the_player_can_leave_after_taking_the_gold():
 
     game.say("go forward")
 
-    assert game.room_type == "shop_room"
+    assert game.room_type == "cave_chamber"
     game.dice.assert_exhausted()
 
 
@@ -131,7 +131,7 @@ def test_killing_the_serpent_frees_the_player_without_gold():
     game.dice.assert_exhausted()  # the dead serpent did not strike back
 
     game.say("go forward")
-    assert game.room_type == "shop_room"
+    assert game.room_type == "cave_chamber"
 
 
 def test_the_other_chest_stays_closed_after_the_serpent_is_dead():
@@ -217,7 +217,7 @@ def test_drinking_a_potion_during_the_fight_lets_the_serpent_strike():
     game.dice.assert_exhausted()
 
 
-def test_there_is_no_shop_here():
+def test_a_command_that_makes_no_sense_in_this_room_is_not_understood():
     game = treasure()
     before = game.state
 

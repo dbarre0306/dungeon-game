@@ -150,7 +150,7 @@ def test_a_flawless_victory():
     state = game.say("go forward")
 
     assert state.player.health_points == 20
-    assert game.room_type == "shop_room"
+    assert game.room_type == "cave_chamber"
     game.dice.assert_exhausted()
 
 

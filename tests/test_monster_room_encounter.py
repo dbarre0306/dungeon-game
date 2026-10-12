@@ -9,7 +9,7 @@ from tests.support.builders import goblin, monster_dungeon
 from tests.support.fakes import FakeDice
 from tests.support.scenario import Scenario
 
-MONSTER_ROOM = 2
+MONSTER_ROOM = 0
 
 ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
@@ -28,7 +28,7 @@ KILLING_BLOW = (15, 6)
 @pytest.fixture
 def game() -> Scenario:
     """The player has just reached the monster room; the goblin is alive."""
-    return Scenario(ROUTES, room_index=MONSTER_ROOM)
+    return Scenario(ROUTES, dungeon=monster_dungeon(), room_index=MONSTER_ROOM)
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ def test_refusing_to_let_the_player_pass_costs_nothing(game):
 
 
 @pytest.mark.parametrize("command", ["buy something", "open the chest"])
-def test_there_is_no_shop_or_chest_here(game, command):
+def test_a_command_that_makes_no_sense_in_this_room_is_not_understood(game, command):
     before = game.state
 
     state = game.say(command)
@@ -105,7 +105,7 @@ def test_killing_the_goblin_leaves_the_player_in_the_room():
 def test_once_the_goblin_is_dead_the_player_can_go_forward(cleared):
     state = cleared.say("go forward")
 
-    assert cleared.room_type == "shop_room"
+    assert cleared.room_type == "cave_chamber"
     assert len(state.narration) == 1
     assert state.get_current_room().history == state.narration
 
