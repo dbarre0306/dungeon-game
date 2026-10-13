@@ -108,6 +108,4 @@ class _Strike[Defender: Combatant](ABC):
     def _on_defender_dead(self, defender: Defender) -> dict[str, Any]: ...
 
     def _narrate(self, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(
-            self._room, self._player, msg
-        ).narration
+        return self._dungeon_master_agent.invoke(self._state, msg).narration

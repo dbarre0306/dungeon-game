@@ -17,8 +17,7 @@ class GameOverNode:
         if state.player.is_alive():
             return {}
         response = self._dungeon_master_agent.invoke(
-            state.get_current_room(),
-            state.player,
+            state,
             "The player has died and the game is over. "
             "Write a brief, final farewell to the player. "
             "Do NOT repeat how the player died.",

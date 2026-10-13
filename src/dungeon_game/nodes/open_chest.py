@@ -25,7 +25,7 @@ class OpenChestNode:
         room = state.get_current_room()
         is_valid, msg = room.is_valid_intent(state.intent)
         if not is_valid:
-            response = self._dungeon_master_agent.invoke(room, state.player, msg)
+            response = self._dungeon_master_agent.invoke(state, msg)
             return {"narration": [response.narration]}
         if not isinstance(room, TreasureRoom):
             raise TypeError("The room must be a TreasureRoom")
@@ -36,12 +36,10 @@ class OpenChestNode:
 
     def _release_serpent(self, state: GameState, room: TreasureRoom) -> dict[str, Any]:
         player = state.player.model_copy(update={"is_fighting": True})
-        room = room.model_copy(update={"opened_side": state.intent.chest_side})
         narration = self._dungeon_master_agent.invoke(
-            room,
-            player,
-            f"The player (a {player.type}) opened the {room.opened_side} chest "
-            "and a serpent lunged out of it. Do NOT say that the serpent bit "
+            self._opened_state(state, player),
+            f"The player (a {player.type}) opened the {state.intent.chest_side} "
+            "chest and a serpent lunged out of it. Do NOT say that the serpent bit "
             "or wounded the player. You must tell the player that they must "
             "kill the serpent.",
         ).narration
@@ -52,14 +50,23 @@ class OpenChestNode:
         player = state.player.model_copy(
             update={"gold_coins": state.player.gold_coins + gold}
         )
-        room = room.model_copy(update={"opened_side": state.intent.chest_side})
         narration = self._dungeon_master_agent.invoke(
-            room,
-            player,
-            f"The player (a {player.type}) opened the {room.opened_side} chest "
-            f"and collected {gold} gold coins.",
+            self._opened_state(state, player),
+            f"The player (a {player.type}) opened the {state.intent.chest_side} "
+            f"chest and collected {gold} gold coins.",
         ).narration
         return self._update(state, player, narration)
+
+    @staticmethod
+    def _opened_state(state: GameState, player) -> GameState:
+        return state.model_copy(
+            update={
+                "player": player,
+                "dungeon": state.dungeon.with_room_updated(
+                    player.current_room_index, opened_side=state.intent.chest_side
+                ),
+            }
+        )
 
     @staticmethod
     def _update(state: GameState, player, narration: str) -> dict[str, Any]:

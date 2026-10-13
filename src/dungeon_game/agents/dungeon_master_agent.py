@@ -1,8 +1,8 @@
 from langchain.agents import create_agent
 from pydantic import BaseModel
 
-from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+from dungeon_game.game_state import GameState
 
 
 class DungeonMasterResponse(BaseModel):
@@ -22,9 +22,9 @@ class DungeonMasterAgent:
             response_format=DungeonMasterResponse,
         )
 
-    def invoke(
-        self, room: DungeonRoom, player: Player, msg: str
-    ) -> DungeonMasterResponse:
+    def invoke(self, state: GameState, msg: str) -> DungeonMasterResponse:
+        player = state.player
+        room = state.get_current_room()
         user_msg = {
             "messages": [
                 {

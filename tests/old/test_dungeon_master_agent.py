@@ -31,13 +31,18 @@ def _room() -> MonsterRoom:
     return MonsterRoom(enemy=enemy)
 
 
+def _state(player) -> SimpleNamespace:
+    room = _room()
+    return SimpleNamespace(player=player, get_current_room=lambda: room)
+
+
 def test_prompt_includes_the_players_current_facts_on_every_call():
     agent, fake = _agent_with_fake()
     bronze = SimpleNamespace(get_facts=lambda: "The player has a bronze sword.")
     steel = SimpleNamespace(get_facts=lambda: "The player has a steel sword.")
 
-    agent.invoke(_room(), bronze, "first")
-    agent.invoke(_room(), steel, "second")
+    agent.invoke(_state(bronze), "first")
+    agent.invoke(_state(steel), "second")
 
     assert "The player has a bronze sword." in fake.prompts[0]
     assert "The player has a steel sword." in fake.prompts[1]

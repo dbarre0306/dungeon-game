@@ -1,8 +1,6 @@
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
-from dungeon_game.domain.actors.player.player import Player
-from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
 
@@ -20,9 +18,11 @@ class ExploreNode:
         is_valid, msg = room.is_valid_intent(state.intent)
         if is_valid:
             next_room_index = state.player.current_room_index + 1
-            description = self._get_room_description(next_room, state.player)
             player = state.player.model_copy(
                 update={"current_room_index": next_room_index}
+            )
+            description = self._get_room_description(
+                state.model_copy(update={"player": player})
             )
             new_dungeon = state.dungeon.with_room_updated(
                 next_room_index, history=[description]
@@ -33,10 +33,10 @@ class ExploreNode:
                 "dungeon": new_dungeon,
             }
         else:
-            response = self._dungeon_master_agent.invoke(room, state.player, msg)
+            response = self._dungeon_master_agent.invoke(state, msg)
             return {"narration": [response.narration]}
 
-    def _get_room_description(self, room: DungeonRoom, player: Player) -> str:
+    def _get_room_description(self, state: GameState) -> str:
         msg = (
             "Describe the room to the player using only the room facts. "
             "The player "
@@ -47,4 +47,4 @@ class ExploreNode:
             "not listed. "
             "If the facts or room history don't mention something, leave it out."
         )
-        return self._dungeon_master_agent.invoke(room, player, msg).narration
+        return self._dungeon_master_agent.invoke(state, msg).narration

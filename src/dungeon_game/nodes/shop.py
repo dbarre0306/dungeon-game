@@ -14,5 +14,5 @@ class ShopNode:
         is_valid, msg = room.is_valid_intent(state.intent)
         if is_valid:
             return {}
-        response = self._dungeon_master_agent.invoke(room, state.player, msg)
+        response = self._dungeon_master_agent.invoke(state, msg)
         return {"narration": [response.narration]}

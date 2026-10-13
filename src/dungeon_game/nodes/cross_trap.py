@@ -42,7 +42,9 @@ class CrossTrapNode:
             )
         else:
             player, msg = self._on_struck(room, player)
-        narration = self._dungeon_master_agent.invoke(room, player, msg).narration
+        narration = self._dungeon_master_agent.invoke(
+            state.model_copy(update={"player": player}), msg
+        ).narration
         return {
             "player": player,
             "dungeon": state.dungeon.with_room_updated(

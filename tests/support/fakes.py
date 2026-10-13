@@ -3,6 +3,7 @@ and the dice. Each is duck-typed to the one method the game calls on it."""
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterResponse
 from dungeon_game.agents.router_agent import RouterState
+from dungeon_game.game_state import GameState
 
 _COMMAND_PREFIX = "Player command: "
 
@@ -27,14 +28,14 @@ class FakeDungeonMaster:
     Dungeon Master to narrate, without depending on any LLM wording."""
 
     def __init__(self):
-        self.calls: list[tuple[object, object, str]] = []
+        self.calls: list[tuple[GameState, str]] = []
 
     @property
     def messages(self) -> list[str]:
-        return [msg for _, _, msg in self.calls]
+        return [msg for _, msg in self.calls]
 
-    def invoke(self, room, player, msg) -> DungeonMasterResponse:
-        self.calls.append((room, player, msg))
+    def invoke(self, state, msg) -> DungeonMasterResponse:
+        self.calls.append((state, msg))
         return DungeonMasterResponse(narration=f"[DM] {msg}")
 
 
