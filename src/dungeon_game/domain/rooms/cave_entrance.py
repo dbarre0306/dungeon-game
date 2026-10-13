@@ -1,9 +1,14 @@
 # The Cave Entrance is not "room" in the real world, but
 # it does simplify the software design.
-from typing import Literal
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
 
 from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
+
+if TYPE_CHECKING:
+    from dungeon_game.game_state import GameState
 
 
 class CaveEntrance(DungeonRoom):
@@ -17,7 +22,7 @@ class CaveEntrance(DungeonRoom):
             "and that they must enter the cave."
         )
 
-    def get_room_facts(self) -> list[str]:
+    def get_room_facts(self, state: GameState) -> list[str]:
         return [
             "The player is standing at the entrance of the cave.",
             "The cave entrance is directly in front of the player.",

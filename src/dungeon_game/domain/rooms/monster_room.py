@@ -1,7 +1,12 @@
-from typing import Literal
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
 
 from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.combat_room import CombatRoom
+
+if TYPE_CHECKING:
+    from dungeon_game.game_state import GameState
 
 _NUMBER_OF_GOLD_COINS = 5
 
@@ -47,7 +52,7 @@ class MonsterRoom(CombatRoom):
             "Tell the player that you don't understand what they have asked.",
         )
 
-    def get_room_facts(self) -> list[str]:
+    def get_room_facts(self, state: GameState) -> list[str]:
         return [
             f"The {self.enemy.name}, armed with {self.enemy.get_weapon()}, "
             "is in this room and is itching for a fight.",

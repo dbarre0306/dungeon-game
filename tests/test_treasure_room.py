@@ -101,7 +101,7 @@ def test_without_naming_a_chest_the_player_is_told_to_say_which():
 def test_the_serpent_is_not_mentioned_as_a_threat_before_a_chest_is_opened():
     game = treasure()
 
-    facts = game.state.get_current_room().get_room_facts()
+    facts = game.state.get_current_room().get_room_facts(game.state)
 
     assert not any("must kill" in fact for fact in facts)
 
@@ -231,7 +231,7 @@ def test_looking_during_the_fight_has_the_chests_passageway_and_serpent_to_descr
     game = treasure()
     game.say("open the right chest")
 
-    facts = " ".join(game.state.get_current_room().get_room_facts())
+    facts = " ".join(game.state.get_current_room().get_room_facts(game.state))
 
     assert "right chest is open" in facts
     assert "left chest is closed" in facts
