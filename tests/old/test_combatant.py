@@ -50,16 +50,18 @@ def test_enemy_attacks_with_its_weapon():
 
 def test_warrior_facts_name_the_current_equipment():
     warrior = create_default_warrior()
-    assert (
-        warrior.get_facts()
-        == "The player is a warrior with a bronze sword and a bronze shield."
-    )
+    facts = warrior.get_facts()
+    assert "The player is a warrior." in facts
+    assert "The player has a bronze sword." in facts
+    assert "The player has a bronze shield." in facts
+    assert "The player has 2 potion bottles." in facts
 
     steel_sword = Sword(name="steel sword", additional_damage_points=2)
     upgraded = warrior.model_copy(update={"sword": steel_sword})
-    assert "steel sword" in upgraded.get_facts()
-    assert "bronze sword" not in upgraded.get_facts()
+    assert "The player has a steel sword." in upgraded.get_facts()
+    assert "The player has a bronze sword." not in upgraded.get_facts()
 
 
 def test_mage_facts_name_the_staff():
-    assert _mage().get_facts() == "The player is a mage with a wooden staff."
+    facts = _mage().get_facts()
+    assert "The player has a wooden staff." in facts

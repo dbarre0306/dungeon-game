@@ -29,7 +29,7 @@ class Mage(Player):
 
     def get_facts(self) -> list[str]:
         return [
-            f"The player is a mage, a magical wizard.",
+            "The player is a mage, a magical wizard.",
             f"The player has a {self.staff.name}.",
         ]
 

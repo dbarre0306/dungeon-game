@@ -26,11 +26,11 @@ class Warrior(Player):
 
     def get_facts(self) -> list[str]:
         return [
-            f"The player is a warrior.",
+            "The player is a warrior.",
             f"The player has a {self.sword.name}.",
             f"The player has a {self.shield.name}.",
             f"The player has {self.gold_coins} gold coins.",
-            f"The player has {self.potions.quantity} two potion bottles.",
+            f"The player has {self.potions.quantity} potion bottles.",
         ]
 
     def with_purchased_item(
