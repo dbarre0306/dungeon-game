@@ -27,8 +27,11 @@ class Mage(Player):
     type: Literal["mage"] = "mage"
     staff: Staff
 
-    def get_facts(self) -> str:
-        return f"The player is a mage with a {self.staff.name}."
+    def get_facts(self) -> list[str]:
+        return [
+            f"The player is a mage, a magical wizard.",
+            f"The player has a {self.staff.name}.",
+        ]
 
     def get_weapon(self) -> str:
         return self.staff.name

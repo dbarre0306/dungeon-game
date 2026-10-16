@@ -24,12 +24,14 @@ class Warrior(Player):
     sword: Sword
     shield: Shield
 
-    def get_facts(self) -> str:
-        return (
-            f"The player is a warrior with a {self.sword.name} "
-            f"and a {self.shield.name}."
-        )
-        # TODO: expand this: include potions and/or broken/damaged shield
+    def get_facts(self) -> list[str]:
+        return [
+            f"The player is a warrior.",
+            f"The player has a {self.sword.name}.",
+            f"The player has a {self.shield.name}.",
+            f"The player has {self.gold_coins} gold coins.",
+            f"The player has {self.potions.quantity} two potion bottles.",
+        ]
 
     def with_purchased_item(
         self, item: InventoryItem, quantity: int, price: int

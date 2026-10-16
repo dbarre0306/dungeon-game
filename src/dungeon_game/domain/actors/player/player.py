@@ -17,7 +17,7 @@ class Player(Combatant):
     current_room_index: int
 
     @abstractmethod
-    def get_facts(self) -> str: ...
+    def get_facts(self) -> list[str]: ...
 
     def can_afford(self, price: int) -> bool:
         return self.gold_coins >= price
