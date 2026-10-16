@@ -2,6 +2,7 @@ import os
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
+from dungeon_game.domain.actors.merchant import create_merchant_for_warrior
 from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
 from dungeon_game.game_graph import GameGraph
@@ -10,12 +11,13 @@ from dungeon_game.game_state import GameState
 
 class Game:
     def __init__(self):
+        self.player = create_default_warrior()
+        merchant = create_merchant_for_warrior()
+
         print("Generating Dungeon")
         dungeon_factory = DungeonFactory()
-        self.dungeon = dungeon_factory.generate()
+        self.dungeon = dungeon_factory.generate(merchant)
         print("Generating Dungeon completed")
-
-        self.player = create_default_warrior()
 
         model_name = os.getenv("MODEL", "gpt-4o-mini")
         # A bare name defaults to OpenAI; "provider:name" is used as given.
@@ -31,7 +33,7 @@ class Game:
         state = self.game_graph.invoke(state)
         self._print_narration(state.narration)
         print(f"Room: {state.get_current_room().type}")
-        print(f"Player HP: {state.player.health_points}")
+        state.player.print()
 
         while not state.game_over:
             command = input("> ")
@@ -41,8 +43,7 @@ class Game:
             state = self.game_graph.invoke(state)
             self._print_narration(state.narration)
             print(f"Room: {state.get_current_room().type}")
-            print(f"Player HP: {state.player.health_points}")
-            print(f"Player potions: {state.player.potions.quantity}")
+            state.player.print()
 
         if state.game_over:
             print("GAME OVER")

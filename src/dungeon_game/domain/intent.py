@@ -14,16 +14,21 @@ IntentType = Literal[
 ]
 ExploreDirection = Literal["left", "right", "forward", "backward"]
 ChestSide = Literal["left", "right"]
+ShopItem = Literal["potion", "sword", "shield"]
 
 
 class Intent(BaseModel):
     """The explore_direction is always set when the type is `explore`.
     The chest_side is set when the type is `open_chest` and the player
-    said which chest to open."""
+    said which chest to open. The shop_item is set when the type is `shop`
+    and the player said what they want to buy. The shop_quantity is set when
+    the player said how many; it is 1 when they did not."""
 
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
     chest_side: ChestSide | None = None
+    shop_item: ShopItem | None = None
+    shop_quantity: int | None = None
 
     def is_explore(self) -> bool:
         return self.type == "explore"
@@ -45,6 +50,9 @@ class Intent(BaseModel):
 
     def is_shop(self) -> bool:
         return self.type == "shop"
+
+    def get_shop_quantity(self) -> int:
+        return 1 if self.shop_quantity is None else self.shop_quantity
 
     def is_drink_potion(self) -> bool:
         return self.type == "drink_potion"

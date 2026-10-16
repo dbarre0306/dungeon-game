@@ -108,5 +108,5 @@ def test_a_sprung_room_has_no_gold_left_to_see():
 
     state = game.say("cross")
 
-    facts = state.get_current_room().get_room_facts(state)
+    facts = state.get_current_room().get_room_facts()
     assert any("no gold remains" in fact for fact in facts)

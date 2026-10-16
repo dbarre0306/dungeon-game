@@ -1,20 +1,31 @@
+from __future__ import annotations
+
 from abc import abstractmethod
+from typing import TYPE_CHECKING, Self
 
 from pydantic import BaseModel
 
 from dungeon_game.domain.actors.combatant import Combatant
+from dungeon_game.domain.intent import ShopItem
 
-
-class Potions(BaseModel):
-    name: str = "Potions"
-    health_points: int
-    quantity: int
+if TYPE_CHECKING:
+    from dungeon_game.domain.actors.player.warrior import Shield, Sword
 
 
 class Player(Combatant):
     gold_coins: int
-    potions: Potions
     current_room_index: int
 
     @abstractmethod
     def get_facts(self) -> str: ...
+
+    def can_afford(self, price: int) -> bool:
+        return self.gold_coins >= price
+
+    @abstractmethod
+    def with_purchased_item(
+        self, item: ShopItem, quantity: int, price: int
+    ) -> Self: ...
+
+    def print(self):
+        pass

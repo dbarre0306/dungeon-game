@@ -5,7 +5,6 @@ from dungeon_game.domain.actors.player.mage import (
     Mage,
     Staff,
 )
-from dungeon_game.domain.actors.player.player import Potions
 from dungeon_game.domain.actors.player.warrior import Sword, create_default_warrior
 
 
@@ -14,7 +13,6 @@ def _mage() -> Mage:
         max_health_points=15,
         health_points=15,
         is_fighting=False,
-        potions=Potions(health_points=8, quantity=1),
         gold_coins=0,
         hit_bonus=2,
         current_room_index=0,

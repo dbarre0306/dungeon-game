@@ -1,12 +1,7 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
-
-if TYPE_CHECKING:
-    from dungeon_game.game_state import GameState
 
 
 class TrapRoom(DungeonRoom):
@@ -32,7 +27,7 @@ class TrapRoom(DungeonRoom):
             "Tell the player that you don't understand what they have asked.",
         )
 
-    def get_room_facts(self, state: GameState) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         if self.is_sprung:
             return [
                 "The player has crossed the room and the trap has been sprung.",

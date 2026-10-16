@@ -2,6 +2,7 @@
 depend on what `DungeonFactory` happens to randomize."""
 
 from dungeon_game.domain.actors.enemy import Enemy
+from dungeon_game.domain.actors.merchant import create_merchant_for_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
@@ -31,7 +32,7 @@ def full_dungeon() -> Dungeon:
             CaveEntrance(),
             CaveChamber(),
             MonsterRoom(enemy=goblin()),
-            ShopRoom(),
+            ShopRoom(merchant=create_merchant_for_warrior()),
             ThroneRoom(),
         ]
     )
@@ -72,5 +73,16 @@ def treasure_dungeon(
     )
 
 
+def shop_dungeon() -> Dungeon:
+    """A shop room, then a chamber."""
+    return Dungeon(
+        rooms=[ShopRoom(merchant=create_merchant_for_warrior()), CaveChamber()]
+    )
+
+
 def new_game_state(player, dungeon: Dungeon, command: str = "look") -> GameState:
-    return GameState(player=player, dungeon=dungeon, command=command)
+    return GameState(
+        player=player,
+        dungeon=dungeon,
+        command=command,
+    )

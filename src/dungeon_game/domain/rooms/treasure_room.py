@@ -1,12 +1,7 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from dungeon_game.domain.intent import ChestSide, Intent
 from dungeon_game.domain.rooms.combat_room import CombatRoom
-
-if TYPE_CHECKING:
-    from dungeon_game.game_state import GameState
 
 
 class TreasureRoom(CombatRoom):
@@ -86,7 +81,7 @@ class TreasureRoom(CombatRoom):
             )
         return (False, "Tell the player that there is nothing here to attack.")
 
-    def get_room_facts(self, state: GameState) -> list[str]:
+    def get_room_facts(self) -> list[str]:
         if self.opened_side is None:
             return [
                 "There are two identical chests, one to the left and the other "

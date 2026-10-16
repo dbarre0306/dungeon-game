@@ -40,6 +40,25 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 - **Trying to leave before opening a chest:** the player cannot leave until they open one. The attempt is simply refused, with no penalty.
 - If the player's HP reaches 0 in the fight, the game ends as usual.
 
+**Shop Room details.** An old merchant selling stuff.
+
+- **Stock depends on the class:**
+  - Warrior: one steel sword, one steel shield, and three potions.
+  - Wizard: the Elder staff, which has more powerful firebolt spells. No potions.
+- **Prices:**
+  - Potion: 5 gold coins.
+  - Steel sword: 10 gold coins.
+  - Steel shield: 10 gold coins.
+  - Elder staff: 20 gold coins.
+- **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield and the staff.
+- **Potions add up:** bought potions are added to any potions the player already has.
+- **Quantity:**
+  - Potions are the only item that can be bought in quantity (e.g. "buy 2 potions").
+  - If the player doesn't say how many, they buy one.
+- **Limited stock:** the merchant tracks how many of each item are left, and an item that runs out (e.g. the steel sword once bought) can't be bought again.
+- **All or nothing:** if the player asks for more than the merchant has left, or can't afford the total, nothing is bought and the merchant says why.
+- **Leaving:** the player is not required to buy anything. At any point, the player can move forward to the next room.
+
 ### Playable Roles
 
 Two classes are available for this demo: **Warrior** and **Mage**. Each starts with fixed gear and stats — no character building or leveling required.
@@ -52,13 +71,12 @@ Two classes are available for this demo: **Warrior** and **Mage**. Each starts w
 | Damage die     | 1d6                                         | 1d8 (Firebolt)        |
 | Special        | Shield passively lowers chance of being hit | Can cast Heal (+8 HP) |
 | Starting gold  | 10                                          | 5                     |
-| Starting items | Sword, shield, 2 potions                    | Staff, 1 potion       |
+| Starting items | Sword, shield, 2 potions                    | Staff                 |
 
 **Shop upgrades** (class-specific, so each class is only offered relevant gear):
 
-- Warrior: **Steel Sword** (+2 damage), **Reinforced Shield** (further reduces chance of being hit)
+- Warrior: **Steel Sword** (+2 damage), **Steel Shield** (further reduces chance of being hit), **Potion** (+8 HP, usable anytime)
 - Mage: **Elder Staff** (+2 damage)
-- Either class: **Potion** (+8 HP, usable anytime)
 
 ### What the Player Does
 
@@ -97,7 +115,7 @@ A full playthrough — Cave Entrance through the boss fight — is designed to t
 
 ### Design Principle: Data vs. Narration
 
-The dungeon's rooms, enemies, stats, and shop items are all defined as fixed data (a Python structure), not invented by the LLM. Graph nodes read and update this data directly — checking real numbers like enemy HP — while the LLM's only job is to turn those numbers into narration. This keeps the conditional edges reliable and the game state consistent across turns.
+The dungeon's rooms, enemies, stats, and the merchant's stock are all defined as fixed data (a Python structure), not invented by the LLM. Graph nodes read and update this data directly — checking real numbers like enemy HP — while the LLM's only job is to turn those numbers into narration. This keeps the conditional edges reliable and the game state consistent across turns.
 
 ### The Workflow Graph
 
@@ -106,11 +124,11 @@ Each player command triggers exactly one graph invocation — input goes in, flo
 1. **Router Node** — classifies the player's free-text input as explore, combat, dialogue, or shop, and routes to the matching node.
 2. **Explore Node** — default handling for movement and looking around; generates the randomized 2-of-3 challenge sequence at the Fork, tracks the player's position in that sequence, and resolves room transitions and traps.
 3. **Combat Node** — resolves the player's attack, then the enemy's counterattack, updating HP for both sides.
-4. **Shop Node** — checks gold against item price, updates inventory and gold if the purchase is valid.
+4. **Shop Node** — checks the merchant's remaining stock and the player's gold against the price; if the purchase is valid, it hands the item to the player, deducts the gold, and reduces the merchant's stock.
 5. **Game Over Node** — reached only via a conditional check (HP ≤ 0 for either side) after combat; ends the session or triggers the victory narration and reward.
 
 **Example — an attack turn:** the longest realistic path through the graph in a single turn — a player attack that results in a kill — looks like: `Router → Combat Node → Game Over Node`. Most turns are shorter, resolving in just `Router → one node`, since the "did someone just die" check is the only case that chains a third node.
 
 ### Persistence Flow
 
-Each play session is tied to a `thread_id`. Every graph invocation reads the current state (HP, inventory, gold, current room) from the checkpointer at the start and writes the updated state back out at the end. This is what allows a player to close the browser tab and resume later with their character and progress intact, and it doubles as a clean, concrete example of LangGraph's persistence model.
+Each play session is tied to a `thread_id`. Every graph invocation reads the current state (HP, inventory, gold, current room, the merchant's remaining stock) from the checkpointer at the start and writes the updated state back out at the end. This is what allows a player to close the browser tab and resume later with their character and progress intact, and it doubles as a clean, concrete example of LangGraph's persistence model.

@@ -38,7 +38,7 @@ class DungeonMasterAgent:
                     f"{self._format_list([player.get_facts()])}"
                     "\n\n"
                     "Room Facts:\n"
-                    f"{self._format_list(room.get_room_facts(state))}"
+                    f"{self._format_list(room.get_room_facts())}"
                     "\n\n"
                     f"{self._room_history(room)}"
                     f"{self._query(room, msg)}",

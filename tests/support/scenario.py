@@ -25,7 +25,9 @@ class Scenario:
             update={"current_room_index": room_index}
         )
         self.state = GameState(
-            player=player, dungeon=dungeon or full_dungeon(), command=""
+            player=player,
+            dungeon=dungeon or full_dungeon(),
+            command="",
         )
 
     def say(self, command: str) -> GameState:

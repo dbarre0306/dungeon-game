@@ -1,7 +1,8 @@
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import BaseModel
 
+from dungeon_game.domain.actors.player.inventory_items import InventoryItem
 from dungeon_game.domain.actors.player.player import Player
 
 
@@ -37,3 +38,10 @@ class Mage(Player):
 
     def get_extra_damage(self) -> int:
         return self.staff.fire_bolt_spell.additional_damage_points
+
+    def with_purchased_item(
+        self, item: InventoryItem, quantity: int, price: int
+    ) -> Self:
+        """Return a copy that spent `price` gold coins and added purchased item."""
+        pass
+        # TODO: implement

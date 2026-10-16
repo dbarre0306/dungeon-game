@@ -6,7 +6,12 @@ from langchain.agents.structured_output import StructuredOutputError
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
-from dungeon_game.domain.intent import ChestSide, ExploreDirection, IntentType
+from dungeon_game.domain.intent import (
+    ChestSide,
+    ExploreDirection,
+    IntentType,
+    ShopItem,
+)
 
 
 class RouterState(BaseModel):
@@ -23,6 +28,20 @@ class RouterState(BaseModel):
         description=(
             "Which chest the player wants to open, left or right. "
             "Leave it unset if the player did not say which chest."
+        ),
+    )
+    shop_item: ShopItem | None = Field(
+        default=None,
+        description=(
+            "What the player wants to buy: a potion, a sword or a shield. "
+            "Leave it unset if the player did not say what to buy."
+        ),
+    )
+    shop_quantity: int | None = Field(
+        default=None,
+        description=(
+            "How many of the item the player wants to buy, only if the player "
+            "gave a number. Leave it unset otherwise."
         ),
     )
 

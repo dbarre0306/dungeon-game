@@ -1,22 +1,63 @@
-from __future__ import annotations
+from typing import Literal
 
-from typing import TYPE_CHECKING, Literal
-
+from dungeon_game.domain.actors.merchant import Merchant
 from dungeon_game.domain.intent import Intent
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
-if TYPE_CHECKING:
-    from dungeon_game.game_state import GameState
-
 
 class ShopRoom(DungeonRoom):
+    """Where the player trades with the merchant, who lives here."""
+
     type: Literal["shop_room"] = "shop_room"
+    merchant: Merchant
 
     def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+        if intent.is_shop():
+            return self._is_valid_purchase(intent)
+        if intent.is_explore():
+            return self._is_valid_explore(intent)
+        if intent.is_look() or intent.is_drink_potion():
+            return (True, None)
+        if intent.is_attack():
+            return (
+                False,
+                "Tell the player that there is nothing here to attack. "
+                "The merchant is peaceful.",
+            )
+        return (
+            False,
+            "Tell the player that you don't understand what they have asked.",
+        )
+
+    @staticmethod
+    def _is_valid_purchase(intent: Intent) -> tuple[bool, str | None]:
+        if intent.shop_item is None:
+            return (
+                False,
+                "Tell the player that they must say what they want to buy "
+                "from the merchant.",
+            )
+        if intent.get_shop_quantity() < 1:
+            return (
+                False,
+                "Tell the player that they must buy at least one item.",
+            )
         return (True, None)
 
-    def get_room_facts(self, state: GameState) -> list[str]:
+    @staticmethod
+    def _is_valid_explore(intent: Intent) -> tuple[bool, str | None]:
+        if intent.is_explore_forward():
+            return (True, None)
+        return (
+            False,
+            "Tell the player that the only way out is forward through the passageway.",
+        )
+
+    def get_room_facts(self) -> list[str]:
         return [
-            "There is a merchant selling stuff.",
+            "There is an old merchant behind a two-wheeled wooden cart, and he is selling:",
+            *self.merchant.describe_inventory(),
+            "The player does not have to buy anything.",
+            "The player can only buy one item at a time.",
             "There is only one passageway forward.",
         ]

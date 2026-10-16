@@ -1,6 +1,7 @@
 import random
 
 from dungeon_game.domain.actors.enemy import Enemy
+from dungeon_game.domain.actors.merchant import Merchant
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
@@ -13,7 +14,7 @@ from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 
 
 class DungeonFactory:
-    def generate(self) -> Dungeon:
+    def generate(self, merchant: Merchant) -> Dungeon:
         remaining_rooms = ["treasure", "monster", "trap"]
         first_room, remaining_rooms = self._pick_first_combat_room(remaining_rooms)
         second_room = random.choice(remaining_rooms)
@@ -22,9 +23,9 @@ class DungeonFactory:
             rooms=[
                 CaveEntrance(),
                 CaveChamber(),
+                ShopRoom(merchant=merchant),
                 self._generate_combat_room(first_room),
                 self._generate_combat_room(second_room),
-                ShopRoom(),
                 ThroneRoom(),
             ]
         )
