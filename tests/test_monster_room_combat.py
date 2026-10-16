@@ -54,6 +54,62 @@ def test_a_hit_absorbed_by_the_shield_is_not_narrated_as_a_wound(damage_roll):
     assert "Do NOT say the player was wounded" in goblin_strike
 
 
+def test_the_shield_loses_a_durability_point_per_damage_point_it_absorbs():
+    game = fight(5, 12, 5)  # the player misses, the goblin hits for 5: shield blocks 2
+
+    state = game.say("attack")
+
+    assert state.player.shield.durability == 4
+    assert state.player.shield.condition == "good"
+
+
+def test_a_hit_the_shield_cannot_fully_absorb_still_wears_it_by_what_it_absorbed():
+    game = fight(5, 12, 1)  # the goblin hits for 1: the shield absorbs only 1
+
+    state = game.say("attack")
+
+    assert state.player.shield.durability == 5
+    assert state.player.health_points == 20
+
+
+def test_a_missed_blow_does_not_wear_the_shield():
+    game = fight(5, 5)
+
+    state = game.say("attack")
+
+    assert state.player.shield.durability == 6
+
+
+def test_the_shield_is_damaged_then_broken_and_stops_blocking():
+    game = fight(
+        5, 12, 6,  # shield 6 -> 4, still good, blocks 2: player 25 -> 21
+        5, 12, 6,  # shield 4 -> 2, damaged, narrated: player -> 17
+        5, 12, 6,  # damaged shield blocks 1: shield 2 -> 1, player -> 12
+        5, 12, 6,  # damaged shield blocks 1: shield 1 -> 0, broken: player -> 7
+        5, 12, 6,  # broken shield blocks nothing: player -> 1
+        health_points=25,
+    )  # fmt: skip
+
+    game.say("attack")
+    assert game.state.player.shield.condition == "good"
+
+    state = game.say("attack")
+    assert state.player.shield.condition == "damaged"
+    assert "bronze shield is now damaged" in game.dm.messages[-1]
+
+    game.say("attack")
+    state = game.say("attack")
+    assert state.player.shield.condition == "broken"
+    assert state.player.get_defense() is None
+    assert "bronze shield is now broken" in game.dm.messages[-1]
+
+    health_before = state.player.health_points
+    state = game.say("attack")
+    assert state.player.health_points == health_before - 6
+    assert state.player.shield.durability == 0
+    game.dice.assert_exhausted()
+
+
 def test_a_round_narrates_both_strikes_and_adds_them_to_the_room_history():
     game = fight(15, 4, 14, 5)
 
@@ -158,7 +214,7 @@ def test_a_close_win_with_a_potion_mid_fight():
     game = fight(
         15, 3, 14, 6,  # goblin 10 -> 7, the goblin hits for 4: player 6 -> 2
         14, 6,  # potion first: player 2 -> 10, then the goblin hits for 4: -> 6
-        15, 6, 14, 4,  # goblin 7 -> 1, the goblin hits for 2: player 6 -> 4
+        15, 6, 14, 4,  # goblin 7 -> 1, the damaged shield blocks 1: player 6 -> 3
         15, 1,  # goblin 1 -> 0, dead
         health_points=6,
     )  # fmt: skip
@@ -169,7 +225,7 @@ def test_a_close_win_with_a_potion_mid_fight():
     state = game.say("attack")
 
     assert state.get_current_room().enemy.is_dead()
-    assert state.player.health_points == 4
+    assert state.player.health_points == 3
     assert state.player.potions.quantity == 1
     assert not state.game_over
     game.dice.assert_exhausted()

@@ -71,10 +71,12 @@ class _Strike[Defender: Combatant](ABC):
     def resolve(self) -> dict[str, Any]:
         if not self._is_defender_hit():
             return self._on_defender_missed()
-        damage = self._defender_damage_points()
+        raw = self._raw_damage_points()
+        damage = max(0, raw - self._defender.get_damage_reduction())
+        defender = self._defender.with_defense_worn(raw - damage)
         if damage == 0:
-            return self._on_defender_unharmed()
-        defender = self._defender.take_damage(damage)
+            return self._on_defender_unharmed(defender)
+        defender = defender.with_damage(damage)
         if defender.is_dead():
             return self._on_defender_dead(defender)
         return self._on_defender_wounded(defender)
@@ -90,16 +92,16 @@ class _Strike[Defender: Combatant](ABC):
     def _is_defender_hit(self) -> bool:
         return self._dice.roll(20) + self._attacker.hit_bonus >= HIT_TARGET
 
-    def _defender_damage_points(self) -> int:
-        raw = self._dice.roll(6) + self._attacker.get_extra_damage()
-        return max(0, raw - self._defender.get_damage_reduction())
+    def _raw_damage_points(self) -> int:
+        return self._dice.roll(6) + self._attacker.get_extra_damage()
 
     @abstractmethod
     def _on_defender_missed(self) -> dict[str, Any]: ...
 
     @abstractmethod
-    def _on_defender_unharmed(self) -> dict[str, Any]:
-        """A hit that was fully absorbed (e.g. by armor), so no health was lost."""
+    def _on_defender_unharmed(self, defender: Defender) -> dict[str, Any]:
+        """A hit that was fully absorbed (e.g. by armor), so no health was lost.
+        `defender` is the defender after its defense wore down."""
 
     @abstractmethod
     def _on_defender_wounded(self, defender: Defender) -> dict[str, Any]: ...

@@ -29,6 +29,7 @@ class Warrior(Player):
             "The player is a warrior.",
             f"The player has a {self.sword.name}.",
             f"The player has a {self.shield.name}.",
+            f"The player's {self.shield.name} is {self.shield.state}.",
             f"The player has {self.gold_coins} gold coins.",
             f"The player has {self.potions.quantity} potion bottles.",
         ]
@@ -72,10 +73,20 @@ class Warrior(Player):
         return self.sword.additional_damage_points
 
     def get_defense(self) -> str | None:
+        if self.shield.condition == "broken":
+            return None
         return self.shield.name
 
     def get_damage_reduction(self) -> int:
-        return self.shield.defensive_health_points
+        return self.shield.block_points
+
+    def with_defense_worn(self, absorbed: int) -> Self:
+        return self.model_copy(update={"shield": self.shield.with_worn(absorbed)})
+
+    def describe_defense_change(self, before: Self) -> str | None:
+        if self.shield.condition == before.shield.condition:
+            return None
+        return f"The player's {self.shield.name} is now {self.shield.state}."
 
     def print(self):
         print(f"Gold Coins: {self.gold_coins}")
@@ -83,7 +94,9 @@ class Warrior(Player):
         print(f"Is Fighting: {self.is_fighting}")
         print(f"Potions: {self.potions.quantity}")
         print(f"Sword: {self.sword.name}")
-        print(f"Shield: {self.shield.name}")
+        print(
+            f"Shield: {self.shield.name} ({self.shield.condition}:{self.shield.durability})"
+        )
 
 
 def create_default_warrior() -> Player:

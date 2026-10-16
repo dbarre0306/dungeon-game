@@ -39,16 +39,17 @@ class _EnemyStrike(_Strike[Player]):
             "but missed.",
         )
 
-    def _on_defender_unharmed(self) -> dict[str, Any]:
+    def _on_defender_unharmed(self, defender: Player) -> dict[str, Any]:
         defense = self._player.get_defense()
         absorbed_by = (
             f"the player's {defense} absorbed the blow and " if defense else ""
         )
         return self._update(
-            self._player,
+            defender,
             f"The {self._enemy.name} attacked the player (a {self._player.type}) "
             f"and hit, but {absorbed_by}the player took no damage. "
             "Do NOT say the player was wounded. "
+            f"{self._defense_change(defender)}"
             "Do NOT say anything about the doorway out.",
         )
 
@@ -59,6 +60,7 @@ class _EnemyStrike(_Strike[Player]):
             "and wounded them. "
             f"You must describe how the {self._enemy.name} attacked the player "
             "and how the player was wounded. "
+            f"{self._defense_change(defender)}"
             "Do NOT say anything about the doorway out.",
         )
 
@@ -69,6 +71,10 @@ class _EnemyStrike(_Strike[Player]):
             "You must describe how the player was attacked. "
             "Describe the player's final moments.",
         )
+
+    def _defense_change(self, defender: Player) -> str:
+        change = defender.describe_defense_change(self._player)
+        return f"{change} Mention it. " if change else ""
 
     def _update(self, player: Player, msg: str) -> dict[str, Any]:
         narration = self._narrate(msg)

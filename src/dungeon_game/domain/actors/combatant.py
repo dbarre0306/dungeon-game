@@ -32,7 +32,17 @@ class Combatant(BaseModel, ABC):
     def get_damage_reduction(self) -> int:
         return 0
 
-    def take_damage(self, points: int) -> Self:
+    def with_defense_worn(self, absorbed: int) -> Self:
+        """Return a copy whose defense wore down by the `absorbed` damage points
+        it just blocked. Nothing wears by default."""
+        return self
+
+    def describe_defense_change(self, before: Self) -> str | None:
+        """What happened to the defense since `before`, as it should appear in
+        narration (e.g. a shield broke), or None if its condition is unchanged."""
+        return None
+
+    def with_damage(self, points: int) -> Self:
         """Return a copy that lost `points` health (never below zero).
         A combatant who dies stops fighting."""
         health_points = max(0, self.health_points - points)

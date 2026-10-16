@@ -56,7 +56,7 @@ class CrossTrapNode:
     def _on_struck(self, room: TrapRoom, player):
         is_major = self._dice.roll(10) >= MAJOR_WOUND_ROLL
         severity = "major" if is_major else "minor"
-        player = player.take_damage(
+        player = player.with_damage(
             MAJOR_WOUND_POINTS if is_major else MINOR_WOUND_POINTS
         )
         if player.is_dead():

@@ -23,9 +23,9 @@ class DungeonFactory:
             rooms=[
                 CaveEntrance(),
                 CaveChamber(),
-                ShopRoom(merchant=merchant),
                 self._generate_combat_room(first_room),
                 self._generate_combat_room(second_room),
+                ShopRoom(merchant=merchant),
                 ThroneRoom(),
             ]
         )
@@ -33,6 +33,7 @@ class DungeonFactory:
     @staticmethod
     def _pick_first_combat_room(rooms: list[str]) -> tuple[str, list[str]]:
         room = random.choice(rooms)
+        room = "monster"
         return room, DungeonFactory._other_rooms(rooms, room)
 
     @staticmethod
@@ -59,8 +60,8 @@ class DungeonFactory:
                     enemy=Enemy(
                         name=monster_name,
                         weapon=DungeonFactory._get_monster_weapon(monster_name),
-                        max_health_points=10,
-                        health_points=10,
+                        max_health_points=100,
+                        health_points=100,
                         hit_bonus=0,
                     )
                 )
