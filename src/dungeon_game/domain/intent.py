@@ -20,14 +20,14 @@ ShopItemName = Literal["potion", "sword", "shield"]
 class Intent(BaseModel):
     """The explore_direction is always set when the type is `explore`.
     The chest_side is set when the type is `open_chest` and the player
-    said which chest to open. The shop_item is set when the type is `shop`
+    said which chest to open. The shop_item_name is set when the type is `shop`
     and the player said what they want to buy. The shop_quantity is set when
     the player said how many; it is 1 when they did not."""
 
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
     chest_side: ChestSide | None = None
-    shop_item: ShopItemName | None = None
+    shop_item_name: ShopItemName | None = None
     shop_quantity: int | None = None
 
     def is_explore(self) -> bool:

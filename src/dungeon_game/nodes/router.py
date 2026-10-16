@@ -33,7 +33,7 @@ class RouterNode:
             "  - Set chest_side to `left` or `right` only if the command says "
             "which chest to open; otherwise leave it unset.\n"
             "- `shop`:\n"
-            "  - Set shop_item to `potion`, `sword` or `shield` only "
+            "  - Set shop_item_name to `potion`, `sword` or `shield` only "
             "if the command says what to buy; otherwise leave it unset.\n"
             "  - A steel sword is `sword` and a reinforced or steel shield is "
             "`shield`.\n"
@@ -46,7 +46,7 @@ class RouterNode:
                 "type": result.intent,
                 "explore_direction": result.explore_direction,
                 "chest_side": result.chest_side,
-                "shop_item": result.shop_item,
+                "shop_item_name": result.shop_item_name,
                 "shop_quantity": result.shop_quantity,
             }
         }

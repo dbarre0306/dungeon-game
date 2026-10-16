@@ -30,7 +30,7 @@ class RouterState(BaseModel):
             "Leave it unset if the player did not say which chest."
         ),
     )
-    shop_item: ShopItemName | None = Field(
+    shop_item_name: ShopItemName | None = Field(
         default=None,
         description=(
             "What the player wants to buy: a potion, a sword or a shield. "

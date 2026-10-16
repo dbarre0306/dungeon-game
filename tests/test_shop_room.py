@@ -13,16 +13,26 @@ from tests.support.scenario import Scenario
 SHOP_ROOM = 0
 
 ROUTES = {
-    "buy a potion": RouterState(intent="shop", shop_item="potion"),
-    "buy the sword": RouterState(intent="shop", shop_item="sword"),
-    "buy the shield": RouterState(intent="shop", shop_item="shield"),
+    "buy a potion": RouterState(intent="shop", shop_item_name="potion"),
+    "buy the sword": RouterState(intent="shop", shop_item_name="sword"),
+    "buy the shield": RouterState(intent="shop", shop_item_name="shield"),
     "buy something": RouterState(intent="shop"),
-    "buy 2 potions": RouterState(intent="shop", shop_item="potion", shop_quantity=2),
-    "buy 3 potions": RouterState(intent="shop", shop_item="potion", shop_quantity=3),
-    "buy 4 potions": RouterState(intent="shop", shop_item="potion", shop_quantity=4),
-    "buy 0 potions": RouterState(intent="shop", shop_item="potion", shop_quantity=0),
-    "buy -1 potions": RouterState(intent="shop", shop_item="potion", shop_quantity=-1),
-    "buy 2 swords": RouterState(intent="shop", shop_item="sword", shop_quantity=2),
+    "buy 2 potions": RouterState(
+        intent="shop", shop_item_name="potion", shop_quantity=2
+    ),
+    "buy 3 potions": RouterState(
+        intent="shop", shop_item_name="potion", shop_quantity=3
+    ),
+    "buy 4 potions": RouterState(
+        intent="shop", shop_item_name="potion", shop_quantity=4
+    ),
+    "buy 0 potions": RouterState(
+        intent="shop", shop_item_name="potion", shop_quantity=0
+    ),
+    "buy -1 potions": RouterState(
+        intent="shop", shop_item_name="potion", shop_quantity=-1
+    ),
+    "buy 2 swords": RouterState(intent="shop", shop_item_name="sword", shop_quantity=2),
     "go forward": RouterState(intent="explore", explore_direction="forward"),
     "go left": RouterState(intent="explore", explore_direction="left"),
     "attack": RouterState(intent="attack"),

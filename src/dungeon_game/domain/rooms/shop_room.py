@@ -31,7 +31,7 @@ class ShopRoom(DungeonRoom):
 
     @staticmethod
     def _is_valid_purchase(intent: Intent) -> tuple[bool, str | None]:
-        if intent.shop_item is None:
+        if intent.shop_item_name is None:
             return (
                 False,
                 "Tell the player that they must say what they want to buy "

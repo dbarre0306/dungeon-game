@@ -14,38 +14,41 @@ class ShopNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print(f"SHOP : {state.intent.get_shop_quantity} x {state.intent.shop_item}")
+        print(
+            f"SHOP : {state.intent.get_shop_quantity()} x {state.intent.shop_item_name}"
+        )
         room = state.get_current_room()
         is_valid, msg = room.is_valid_intent(state.intent)
         if not is_valid:
             return self._narrate(state, msg)
         if not isinstance(room, ShopRoom):
             raise TypeError("The room must be a ShopRoom")
-        item = state.intent.shop_item
+        item_name = state.intent.shop_item_name
         quantity = state.intent.get_shop_quantity()
-        refusal = self._refusal(room, state, item, quantity)
+        refusal = self._refusal(room, state, item_name, quantity)
         if refusal is not None:
             return self._narrate(state, refusal)
-        return self._buy(state, room, item, quantity)
+        return self._buy(state, room, item_name, quantity)
 
     @staticmethod
     def _refusal(
-        room: ShopRoom, state: GameState, item: ShopItemName | None, quantity: int
+        room: ShopRoom, state: GameState, item_name: ShopItemName | None, quantity: int
     ) -> str | None:
         merchant = room.merchant
-        if not merchant.has_item_in_stock(item):
+        if not merchant.has_item_in_stock(item_name):
             return "Tell the player that the merchant has none of that to sell."
-        if not merchant.is_in_stock(item, quantity):
+        if not merchant.is_in_stock(item_name, quantity):
             return (
                 f"Tell the player that the merchant only has "
-                f"{merchant.quantity_of(item)} of {merchant.name_of(item)} left, so they can't buy "
-                f"{quantity}."
+                f"{merchant.quantity_of(item_name)} of "
+                f"{merchant.name_of(item_name)} "
+                f"left, so they can't buy {quantity}."
             )
-        total = merchant.total_price(item, quantity)
+        total = merchant.total_price(item_name, quantity)
         if not state.player.can_afford(total):
             return (
-                f"Tell the player that {quantity} of {merchant.name_of(item)} cost "
-                f"{total} gold coins but they only have "
+                f"Tell the player that {quantity} of {merchant.name_of(item_name)} "
+                f"cost {total} gold coins but they only have "
                 f"{state.player.gold_coins}, so they cannot afford it."
             )
         return None
@@ -72,7 +75,8 @@ class ShopNode:
         narration = self._dungeon_master_agent.invoke(
             sold_state,
             f"The player bought {quantity} "
-            f"{merchant.name_of(item)} from the merchant for {total_price} gold coins.",
+            f"{merchant.name_of(item_name)} from the merchant for "
+            f"{total_price} gold coins.",
         ).narration
         return {
             "player": sold_state.player,
