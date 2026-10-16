@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Self
 from pydantic import BaseModel
 
 from dungeon_game.domain.actors.combatant import Combatant
-from dungeon_game.domain.intent import ShopItem
+from dungeon_game.domain.intent import ShopItemName
 
 if TYPE_CHECKING:
     from dungeon_game.domain.actors.player.warrior import Shield, Sword
@@ -24,7 +24,7 @@ class Player(Combatant):
 
     @abstractmethod
     def with_purchased_item(
-        self, item: ShopItem, quantity: int, price: int
+        self, item: ShopItemName, quantity: int, price: int
     ) -> Self: ...
 
     def print(self):

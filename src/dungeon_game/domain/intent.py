@@ -14,7 +14,7 @@ IntentType = Literal[
 ]
 ExploreDirection = Literal["left", "right", "forward", "backward"]
 ChestSide = Literal["left", "right"]
-ShopItem = Literal["potion", "sword", "shield"]
+ShopItemName = Literal["potion", "sword", "shield"]
 
 
 class Intent(BaseModel):
@@ -27,7 +27,7 @@ class Intent(BaseModel):
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
     chest_side: ChestSide | None = None
-    shop_item: ShopItem | None = None
+    shop_item: ShopItemName | None = None
     shop_quantity: int | None = None
 
     def is_explore(self) -> bool:

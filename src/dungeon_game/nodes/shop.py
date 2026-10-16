@@ -1,7 +1,7 @@
 from typing import Any
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
-from dungeon_game.domain.intent import ShopItem
+from dungeon_game.domain.intent import ShopItemName
 from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.game_state import GameState
 
@@ -30,7 +30,7 @@ class ShopNode:
 
     @staticmethod
     def _refusal(
-        room: ShopRoom, state: GameState, item: ShopItem | None, quantity: int
+        room: ShopRoom, state: GameState, item: ShopItemName | None, quantity: int
     ) -> str | None:
         merchant = room.merchant
         if not merchant.has_item_in_stock(item):
@@ -51,12 +51,12 @@ class ShopNode:
         return None
 
     def _buy(
-        self, state: GameState, room: ShopRoom, item_type: ShopItem, quantity: int
+        self, state: GameState, room: ShopRoom, item_name: ShopItemName, quantity: int
     ) -> dict[str, Any]:
         merchant = room.merchant
 
-        total_price = merchant.total_price(item_type, quantity)
-        merchant, item = merchant.with_item_removed(item_type, quantity)
+        total_price = merchant.total_price(item_name, quantity)
+        merchant, item = merchant.with_item_removed(item_name, quantity)
         player = state.player.with_purchased_item(item, quantity, total_price)
 
         index = state.player.current_room_index

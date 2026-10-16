@@ -12,7 +12,7 @@ from dungeon_game.domain.actors.player.inventory_items import (
     InventoryItem,
 )
 from dungeon_game.domain.actors.player.warrior import Shield, Sword
-from dungeon_game.domain.intent import ShopItem
+from dungeon_game.domain.intent import ShopItemName
 
 
 class Merchant(BaseModel):
@@ -21,53 +21,53 @@ class Merchant(BaseModel):
 
     merchandise: list[Merchandise]
 
-    def has_item_in_stock(self, item_type: ShopItem | None) -> bool:
-        return item_type is not None and self.is_in_stock(item_type, 1)
+    def has_item_in_stock(self, item_name: ShopItemName | None) -> bool:
+        return item_name is not None and self.is_in_stock(item_name, 1)
 
-    def is_in_stock(self, item_type: ShopItem, quantity: int) -> bool:
+    def is_in_stock(self, item_name: ShopItemName, quantity: int) -> bool:
         return any(
-            m.type == item_type and m.quantity >= quantity for m in self.merchandise
+            m.type == item_name and m.quantity >= quantity for m in self.merchandise
         )
 
-    def total_price(self, item_type: ShopItem, quantity: int) -> int:
-        item = self._find_merchandise(item_type)
+    def total_price(self, item_name: ShopItemName, quantity: int) -> int:
+        item = self._find_merchandise(item_name)
         if item is None:
             return -1
         return item.price * quantity
 
-    def quantity_of(self, item_type: ShopItem) -> int:
-        item = self._find_merchandise(item_type)
+    def quantity_of(self, item_name: ShopItemName) -> int:
+        item = self._find_merchandise(item_name)
         if item is None:
             return 0
         return item.quantity
 
-    def name_of(self, item_type: ShopItem) -> str:
-        item = self._find_merchandise(item_type)
+    def name_of(self, item_name: ShopItemName) -> str:
+        item = self._find_merchandise(item_name)
         if item is None:
-            return item_type
+            return item_name
         return item.name
 
     def with_item_removed(
-        self, item_type: ShopItem, quantity: int
+        self, item_name: ShopItemName, quantity: int
     ) -> tuple[Self, InventoryItem]:
-        merchandise = self._find_merchandise(item_type)
+        merchandise = self._find_merchandise(item_name)
         if merchandise is None:
             raise Exception("can't remove non-existent item")
-        new_merchant = Merchant(merchandise=self._update_inventory(item_type, quantity))
+        new_merchant = Merchant(merchandise=self._update_inventory(item_name, quantity))
         return new_merchant, merchandise.item
 
     def _update_inventory(
-        self, item_type: ShopItem, quantity: int
+        self, item_name: ShopItemName, quantity: int
     ) -> list[Merchandise]:
         updated_merchandise = []
         for item in self.merchandise:
-            if item.type == item_type:
+            if item.type == item_name:
                 item = item.model_copy(update={"quantity": item.quantity - quantity})
             updated_merchandise.append(item)
         return updated_merchandise
 
-    def _find_merchandise(self, item_type: ShopItem) -> Merchandise | None:
-        return next((m for m in self.merchandise if m.type == item_type), None)
+    def _find_merchandise(self, item_name: ShopItemName) -> Merchandise | None:
+        return next((m for m in self.merchandise if m.type == item_name), None)
 
     def describe_inventory(self) -> list[str]:
         """What is for sale."""

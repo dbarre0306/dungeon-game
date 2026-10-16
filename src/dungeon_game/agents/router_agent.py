@@ -10,7 +10,7 @@ from dungeon_game.domain.intent import (
     ChestSide,
     ExploreDirection,
     IntentType,
-    ShopItem,
+    ShopItemName,
 )
 
 
@@ -30,7 +30,7 @@ class RouterState(BaseModel):
             "Leave it unset if the player did not say which chest."
         ),
     )
-    shop_item: ShopItem | None = Field(
+    shop_item: ShopItemName | None = Field(
         default=None,
         description=(
             "What the player wants to buy: a potion, a sword or a shield. "
