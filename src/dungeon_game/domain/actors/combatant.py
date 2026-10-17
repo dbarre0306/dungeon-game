@@ -33,7 +33,8 @@ class Combatant(BaseModel, ABC):
         narration (e.g. a shield), or None if nothing does."""
         return None
 
-    def get_damage_reduction(self) -> int:
+    @property
+    def reduced_defensive_weapon_damage(self) -> int:
         return 0
 
     def with_defense_worn(self, absorbed: int) -> Self:

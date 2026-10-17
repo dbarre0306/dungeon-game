@@ -104,7 +104,7 @@ def test_the_warrior_buys_a_steel_shield_for_ten_gold():
 
     assert state.player.gold_coins == 0
     assert state.player.defensive_weapon == "steel shield"
-    assert state.player.get_damage_reduction() == 4
+    assert state.player.reduced_defensive_weapon_damage == 4
     assert in_stock(state, "shield") == 0
 
 

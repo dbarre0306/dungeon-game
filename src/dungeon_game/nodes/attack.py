@@ -72,7 +72,7 @@ class _Strike[Defender: Combatant](ABC):
         if not self._is_defender_hit():
             return self._on_defender_missed()
         raw = self._raw_damage_points()
-        damage = max(0, raw - self._defender.get_damage_reduction())
+        damage = max(0, raw - self._defender.reduced_defensive_weapon_damage)
         defender = self._defender.with_defense_worn(raw - damage)
         if damage == 0:
             return self._on_defender_unharmed(defender)

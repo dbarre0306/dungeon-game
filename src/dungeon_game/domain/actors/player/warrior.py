@@ -114,7 +114,8 @@ class Warrior(Player):
             return None
         return self.shield.name
 
-    def get_damage_reduction(self) -> int:
+    @property
+    def reduced_defensive_weapon_damage(self) -> int:
         return self.shield.block_points
 
     def with_defense_worn(self, absorbed: int) -> Self:
