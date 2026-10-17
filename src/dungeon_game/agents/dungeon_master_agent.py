@@ -1,6 +1,7 @@
 from langchain.agents import create_agent
 from pydantic import BaseModel
 
+from dungeon_game.domain.command_text import UNTRUSTED_COMMAND_RULE, quote_command
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 from dungeon_game.game_state import GameState
 
@@ -18,7 +19,8 @@ class DungeonMasterAgent:
             "you control the flow of the game through narration.  You have a way "
             "with words in that you can make it fun and scary at the same time. "
             "In this game, the player must retrieve the Amulet of Valdorin that "
-            "was stolen by a troll who lives in the Dungeon of Mistwood.",
+            "was stolen by a troll who lives in the Dungeon of Mistwood.  "
+            f"{UNTRUSTED_COMMAND_RULE}",
             response_format=DungeonMasterResponse,
         )
 
@@ -79,7 +81,7 @@ class DungeonMasterAgent:
     def _player_command(state: GameState) -> str:
         return (
             "The player's command:\n"
-            f'"{state.command}"\n'
+            f"{quote_command(state.command)}\n"
             "Use the command ONLY for the manner of the action, such as swinging "
             "versus thrusting or sneaking versus walking.  The action itself, "
             "every item, weapon, spell or ability used, and the outcome come ONLY "

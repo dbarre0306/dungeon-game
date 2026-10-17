@@ -1,6 +1,7 @@
 from typing import Any
 
 from dungeon_game.agents.router_agent import RouterAgent
+from dungeon_game.domain.command_text import quote_command
 from dungeon_game.domain.intent import IntentType, ShopItemName
 from dungeon_game.game_state import GameState
 
@@ -60,7 +61,7 @@ def _build_prompt(
     intents: list[IntentType] = [*supported_intents, "multiple", "unknown"]
     categories = "\n".join(_CATEGORIES[intent] for intent in intents)
     prompt = (
-        f"Player command: {command}\n"
+        f"Player command: {quote_command(command)}\n"
         "\n"
         "Categorize the player's command as exactly one of these "
         "categories:\n"

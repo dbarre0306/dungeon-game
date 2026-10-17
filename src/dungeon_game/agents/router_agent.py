@@ -6,6 +6,7 @@ from langchain.agents.structured_output import StructuredOutputError
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
+from dungeon_game.domain.command_text import UNTRUSTED_COMMAND_RULE
 from dungeon_game.domain.intent import (
     ChestSide,
     ExploreDirection,
@@ -106,7 +107,10 @@ class RouterAgent:
     def __init__(self, model):
         self._agent = create_agent(
             model=model,
-            system_prompt="You are great at categorizing commands from the player.",
+            system_prompt=(
+                "You are great at categorizing commands from the player.  "
+                f"{UNTRUSTED_COMMAND_RULE}"
+            ),
             response_format=RouterState,
             middleware=[retry_on_invalid_router_output],
         )
