@@ -55,7 +55,8 @@ class ShopRoom(DungeonRoom):
 
     def get_room_facts(self) -> list[str]:
         return [
-            "There is an old merchant behind a two-wheeled wooden cart, and he is selling:",
+            "There is an old merchant behind a two-wheeled wooden cart, "
+            "and he is selling: ",
             *self.merchant.describe_inventory(),
             "The player does not have to buy anything.",
             "The player can only buy one item at a time.",

@@ -106,7 +106,8 @@ class Warrior(Player):
         print(f"Potions: {self.potions.quantity}")
         print(f"Sword: {self.sword.name}")
         print(
-            f"Shield: {self.shield.name} ({self.shield.condition}:{self.shield.durability})"
+            f"Shield: {self.shield.name} "
+            f"({self.shield.condition}:{self.shield.durability})"
         )
 
 
