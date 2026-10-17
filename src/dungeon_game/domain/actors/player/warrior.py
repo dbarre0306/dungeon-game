@@ -10,6 +10,7 @@ from dungeon_game.domain.actors.player.inventory_items import (
     Sword,
 )
 from dungeon_game.domain.actors.player.player import Player
+from dungeon_game.domain.intent import IntentType
 
 
 class Potions(BaseModel):
@@ -32,6 +33,16 @@ class Warrior(Player):
             f"The player's {self.shield.name} is {self.shield.state}.",
             f"The player has {self.gold_coins} gold coins.",
             f"The player has {self.potions.quantity} potion bottles.",
+        ]
+
+    def get_supported_intents(self) -> list[IntentType]:
+        return [
+            "explore",
+            "look",
+            "attack",
+            "shop",
+            "drink_potion",
+            "open_chest",
         ]
 
     def with_purchased_item(

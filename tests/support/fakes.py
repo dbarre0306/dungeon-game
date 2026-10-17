@@ -3,6 +3,7 @@ and the dice. Each is duck-typed to the one method the game calls on it."""
 
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterResponse
 from dungeon_game.agents.router_agent import RouterState
+from dungeon_game.domain.intent import IntentType
 from dungeon_game.game_state import GameState
 
 _COMMAND_PREFIX = "Player command: "
@@ -13,8 +14,10 @@ class FakeRouterAgent:
 
     def __init__(self, routes: dict[str, RouterState]):
         self._routes = routes
+        self.prompts: list[str] = []
 
-    def invoke(self, msg: str) -> RouterState:
+    def invoke(self, msg: str, supported_intents: list[IntentType]) -> RouterState:
+        self.prompts.append(msg)
         command = msg.splitlines()[0].removeprefix(_COMMAND_PREFIX)
         if command not in self._routes:
             raise AssertionError(f"No route scripted for command: {command!r}")

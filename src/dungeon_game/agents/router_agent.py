@@ -47,6 +47,7 @@ class RouterState(BaseModel):
 
 
 _MAX_ATTEMPTS = 3
+_ALWAYS_ALLOWED: tuple[IntentType, ...] = ("multiple", "unknown")
 _DIRECTION_HINT = (
     "When the intent is explore, explore_direction must be one of: "
     "left, right, forward, backward. If you cannot tell which direction "
@@ -110,12 +111,18 @@ class RouterAgent:
             middleware=[retry_on_invalid_router_output],
         )
 
-    def invoke(self, msg: str) -> RouterState:
+    def invoke(self, msg: str, supported_intents: list[IntentType]) -> RouterState:
+        """Route `msg`. An intent outside `supported_intents`, apart from
+        `multiple` and `unknown`, is something the player cannot do, so it is
+        downgraded to unknown along with any fields that came with it."""
         try:
             result = self._agent.invoke(
                 {"messages": [{"role": "user", "content": msg}]}
             )
-            return result["structured_response"]
+            router_state = result["structured_response"]
+            if router_state.intent not in (*supported_intents, *_ALWAYS_ALLOWED):
+                return RouterState(intent="unknown")
+            return router_state
         except StructuredOutputError:
             # The model occasionally returns malformed structured output
             # (e.g. for typos or ambiguous commands). Treat it as unknown

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from dungeon_game.domain.actors.player.inventory_items import InventoryItem
 from dungeon_game.domain.actors.player.player import Player
+from dungeon_game.domain.intent import IntentType
 
 
 class FireBoltSpell(BaseModel):
@@ -32,6 +33,9 @@ class Mage(Player):
             "The player is a mage, a magical wizard.",
             f"The player has a {self.staff.name}.",
         ]
+
+    def get_supported_intents(self) -> list[IntentType]:
+        return ["explore", "look", "attack", "shop", "open_chest"]
 
     def get_weapon(self) -> str:
         return self.staff.name
