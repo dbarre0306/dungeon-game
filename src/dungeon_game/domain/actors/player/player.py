@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Self
-
-from pydantic import BaseModel
+from typing import Self
 
 from dungeon_game.domain.actors.combatant import Combatant
 from dungeon_game.domain.intent import IntentType, ShopItemName
-
-if TYPE_CHECKING:
-    from dungeon_game.domain.actors.player.warrior import Shield, Sword
 
 
 class Player(Combatant):

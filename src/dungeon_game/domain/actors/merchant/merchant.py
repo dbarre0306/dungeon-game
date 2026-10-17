@@ -11,7 +11,6 @@ from dungeon_game.domain.actors.player.inventory_items import (
     STEEL_SWORD,
     InventoryItem,
 )
-from dungeon_game.domain.actors.player.warrior import Shield, Sword
 from dungeon_game.domain.intent import ShopItemName
 
 
