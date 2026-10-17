@@ -25,7 +25,7 @@ class Shield(BaseModel):
 
     type: Literal["shield"] = "shield"
     name: str
-    defensive_health_points: int
+    defensive_health_points: int = Field(gt=1)
     max_durability: int
     durability: int
 
@@ -52,7 +52,7 @@ class Shield(BaseModel):
         if self.condition == "good":
             return self.defensive_health_points
         if self.condition == "damaged":
-            return self.defensive_health_points // 2
+            return max(1, self.defensive_health_points // 2)
         return 0
 
     def with_worn(self, absorbed: int) -> "Shield":
