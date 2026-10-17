@@ -48,11 +48,12 @@ class Shield(BaseModel):
 
     @property
     def block_points(self) -> int:
-        """The damage this shield absorbs from a blow in its current condition."""
+        """The damage this shield absorbs from a blow in its current condition,
+        never more than the durability it has left to spend."""
         if self.condition == "good":
-            return self.defensive_health_points
+            return min(self.defensive_health_points, self.durability)
         if self.condition == "damaged":
-            return max(1, self.defensive_health_points // 2)
+            return min(max(1, self.defensive_health_points // 2), self.durability)
         return 0
 
     def with_worn(self, absorbed: int) -> "Shield":

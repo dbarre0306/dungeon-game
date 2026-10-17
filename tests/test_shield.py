@@ -38,6 +38,25 @@ def test_damaged_shield_with_smallest_allowed_points_still_blocks_one():
     assert shield.block_points == 1
 
 
+def test_damaged_shield_blocks_no_more_than_its_remaining_durability():
+    shield = make_shield(4, durability=1)
+
+    assert shield.condition == "damaged"
+    assert shield.block_points == 1
+
+
+def test_good_shield_blocks_no_more_than_its_remaining_durability():
+    shield = Shield(
+        name="test shield",
+        defensive_health_points=4,
+        max_durability=4,
+        durability=3,
+    )
+
+    assert shield.condition == "good"
+    assert shield.block_points == 3
+
+
 def test_broken_shield_blocks_nothing():
     shield = make_shield(4, durability=0)
 
