@@ -15,7 +15,8 @@ class DrinkPotionNode:
         if is_valid:
             return self._drink_potion(state)
         else:
-            return {"narration": [err_msg]}
+            response = self._dungeon_master_agent.invoke(state, err_msg)
+            return {"narration": [response.narration]}
 
     def _drink_potion(self, state: GameState) -> dict[str, Any]:
         player = state.player
