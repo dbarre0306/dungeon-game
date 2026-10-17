@@ -25,7 +25,9 @@ class OpenChestNode:
         room = state.get_current_room()
         is_valid, msg = room.is_valid_intent(state.intent)
         if not is_valid:
-            response = self._dungeon_master_agent.invoke(state, msg)
+            response = self._dungeon_master_agent.invoke(
+                state, msg, include_command=True
+            )
             return {"narration": [response.narration]}
         if not isinstance(room, TreasureRoom):
             raise TypeError("The room must be a TreasureRoom")
@@ -42,6 +44,7 @@ class OpenChestNode:
             "chest and a serpent lunged out of it. Do NOT say that the serpent bit "
             "or wounded the player. You must tell the player that they must "
             "kill the serpent.",
+            include_command=True,
         ).narration
         return self._update(state, player, narration)
 
@@ -54,6 +57,7 @@ class OpenChestNode:
             self._opened_state(state, player),
             f"The player (a {player.type}) opened the {state.intent.chest_side} "
             f"chest and collected {gold} gold coins.",
+            include_command=True,
         ).narration
         return self._update(state, player, narration)
 

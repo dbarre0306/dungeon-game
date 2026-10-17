@@ -15,7 +15,9 @@ class DrinkPotionNode:
         if is_valid:
             return self._drink_potion(state)
         else:
-            response = self._dungeon_master_agent.invoke(state, err_msg)
+            response = self._dungeon_master_agent.invoke(
+                state, err_msg, include_command=True
+            )
             return {"narration": [response.narration]}
 
     def _drink_potion(self, state: GameState) -> dict[str, Any]:
@@ -97,4 +99,6 @@ class DrinkPotionNode:
         }
 
     def _get_narration(self, state: GameState, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(state, msg).narration
+        return self._dungeon_master_agent.invoke(
+            state, msg, include_command=True
+        ).narration

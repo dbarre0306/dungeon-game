@@ -112,7 +112,7 @@ class GameGraph:
             "Tell the player that what they want to do "
             "doesn't make any sense given the room they are in."
         )
-        response = self._dungeon_master_agent.invoke(state, msg)
+        response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
         return {"narration": [response.narration]}
 
     def _next_action(self, state: GameState) -> str:

@@ -23,12 +23,14 @@ class PlayerAttackNode(AttackNode):
         return _PlayerStrike(state, room, self._dungeon_master_agent, self._dice)
 
     def _narrate(self, msg: str, state: GameState) -> dict[str, Any]:
-        response = self._dungeon_master_agent.invoke(state, msg)
+        response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
         return {"narration": [response.narration]}
 
 
 class _PlayerStrike(_Strike[Enemy]):
     """One player attack against the enemy."""
+
+    _include_command = True
 
     @property
     def _attacker(self) -> Player:

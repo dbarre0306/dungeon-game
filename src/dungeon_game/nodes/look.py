@@ -48,4 +48,6 @@ class LookNode:
             "Keep it to one sentence. "
             "BE BORING!"
         )
-        return self._dungeon_master_agent.invoke(state, msg).narration
+        return self._dungeon_master_agent.invoke(
+            state, msg, include_command=True
+        ).narration

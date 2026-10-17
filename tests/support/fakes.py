@@ -37,13 +37,15 @@ class FakeDungeonMaster:
 
     def __init__(self):
         self.calls: list[tuple[GameState, str]] = []
+        self.included_command: list[bool] = []
 
     @property
     def messages(self) -> list[str]:
         return [msg for _, msg in self.calls]
 
-    def invoke(self, state, msg) -> DungeonMasterResponse:
+    def invoke(self, state, msg, include_command=False) -> DungeonMasterResponse:
         self.calls.append((state, msg))
+        self.included_command.append(include_command)
         return DungeonMasterResponse(narration=f"[DM] {msg}")
 
 

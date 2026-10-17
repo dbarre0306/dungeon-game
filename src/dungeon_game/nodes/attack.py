@@ -68,6 +68,9 @@ class _Strike[Defender: Combatant](ABC):
         self._dungeon_master_agent = dungeon_master_agent
         self._dice = dice
 
+    # Only the player's own strike is narrated using their command
+    _include_command = False
+
     def resolve(self) -> dict[str, Any]:
         if not self._is_defender_hit():
             return self._on_defender_missed()
@@ -110,4 +113,6 @@ class _Strike[Defender: Combatant](ABC):
     def _on_defender_dead(self, defender: Defender) -> dict[str, Any]: ...
 
     def _narrate(self, msg: str) -> str:
-        return self._dungeon_master_agent.invoke(self._state, msg).narration
+        return self._dungeon_master_agent.invoke(
+            self._state, msg, include_command=self._include_command
+        ).narration

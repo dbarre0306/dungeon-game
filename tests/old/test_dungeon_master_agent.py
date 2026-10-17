@@ -47,3 +47,16 @@ def test_prompt_includes_the_players_current_facts_on_every_call():
     assert "The player has a bronze sword." in fake.prompts[0]
     assert "The player has a steel sword." in fake.prompts[1]
     assert "bronze" not in fake.prompts[1]
+
+
+def test_prompt_includes_the_command_only_when_asked():
+    agent, fake = _agent_with_fake()
+    player = SimpleNamespace(get_facts=lambda: "The player has a sword.")
+    state = _state(player)
+    state.command = "thrust my sword at the rat"
+
+    agent.invoke(state, "first", include_command=True)
+    agent.invoke(state, "second")
+
+    assert "thrust my sword at the rat" in fake.prompts[0]
+    assert "thrust my sword at the rat" not in fake.prompts[1]

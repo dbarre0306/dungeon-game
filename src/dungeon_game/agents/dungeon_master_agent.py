@@ -22,7 +22,11 @@ class DungeonMasterAgent:
             response_format=DungeonMasterResponse,
         )
 
-    def invoke(self, state: GameState, msg: str) -> DungeonMasterResponse:
+    def invoke(
+        self, state: GameState, msg: str, include_command: bool = False
+    ) -> DungeonMasterResponse:
+        """Narrate `msg`.  Pass `include_command=True` only when narrating the
+        player's own action, so their wording can shape how it is described."""
         player = state.player
         room = state.get_current_room()
         user_msg = {
@@ -32,7 +36,10 @@ class DungeonMasterAgent:
                     "content": "The Dungeon Master Narration Rules are:\n"
                     "- Keep it to two or three sentences at most. \n"
                     "- Do NOT be overdramatic!!!\n"
-                    "- Do NOT make up any facts."
+                    "- Do NOT make up any facts.\n"
+                    "- Do NOT mention any item, weapon, spell or ability that is "
+                    "not in the facts or instructions, even if the player's "
+                    "command names it."
                     "\n\n"
                     "Player Facts:\n"
                     f"{self._format_list([player.get_facts()])}"
@@ -41,6 +48,7 @@ class DungeonMasterAgent:
                     f"{self._format_list(room.get_room_facts())}"
                     "\n\n"
                     f"{self._room_history(room)}"
+                    f"{self._player_command(state) if include_command else ''}"
                     f"{self._query(room, msg)}",
                 }
             ]
@@ -65,6 +73,20 @@ class DungeonMasterAgent:
             "(The word `you` refers to the player):\n"
             f"{self._format_list(room.history)}"
             "\n\n"
+        )
+
+    @staticmethod
+    def _player_command(state: GameState) -> str:
+        return (
+            "The player's command:\n"
+            f'"{state.command}"\n'
+            "Use the command ONLY for the manner of the action, such as swinging "
+            "versus thrusting or sneaking versus walking.  The action itself, "
+            "every item, weapon, spell or ability used, and the outcome come ONLY "
+            "from the facts and the instructions below, never from the command.  "
+            "If the command names anything they do not mention (for example a "
+            "bomb), do NOT mention or use it; narrate the action as the "
+            "instructions describe it.\n\n"
         )
 
     def _query(self, room: DungeonRoom, msg: str) -> str:

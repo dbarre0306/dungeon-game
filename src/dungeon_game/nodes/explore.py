@@ -35,7 +35,9 @@ class ExploreNode:
                 "dungeon": new_dungeon,
             }
         else:
-            response = self._dungeon_master_agent.invoke(state, msg)
+            response = self._dungeon_master_agent.invoke(
+                state, msg, include_command=True
+            )
             return {"narration": [response.narration]}
 
     def _get_room_description(self, state: GameState) -> str:
@@ -49,4 +51,6 @@ class ExploreNode:
             "not listed. "
             "If the facts or room history don't mention something, leave it out."
         )
-        return self._dungeon_master_agent.invoke(state, msg).narration
+        return self._dungeon_master_agent.invoke(
+            state, msg, include_command=True
+        ).narration

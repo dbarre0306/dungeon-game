@@ -77,6 +77,7 @@ class ShopNode:
             f"The player bought {quantity} "
             f"{merchant.name_of(item_name)} from the merchant for "
             f"{total_price} gold coins.",
+            include_command=True,
         ).narration
         return {
             "player": sold_state.player,
@@ -85,5 +86,5 @@ class ShopNode:
         }
 
     def _narrate(self, state: GameState, msg: str) -> dict[str, Any]:
-        response = self._dungeon_master_agent.invoke(state, msg)
+        response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
         return {"narration": [response.narration]}
