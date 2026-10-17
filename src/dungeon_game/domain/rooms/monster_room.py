@@ -49,7 +49,7 @@ class MonsterRoom(CombatRoom):
 
     def get_room_facts(self) -> list[str]:
         return [
-            f"The {self.enemy.name}, armed with {self.enemy.get_weapon()}, "
+            f"The {self.enemy.name}, armed with {self.enemy.offensive_weapon}, "
             "is in this room and is itching for a fight.",
             "The player cannot go back the way they came.",
             "There is only one exit, doorway, or passageway to the next room.",

@@ -5,7 +5,8 @@ class Enemy(Combatant):
     name: str
     weapon: str
 
-    def get_weapon(self) -> str:
+    @property
+    def offensive_weapon(self) -> str:
         return self.weapon
 
     def get_extra_damage(self) -> int:

@@ -124,7 +124,7 @@ def test_the_shield_is_damaged_then_broken_and_stops_blocking():
     game.say("attack")
     state = game.say("attack")
     assert state.player.shield.condition == "broken"
-    assert state.player.get_defense() is None
+    assert state.player.defensive_weapon is None
     assert "bronze shield is now broken" in game.dm.messages[-1]
 
     health_before = state.player.health_points

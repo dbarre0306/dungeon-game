@@ -92,7 +92,7 @@ def test_the_warrior_buys_a_steel_sword_for_ten_gold():
     state = game.say("buy the sword")
 
     assert state.player.gold_coins == 0
-    assert state.player.get_weapon() == "steel sword"
+    assert state.player.offensive_weapon == "steel sword"
     assert state.player.get_extra_damage() == 2
     assert in_stock(state, "sword") == 0
 
@@ -103,7 +103,7 @@ def test_the_warrior_buys_a_steel_shield_for_ten_gold():
     state = game.say("buy the shield")
 
     assert state.player.gold_coins == 0
-    assert state.player.get_defense() == "steel shield"
+    assert state.player.defensive_weapon == "steel shield"
     assert state.player.get_damage_reduction() == 4
     assert in_stock(state, "shield") == 0
 
@@ -124,7 +124,7 @@ def test_an_upgrade_cannot_be_bought_without_enough_gold():
     state = game.say("buy the sword")
 
     assert state.player.gold_coins == 9
-    assert state.player.get_weapon() == "bronze sword"
+    assert state.player.offensive_weapon == "bronze sword"
     assert in_stock(state, "sword") == 1
     assert "cannot afford" in game.dm.messages[-1]
 
@@ -189,7 +189,7 @@ def test_several_of_a_single_item_cannot_be_bought():
     state = game.say("buy 2 swords")
 
     assert state.player.gold_coins == 100
-    assert state.player.get_weapon() == "bronze sword"
+    assert state.player.offensive_weapon == "bronze sword"
     assert in_stock(state, "sword") == 1
     assert "only has 1 of steel sword left" in game.dm.messages[-1]
 

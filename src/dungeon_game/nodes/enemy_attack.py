@@ -40,7 +40,7 @@ class _EnemyStrike(_Strike[Player]):
         )
 
     def _on_defender_unharmed(self, defender: Player) -> dict[str, Any]:
-        defense = self._player.get_defense()
+        defense = self._player.defensive_weapon
         absorbed_by = (
             f"the player's {defense} absorbed the blow and " if defense else ""
         )
@@ -54,7 +54,7 @@ class _EnemyStrike(_Strike[Player]):
         )
 
     def _on_defender_wounded(self, defender: Player) -> dict[str, Any]:
-        defense = self._player.get_defense()
+        defense = self._player.defensive_weapon
         partly_absorbed = (
             f"The player's {defense} absorbed part of the blow, "
             "but the rest got through. "

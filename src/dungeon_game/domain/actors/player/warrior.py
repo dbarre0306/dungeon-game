@@ -100,13 +100,15 @@ class Warrior(Player):
             update={"shield": shield, "gold_coins": self.gold_coins - price}
         )
 
-    def get_weapon(self) -> str:
+    @property
+    def offensive_weapon(self) -> str:
         return self.sword.name
 
     def get_extra_damage(self) -> int:
         return self.sword.additional_damage_points
 
-    def get_defense(self) -> str | None:
+    @property
+    def defensive_weapon(self) -> str | None:
         if self.shield.condition == "broken":
             return None
         return self.shield.name
