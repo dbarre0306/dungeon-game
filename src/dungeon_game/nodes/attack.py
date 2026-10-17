@@ -93,7 +93,7 @@ class _Strike[Defender: Combatant](ABC):
         return self._dice.roll(20) + self._attacker.hit_bonus >= HIT_TARGET
 
     def _raw_damage_points(self) -> int:
-        return self._dice.roll(6) + self._attacker.get_extra_damage()
+        return self._dice.roll(6) + self._attacker.additional_offensive_weapon_damage
 
     @abstractmethod
     def _on_defender_missed(self) -> dict[str, Any]: ...

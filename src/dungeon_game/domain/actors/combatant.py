@@ -23,8 +23,9 @@ class Combatant(BaseModel, ABC):
         Usually the weapon itself; a spellcaster's attack is the spell."""
         return self.offensive_weapon
 
+    @property
     @abstractmethod
-    def get_extra_damage(self) -> int: ...
+    def additional_offensive_weapon_damage(self) -> int: ...
 
     @property
     def defensive_weapon(self) -> str | None:

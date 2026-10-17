@@ -104,7 +104,8 @@ class Warrior(Player):
     def offensive_weapon(self) -> str:
         return self.sword.name
 
-    def get_extra_damage(self) -> int:
+    @property
+    def additional_offensive_weapon_damage(self) -> int:
         return self.sword.additional_damage_points
 
     @property

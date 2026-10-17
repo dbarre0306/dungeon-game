@@ -9,5 +9,6 @@ class Enemy(Combatant):
     def offensive_weapon(self) -> str:
         return self.weapon
 
-    def get_extra_damage(self) -> int:
+    @property
+    def additional_offensive_weapon_damage(self) -> int:
         return 0

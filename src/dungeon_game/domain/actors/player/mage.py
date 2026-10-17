@@ -60,7 +60,8 @@ class Mage(Player):
     def offensive_weapon_payload(self) -> str:
         return self.staff.fire_bolt_spell.name
 
-    def get_extra_damage(self) -> int:
+    @property
+    def additional_offensive_weapon_damage(self) -> int:
         return self.staff.fire_bolt_spell.additional_damage_points
 
     def with_purchased_item(
