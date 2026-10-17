@@ -54,10 +54,18 @@ class _EnemyStrike(_Strike[Player]):
         )
 
     def _on_defender_wounded(self, defender: Player) -> dict[str, Any]:
+        defense = self._player.get_defense()
+        partly_absorbed = (
+            f"The player's {defense} absorbed part of the blow, "
+            "but the rest got through. "
+            if defense
+            else ""
+        )
         return self._update(
             defender,
             f"The {self._enemy.name} attacked the player (a {defender.type}) "
             "and wounded them. "
+            f"{partly_absorbed}"
             f"You must describe how the {self._enemy.name} attacked the player "
             "and how the player was wounded. "
             f"{self._defense_change(defender)}"

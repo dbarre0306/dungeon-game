@@ -54,6 +54,30 @@ def test_a_hit_absorbed_by_the_shield_is_not_narrated_as_a_wound(damage_roll):
     assert "Do NOT say the player was wounded" in goblin_strike
 
 
+def test_a_wound_the_shield_only_partly_absorbed_mentions_the_shield():
+    game = fight(5, 12, 5)  # the player misses, the goblin hits for 5: shield blocks 2
+
+    state = game.say("attack")
+
+    assert state.player.health_points == 17
+    goblin_strike = game.dm.messages[-1]
+    assert "bronze shield absorbed part of the blow" in goblin_strike
+    assert "the rest got through" in goblin_strike
+
+
+def test_a_wound_with_a_broken_shield_does_not_mention_the_shield():
+    game = fight(5, 12, 5)
+    player = game.state.player
+    broken = player.shield.model_copy(update={"durability": 0})  # blocks nothing
+    game.state = game.state.model_copy(
+        update={"player": player.model_copy(update={"shield": broken})}
+    )
+
+    game.say("attack")
+
+    assert "absorbed" not in game.dm.messages[-1]
+
+
 def test_the_shield_loses_a_durability_point_per_damage_point_it_absorbs():
     game = fight(5, 12, 5)  # the player misses, the goblin hits for 5: shield blocks 2
 
