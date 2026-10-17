@@ -56,7 +56,8 @@ class Mage(Player):
     def offensive_weapon(self) -> str:
         return self.staff.name
 
-    def get_attack(self) -> str:
+    @property
+    def offensive_weapon_payload(self) -> str:
         return self.staff.fire_bolt_spell.name
 
     def get_extra_damage(self) -> int:

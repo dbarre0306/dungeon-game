@@ -27,13 +27,13 @@ def _mage() -> Mage:
 def test_warrior_attacks_with_its_sword():
     warrior = create_default_warrior()
     assert warrior.offensive_weapon == "bronze sword"
-    assert warrior.get_attack() == "bronze sword"
+    assert warrior.offensive_weapon_payload == "bronze sword"
 
 
 def test_mage_carries_a_staff_but_attacks_with_firebolt():
     mage = _mage()
     assert mage.offensive_weapon == "wooden staff"
-    assert mage.get_attack() == "firebolt"
+    assert mage.offensive_weapon_payload == "firebolt"
 
 
 def test_enemy_attacks_with_its_weapon():
@@ -45,7 +45,7 @@ def test_enemy_attacks_with_its_weapon():
         hit_bonus=0,
     )
     assert enemy.offensive_weapon == "battle ax"
-    assert enemy.get_attack() == "battle ax"
+    assert enemy.offensive_weapon_payload == "battle ax"
 
 
 def test_warrior_facts_name_the_current_equipment():

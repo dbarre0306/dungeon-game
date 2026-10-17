@@ -17,7 +17,8 @@ class Combatant(BaseModel, ABC):
     def offensive_weapon(self) -> str:
         """The item this combatant carries, e.g. a sword or a staff."""
 
-    def get_attack(self) -> str:
+    @property
+    def offensive_weapon_payload(self) -> str:
         """What actually does the damage, as it should appear in narration.
         Usually the weapon itself; a spellcaster's attack is the spell."""
         return self.offensive_weapon

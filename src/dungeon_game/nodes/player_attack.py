@@ -42,7 +42,7 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}, but missed. "
+            f"with a {self._player.offensive_weapon_payload}, but missed. "
             "Ignore the gold coins; stay focused on the battle. "
             "Do NOT say anything about the doorway out.",
         )
@@ -51,7 +51,8 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()} and hit, but the blow did no "
+            f"with a {self._player.offensive_weapon_payload} and hit, "
+            "but the blow did no "
             f"damage. Do NOT say the {self._enemy.name} was wounded. "
             "Ignore the gold coins; stay focused on the battle. "
             "Do NOT say anything about the doorway out.",
@@ -61,7 +62,8 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             True,
             f"The player (a {self._player.type}) attacked the {self._enemy.name} "
-            f"with a {self._player.get_attack()}.  The {self._enemy.name} was wounded. "
+            f"with a {self._player.offensive_weapon_payload}.  "
+            f"The {self._enemy.name} was wounded. "
             f"You must describe how the player attacked the {self._enemy.name} "
             f"and how the {self._enemy.name} was wounded. "
             "Ignore the gold coins; stay focused on the battle. "
@@ -80,7 +82,7 @@ class _PlayerStrike(_Strike[Enemy]):
         return self._update(
             False,
             f"The player (a {self._player.type}) has killed the {self._enemy.name} "
-            f"with a {self._player.get_attack()}.  "
+            f"with a {self._player.offensive_weapon_payload}.  "
             f"You must describe how the player attacked the {self._enemy.name}. "
             "Stick to what it would feel like after a brutal battle. "
             f"{looted}"
