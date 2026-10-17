@@ -5,13 +5,8 @@ from pydantic import BaseModel
 from dungeon_game.domain.actors.merchant.merchandise import (
     Merchandise,
 )
-from dungeon_game.domain.actors.player.inventory_items import (
-    POTION,
-    STEEL_SHIELD,
-    STEEL_SWORD,
-    InventoryItem,
-)
 from dungeon_game.domain.intent import ShopItemName
+from dungeon_game.domain.items.inventory_items import InventoryItem
 
 
 class Merchant(BaseModel):
@@ -85,25 +80,3 @@ class Merchant(BaseModel):
         if len(lines) == 0:
             lines.append("The merchant is out of items to sell.")
         return lines
-
-
-def create_merchant_for_warrior() -> Merchant:
-    return Merchant(
-        merchandise=[
-            Merchandise(type="potion", name="potion", price=5, quantity=3, item=POTION),
-            Merchandise(
-                type="sword",
-                name="steel sword",
-                price=10,
-                quantity=1,
-                item=STEEL_SWORD,
-            ),
-            Merchandise(
-                type="shield",
-                name="steel shield",
-                price=10,
-                quantity=1,
-                item=STEEL_SHIELD,
-            ),
-        ]
-    )

@@ -2,7 +2,8 @@
 depend on what `DungeonFactory` happens to randomize."""
 
 from dungeon_game.domain.actors.enemy import Enemy
-from dungeon_game.domain.actors.merchant import create_merchant_for_warrior
+from dungeon_game.domain.actors.merchant import Merchant
+from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
 from dungeon_game.domain.rooms.cave_chamber import CaveChamber
 from dungeon_game.domain.rooms.cave_entrance import CaveEntrance
@@ -12,6 +13,10 @@ from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
+
+
+def _warrior_merchant() -> Merchant:
+    return Merchant(merchandise=create_default_warrior().get_supported_merchandise())
 
 
 def goblin(health_points: int = 10) -> Enemy:
@@ -32,7 +37,7 @@ def full_dungeon() -> Dungeon:
             CaveEntrance(),
             CaveChamber(),
             MonsterRoom(enemy=goblin()),
-            ShopRoom(merchant=create_merchant_for_warrior()),
+            ShopRoom(merchant=_warrior_merchant()),
             ThroneRoom(),
         ]
     )
@@ -76,7 +81,10 @@ def treasure_dungeon(
 def shop_dungeon() -> Dungeon:
     """A shop room, then a chamber."""
     return Dungeon(
-        rooms=[ShopRoom(merchant=create_merchant_for_warrior()), CaveChamber()]
+        rooms=[
+            ShopRoom(merchant=_warrior_merchant()),
+            CaveChamber(),
+        ]
     )
 
 

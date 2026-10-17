@@ -2,9 +2,13 @@ from typing import Literal, Self
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.actors.player.inventory_items import InventoryItem
+from dungeon_game.domain.actors.merchant.merchandise import Merchandise
 from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.intent import IntentType
+from dungeon_game.domain.items.inventory_items import (
+    ELDER_STAFF,
+    InventoryItem,
+)
 
 
 class FireBoltSpell(BaseModel):
@@ -36,6 +40,17 @@ class Mage(Player):
 
     def get_supported_intents(self) -> list[IntentType]:
         return ["explore", "look", "attack", "shop", "open_chest"]
+
+    def get_supported_merchandise(self) -> list[Merchandise]:
+        return [
+            Merchandise(
+                type="elder_staff",
+                name="elder staff",
+                price=10,
+                quantity=1,
+                item=ELDER_STAFF,
+            )
+        ]
 
     def get_weapon(self) -> str:
         return self.staff.name

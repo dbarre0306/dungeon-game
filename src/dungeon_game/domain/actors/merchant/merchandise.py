@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from dungeon_game.domain.actors.player.inventory_items import InventoryItem
 from dungeon_game.domain.intent import ShopItemName
+from dungeon_game.domain.items.inventory_items import InventoryItem
 
 
 class Merchandise(BaseModel):

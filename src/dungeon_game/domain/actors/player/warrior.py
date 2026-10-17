@@ -2,15 +2,19 @@ from typing import Literal, Self, cast
 
 from pydantic import BaseModel
 
-from dungeon_game.domain.actors.player.inventory_items import (
+from dungeon_game.domain.actors.merchant.merchandise import Merchandise
+from dungeon_game.domain.actors.player.player import Player
+from dungeon_game.domain.intent import IntentType
+from dungeon_game.domain.items.inventory_items import (
     BRONZE_SHIELD,
     BRONZE_SWORD,
+    POTION,
+    STEEL_SHIELD,
+    STEEL_SWORD,
     InventoryItem,
     Shield,
     Sword,
 )
-from dungeon_game.domain.actors.player.player import Player
-from dungeon_game.domain.intent import IntentType
 
 
 class Potions(BaseModel):
@@ -43,6 +47,25 @@ class Warrior(Player):
             "shop",
             "drink_potion",
             "open_chest",
+        ]
+
+    def get_supported_merchandise(self) -> list[Merchandise]:
+        return [
+            Merchandise(type="potion", name="potion", price=5, quantity=3, item=POTION),
+            Merchandise(
+                type="sword",
+                name="steel sword",
+                price=10,
+                quantity=1,
+                item=STEEL_SWORD,
+            ),
+            Merchandise(
+                type="shield",
+                name="steel shield",
+                price=10,
+                quantity=1,
+                item=STEEL_SHIELD,
+            ),
         ]
 
     def with_purchased_item(

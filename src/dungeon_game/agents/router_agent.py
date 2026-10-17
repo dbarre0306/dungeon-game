@@ -33,7 +33,7 @@ class RouterState(BaseModel):
     shop_item_name: ShopItemName | None = Field(
         default=None,
         description=(
-            "What the player wants to buy: a potion, a sword or a shield. "
+            "What the player wants to buy. "
             "Leave it unset if the player did not say what to buy."
         ),
     )
@@ -111,10 +111,16 @@ class RouterAgent:
             middleware=[retry_on_invalid_router_output],
         )
 
-    def invoke(self, msg: str, supported_intents: list[IntentType]) -> RouterState:
+    def invoke(
+        self,
+        msg: str,
+        supported_intents: list[IntentType],
+        shop_items: list[ShopItemName],
+    ) -> RouterState:
         """Route `msg`. An intent outside `supported_intents`, apart from
         `multiple` and `unknown`, is something the player cannot do, so it is
-        downgraded to unknown along with any fields that came with it."""
+        downgraded to unknown along with any fields that came with it. A
+        shop item outside `shop_items` is cleared, as if none was named."""
         try:
             result = self._agent.invoke(
                 {"messages": [{"role": "user", "content": msg}]}
@@ -122,6 +128,11 @@ class RouterAgent:
             router_state = result["structured_response"]
             if router_state.intent not in (*supported_intents, *_ALWAYS_ALLOWED):
                 return RouterState(intent="unknown")
+            if (
+                router_state.shop_item_name is not None
+                and router_state.shop_item_name not in shop_items
+            ):
+                return router_state.model_copy(update={"shop_item_name": None})
             return router_state
         except StructuredOutputError:
             # The model occasionally returns malformed structured output
