@@ -210,6 +210,17 @@ def test_a_flawless_victory():
     game.dice.assert_exhausted()
 
 
+def test_killing_the_monster_gives_the_player_its_gold_once():
+    game = fight(15, 6, goblin_health_points=5)  # the player kills the goblin
+
+    state = game.say("attack")
+
+    assert state.player.gold_coins == 15  # 10 to start with, plus the room's 5
+    assert state.get_current_room().gold_coins == 0
+    assert "collected the 5 gold coins" in game.dm.messages[-1]
+    game.dice.assert_exhausted()
+
+
 def test_a_close_win_with_a_potion_mid_fight():
     game = fight(
         15, 3, 14, 6,  # goblin 10 -> 7, the goblin hits for 4: player 6 -> 2

@@ -3,6 +3,7 @@ from typing import Any
 from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.combat_room import CombatRoom
+from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.attack import AttackNode, _Strike
 
@@ -69,22 +70,37 @@ class _PlayerStrike(_Strike[Enemy]):
         )
 
     def _on_defender_dead(self, defender: Enemy) -> dict[str, Any]:
+        loot = self._room.gold_coins if isinstance(self._room, MonsterRoom) else 0
+        looted = (
+            f"The player then collected the {loot} gold coins behind the "
+            f"{self._enemy.name}. "
+            if loot
+            else ""
+        )
         return self._update(
             False,
             f"The player (a {self._player.type}) has killed the {self._enemy.name} "
             f"with a {self._player.get_attack()}.  "
             f"You must describe how the player attacked the {self._enemy.name}. "
             "Stick to what it would feel like after a brutal battle. "
+            f"{looted}"
             "Do say something about the doorway out.",
+            gold=loot,
             enemy=defender,
+            **({"gold_coins": 0} if loot else {}),
         )
 
     def _update(
-        self, is_fighting: bool, msg: str, **room_updates: Any
+        self, is_fighting: bool, msg: str, gold: int = 0, **room_updates: Any
     ) -> dict[str, Any]:
         narration = self._narrate(msg)
         return {
-            "player": self._player.model_copy(update={"is_fighting": is_fighting}),
+            "player": self._player.model_copy(
+                update={
+                    "is_fighting": is_fighting,
+                    "gold_coins": self._player.gold_coins + gold,
+                }
+            ),
             "dungeon": self._state.dungeon.with_room_updated(
                 self._player.current_room_index, history=[narration], **room_updates
             ),

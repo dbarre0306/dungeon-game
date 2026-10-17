@@ -53,6 +53,10 @@ class MonsterRoom(CombatRoom):
             "is in this room and is itching for a fight.",
             "The player cannot go back the way they came.",
             "There is only one exit, doorway, or passageway to the next room.",
-            f"There are {_NUMBER_OF_GOLD_COINS} gold coins "
-            f"behind the {self.enemy.name}.",
+            *self._gold_facts(),
         ]
+
+    def _gold_facts(self) -> list[str]:
+        if self.gold_coins == 0:
+            return ["The player has collected the gold coins; none remain here."]
+        return [f"There are {self.gold_coins} gold coins behind the {self.enemy.name}."]
