@@ -3,6 +3,7 @@ from typing import Any
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.command_text import quote_command
 from dungeon_game.domain.intent import IntentType, ShopItemName
+from dungeon_game.domain.rooms.combat_room import CombatRoom
 from dungeon_game.game_state import GameState
 
 _CATEGORIES: dict[IntentType, str] = {
@@ -40,6 +41,19 @@ _SHOP_ITEM_HINTS: dict[ShopItemName, str] = {
 }
 
 
+def _attack_instructions(enemy_name: str | None) -> str:
+    enemy = f"the {enemy_name}" if enemy_name else "the enemy"
+    return (
+        f"- `attack` is striking {enemy} in the room.\n"
+        f"  - Set attack_target to `enemy` if the command attacks {enemy} "
+        "or does not say who to attack, `self` if the player would hurt "
+        "themself, or `other` for anyone or anything else.\n"
+        "  - Set attack_target_name to the name the player gave what they "
+        "attack (e.g. `rat`); leave it unset if they gave none or only said "
+        "`it`, `the beast`, `the monster` or `the enemy`."
+    )
+
+
 def _shop_instructions(shop_items: list[ShopItemName]) -> str:
     names = ", ".join(f"`{item}`" for item in shop_items)
     hints = "\n".join(f"  - {_SHOP_ITEM_HINTS[item]}" for item in shop_items)
@@ -57,6 +71,7 @@ def _build_prompt(
     command: str,
     supported_intents: list[IntentType],
     shop_items: list[ShopItemName],
+    enemy_name: str | None = None,
 ) -> str:
     intents: list[IntentType] = [*supported_intents, "multiple", "unknown"]
     categories = "\n".join(_CATEGORIES[intent] for intent in intents)
@@ -72,6 +87,8 @@ def _build_prompt(
         for intent in supported_intents
         if intent in _FIELD_INSTRUCTIONS
     ]
+    if "attack" in supported_intents:
+        field_instructions.append(_attack_instructions(enemy_name))
     if "shop" in supported_intents:
         field_instructions.append(_shop_instructions(shop_items))
     if field_instructions:
@@ -88,8 +105,15 @@ class RouterNode:
     def execute(self, state: GameState) -> dict[str, Any]:
         supported_intents = state.player.get_supported_intents()
         shop_items = [m.type for m in state.player.get_supported_merchandise()]
-        content = _build_prompt(state.command, supported_intents, shop_items)
-        result = self._router_agent.invoke(content, supported_intents, shop_items)
+        room = state.get_current_room()
+        enemy = room.enemy if isinstance(room, CombatRoom) else None
+        enemy_name = enemy.name if enemy is not None and not enemy.is_dead() else None
+        content = _build_prompt(
+            state.command, supported_intents, shop_items, enemy_name
+        )
+        result = self._router_agent.invoke(
+            content, supported_intents, shop_items, enemy_name
+        )
         return {
             "intent": {
                 "type": result.intent,

@@ -23,6 +23,7 @@ class FakeRouterAgent:
         msg: str,
         supported_intents: list[IntentType],
         shop_items: list[ShopItemName],
+        enemy_name: str | None = None,
     ) -> RouterState:
         self.prompts.append(msg)
         quoted = msg.splitlines()[0].removeprefix(_COMMAND_PREFIX)

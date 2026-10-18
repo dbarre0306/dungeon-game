@@ -13,7 +13,12 @@ from dungeon_game.domain.actors.player.mage import (
 )
 from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.nodes.router import RouterNode
-from tests.support.builders import full_dungeon, new_game_state
+from tests.support.builders import (
+    full_dungeon,
+    goblin,
+    monster_dungeon,
+    new_game_state,
+)
 from tests.support.fakes import FakeRouterAgent
 
 
@@ -90,6 +95,65 @@ def test_unsupported_intent_becomes_unknown_and_drops_its_fields():
     result = agent.invoke("buy potions", ["attack"], ["potion"])
 
     assert result == RouterState(intent="unknown")
+
+
+def test_attacking_oneself_or_something_else_becomes_unknown():
+    for target in ("self", "other"):
+        agent = _agent_returning(RouterState(intent="attack", attack_target=target))
+        result = agent.invoke("attack the rat", ["attack"], [])
+        assert result == RouterState(intent="unknown")
+
+
+def test_attacking_the_enemy_passes_through():
+    agent = _agent_returning(RouterState(intent="attack", attack_target="enemy"))
+    result = agent.invoke("attack the goblin", ["attack"], [])
+    assert result == RouterState(intent="attack", attack_target="enemy")
+
+
+def _attack_named(name: str | None, enemy_name: str = "rat") -> RouterState:
+    agent = _agent_returning(
+        RouterState(intent="attack", attack_target="enemy", attack_target_name=name)
+    )
+    return agent.invoke("attack", ["attack"], [], enemy_name)
+
+
+def test_attacking_a_differently_named_thing_becomes_unknown():
+    assert _attack_named("serpent") == RouterState(intent="unknown")
+
+
+def test_attacking_the_enemy_by_name_passes_through():
+    assert _attack_named("Rat").intent == "attack"
+
+
+def test_a_name_that_partly_matches_the_enemy_passes_through():
+    assert _attack_named("orc", "orc chieftain").intent == "attack"
+    assert _attack_named("giant rat", "rat").intent == "attack"
+
+
+def test_attacking_without_a_name_passes_through():
+    assert _attack_named(None).intent == "attack"
+
+
+def test_a_name_is_not_checked_when_there_is_no_enemy():
+    agent = _agent_returning(
+        RouterState(intent="attack", attack_target="enemy", attack_target_name="rat")
+    )
+    assert agent.invoke("attack rat", ["attack"], []).intent == "attack"
+
+
+def test_prompt_names_the_enemy_in_the_room():
+    fake = FakeRouterAgent({"hit it": RouterState(intent="unknown")})
+    state = new_game_state(
+        create_default_warrior(), monster_dungeon(goblin()), command="hit it"
+    )
+
+    RouterNode(fake).execute(state)  # type: ignore[arg-type]
+
+    assert "striking the goblin" in fake.prompts[0]
+
+
+def test_prompt_does_not_name_an_enemy_outside_a_combat_room():
+    assert "striking the enemy" in _prompt_for(create_default_warrior())
 
 
 def test_warrior_sells_potion_sword_and_shield():

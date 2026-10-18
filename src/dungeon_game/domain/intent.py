@@ -14,6 +14,7 @@ IntentType = Literal[
 ]
 ExploreDirection = Literal["left", "right", "forward", "backward"]
 ChestSide = Literal["left", "right"]
+AttackTarget = Literal["enemy", "self", "other"]
 ShopItemName = Literal["potion", "sword", "shield", "elder_staff"]
 
 

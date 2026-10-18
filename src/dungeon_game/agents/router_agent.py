@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from dungeon_game.domain.command_text import UNTRUSTED_COMMAND_RULE
 from dungeon_game.domain.intent import (
+    AttackTarget,
     ChestSide,
     ExploreDirection,
     IntentType,
@@ -22,6 +23,23 @@ class RouterState(BaseModel):
         description=(
             "Which direction the player wants to move "
             "or if they are just looking around."
+        ),
+    )
+    attack_target: AttackTarget | None = Field(
+        default=None,
+        description=(
+            "Who the player wants to attack: the enemy in the room, "
+            "themself, or anyone or anything else. "
+            "Leave it unset if the player did not say."
+        ),
+    )
+    attack_target_name: str | None = Field(
+        default=None,
+        description=(
+            "The name the player gave the thing they attack, e.g. `rat`. "
+            "Leave it unset if the player gave no name or only referred to the "
+            "enemy generically, such as `it`, `the beast`, `the monster` or "
+            "`the enemy`."
         ),
     )
     chest_side: ChestSide | None = Field(
@@ -63,6 +81,16 @@ def _is_explore_without_direction(response: ModelResponse) -> bool:
         and router_state.intent == "explore"
         and router_state.explore_direction is None
     )
+
+
+def _is_not_attacking_enemy(router_state: RouterState, enemy_name: str | None) -> bool:
+    if router_state.attack_target in ("self", "other"):
+        return True
+    target = router_state.attack_target_name
+    if target is None or enemy_name is None:
+        return False
+    target, enemy_name = target.lower().strip(), enemy_name.lower().strip()
+    return target not in enemy_name and enemy_name not in target
 
 
 @wrap_model_call
@@ -120,10 +148,13 @@ class RouterAgent:
         msg: str,
         supported_intents: list[IntentType],
         shop_items: list[ShopItemName],
+        enemy_name: str | None = None,
     ) -> RouterState:
         """Route `msg`. An intent outside `supported_intents`, apart from
         `multiple` and `unknown`, is something the player cannot do, so it is
-        downgraded to unknown along with any fields that came with it. A
+        downgraded to unknown along with any fields that came with it. So is
+        an attack aimed at the player or at anything but the enemy, including
+        one that names something other than `enemy_name`. A
         shop item outside `shop_items` is cleared, as if none was named."""
         try:
             result = self._agent.invoke(
@@ -131,6 +162,10 @@ class RouterAgent:
             )
             router_state = result["structured_response"]
             if router_state.intent not in (*supported_intents, *_ALWAYS_ALLOWED):
+                return RouterState(intent="unknown")
+            if router_state.intent == "attack" and _is_not_attacking_enemy(
+                router_state, enemy_name
+            ):
                 return RouterState(intent="unknown")
             if (
                 router_state.shop_item_name is not None
