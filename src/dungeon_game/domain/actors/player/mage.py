@@ -7,6 +7,7 @@ from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.intent import IntentType
 from dungeon_game.domain.items.inventory_items import (
     ELDER_STAFF,
+    STAFF,
     InventoryItem,
 )
 
@@ -70,3 +71,15 @@ class Mage(Player):
         """Return a copy that spent `price` gold coins and added purchased item."""
         pass
         # TODO: implement
+
+
+def create_default_mage() -> Player:
+    return Mage(
+        max_health_points=25,
+        health_points=20,
+        is_fighting=False,
+        staff=STAFF,
+        gold_coins=10,
+        hit_bonus=3,
+        current_room_index=0,
+    )
