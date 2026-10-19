@@ -26,7 +26,7 @@ The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms 
 | Trap Room     | A dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.    |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold. |
-| Throne Room   | Final fight: the troll holding the Amulet of Valdorin.                                                      |
+| Throne Room   | Final fight: a 30 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others. |
 
 Exactly 2 of the 3 challenge rooms appear in any given run — the third is simply skipped that time. This keeps every playthrough a little different while guaranteeing the Shop is always reachable, so gold earned earlier always has somewhere to go.
 
@@ -58,6 +58,14 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 - **Limited stock:** the merchant tracks how many of each item are left, and an item that runs out (e.g. the steel sword once bought) can't be bought again.
 - **All or nothing:** if the player asks for more than the merchant has left, or can't afford the total, nothing is bought and the merchant says why.
 - **Leaving:** the player is not required to buy anything. At any point, the player can move forward to the next room.
+
+**Throne Room details.** The final room. A troll twice the player's size sits on a stone throne, a large spiked wooden club in its hand and the Amulet of Valdorin hanging around its neck.
+
+- **The troll:** armed with a large spiked wooden club. 30 HP (tracked internally — the player is not told its HP). It fights using the same logic as the monster room — the same to-hit roll as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies.
+- **The troll hits much harder than other enemies.** Its club deals a bigger damage die than anything else in the dungeon: 1d10 + 2 (placeholder — HP and damage numbers are expected to be tuned later).
+- **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out and nothing else happens.
+- **Winning:** the moment the troll's HP reaches 0, the player wins. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
+- If the player's HP reaches 0 first, the game ends as usual.
 
 ### Playable Roles
 
@@ -96,7 +104,7 @@ Combat is a back-and-forth exchange resolved with two dice rolls per attack: a 2
 ### Winning and Losing
 
 - **Lose:** the player's HP reaches 0 at any point — the game ends immediately with a death narration.
-- **Win:** the player defeats the troll in the Throne Room and reclaims the **Amulet of Valdorin**, ending the run with a victory narration.
+- **Win:** the player defeats the troll in the Throne Room (its HP reaches 0) and reclaims the **Amulet of Valdorin** automatically — the narration tells them they have taken it from the troll's neck. The amulet's power then brings the player back to the kingdom, ending the run with a victory narration.
 
 ### Session Length
 
