@@ -97,7 +97,7 @@ class Mage(Player):
         print(f"Health Points: {self.health_points}")
         print(f"Is Fighting: {self.is_fighting}")
         print(f"Staff: {self.staff.name}")
-        print(f"Healing Spells: {self.healing_casts_left} ")
+        print(f"Healing Spells: {self.healing_casts_left}")
 
 
 def create_default_mage() -> Player:
