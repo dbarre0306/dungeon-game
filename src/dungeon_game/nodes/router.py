@@ -11,8 +11,14 @@ _CATEGORIES: dict[IntentType, str] = {
     "look": "- `look`",
     "attack": "- `attack`",
     "shop": "- `shop`",
-    "drink_potion": "- `drink_potion`",
-    "cast_healing": "- `cast_healing` is casting the healing spell on oneself.",
+    "drink_potion": (
+        "- `drink_potion` is drinking a potion to restore health, including "
+        "commands like `heal myself with a potion`."
+    ),
+    "cast_healing": (
+        "- `cast_healing` is casting the healing spell on oneself to restore "
+        "health, including commands like `heal myself` or `cast healing`."
+    ),
     "open_chest": "- `open_chest`",
     "multiple": "- `multiple`: the command matches more than one category.",
     "unknown": "- `unknown`: the command matches no category.",
