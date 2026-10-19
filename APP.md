@@ -14,9 +14,9 @@ This is a short, text-based dungeon crawler in the style of a choose-your-own-ad
 
 ### The Dungeon
 
-The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. At the Fork, the player can go left or right — this choice is flavor only. Either way, the game randomly picks **2 of 3 possible challenge rooms** (Monster Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Boss Room.
+The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. At the Fork, the player can go left or right — this choice is flavor only. Either way, the game randomly picks **2 of 3 possible challenge rooms** (Monster Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Throne Room.
 
-**Path:** `Cave Entrance → Fork → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Boss Room`
+**Path:** `Cave Entrance → Fork → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Throne Room`
 
 | Room          | What's there                                                                                                |
 | ------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -26,7 +26,7 @@ The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms 
 | Trap Room     | A dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.    |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold. |
-| Boss Room     | Final fight: the troll holding the Amulet of Valdorin.                                                      |
+| Throne Room   | Final fight: the troll holding the Amulet of Valdorin.                                                      |
 
 Exactly 2 of the 3 challenge rooms appear in any given run — the third is simply skipped that time. This keeps every playthrough a little different while guaranteeing the Shop is always reachable, so gold earned earlier always has somewhere to go.
 
@@ -96,11 +96,11 @@ Combat is a back-and-forth exchange resolved with two dice rolls per attack: a 2
 ### Winning and Losing
 
 - **Lose:** the player's HP reaches 0 at any point — the game ends immediately with a death narration.
-- **Win:** the player defeats the troll in the Boss Room and reclaims the **Amulet of Valdorin**, ending the run with a victory narration. Victory also grants 50 gold, found on the troll.
+- **Win:** the player defeats the troll in the Throne Room and reclaims the **Amulet of Valdorin**, ending the run with a victory narration.
 
 ### Session Length
 
-A full playthrough — Cave Entrance through the boss fight — is designed to take roughly **5 to 15 minutes**, short enough to finish in one sitting while still passing through exploration, a random encounter or trap, a shop stop, and a final fight.
+A full playthrough — Cave Entrance through the troll fight — is designed to take roughly **5 to 15 minutes**, short enough to finish in one sitting while still passing through exploration, a random encounter or trap, a shop stop, and a final fight.
 
 ---
 
