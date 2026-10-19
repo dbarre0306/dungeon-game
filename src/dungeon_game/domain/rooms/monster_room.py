@@ -32,6 +32,18 @@ class MonsterRoom(CombatRoom):
                 )
         elif intent.is_attack():
             if self.enemy.is_alive():
+                if intent.is_attack_with_missing_weapon():
+                    return (
+                        False,
+                        (
+                            "Tell the player that they do not have the weapon "
+                            "they named, so no attack happens. Using the player "
+                            "facts, say what they do carry instead and suggest "
+                            "they use it. Do NOT describe them swinging, "
+                            "casting or striking, and do NOT imply they once "
+                            "owned the weapon. Do NOT describe any damage."
+                        ),
+                    )
                 return (True, None)
             return (
                 False,

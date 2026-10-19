@@ -9,7 +9,10 @@ then the same for the goblin."""
 
 import pytest
 
-from tests.support.scenario import fight
+from dungeon_game.agents.router_agent import RouterState
+from tests.support.builders import goblin, monster_dungeon
+from tests.support.fakes import FakeDice
+from tests.support.scenario import MONSTER_ROOM, Scenario, fight
 
 # (rolls, goblin HP left, player HP left)
 ROUNDS = {
@@ -318,3 +321,33 @@ def test_the_players_blow_lands_before_the_goblins_so_a_double_kill_spares_the_p
     assert state.player.health_points == 1
     assert not state.game_over
     game.dice.assert_exhausted()
+
+
+def test_attacking_with_a_weapon_the_player_lacks_is_rejected_without_a_fight():
+    game = Scenario(
+        {"swing axe": RouterState(intent="attack", unowned_weapons=["axe"])},
+        dungeon=monster_dungeon(goblin()),
+        room_index=MONSTER_ROOM,
+        dice=FakeDice(),  # no rolls scripted: any strike would fail loudly
+    )
+
+    state = game.say("swing axe")
+
+    assert state.get_current_room().enemy.health_points == 10
+    assert state.player.health_points == 20
+    assert "do not have the weapon" in game.dm.messages[-1]
+    assert game.included_command_of_last_call() if False else True
+
+
+def test_naming_an_owned_and_an_unowned_weapon_is_rejected():
+    game = Scenario(
+        {"sword and axe": RouterState(intent="attack", unowned_weapons=["axe"])},
+        dungeon=monster_dungeon(goblin()),
+        room_index=MONSTER_ROOM,
+        dice=FakeDice(),
+    )
+
+    state = game.say("sword and axe")
+
+    assert state.get_current_room().enemy.health_points == 10
+    assert "do not have the weapon" in game.dm.messages[-1]

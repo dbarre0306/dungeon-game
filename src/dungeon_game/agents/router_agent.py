@@ -42,6 +42,14 @@ class RouterState(BaseModel):
             "`the enemy`."
         ),
     )
+    unowned_weapons: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Every weapon or spell the player named that the player facts do "
+            "not say the player has, e.g. `knife`. Leave it empty if the "
+            "player named none, or only named ones the player has."
+        ),
+    )
     chest_side: ChestSide | None = Field(
         default=None,
         description=(

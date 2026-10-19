@@ -18,7 +18,12 @@ class Mage(Player):
     def get_facts(self) -> list[str]:
         return [
             "The player is a mage, a magical wizard.",
-            f"The player has a {self.staff.name}.",
+            f"The player has a {self.staff.name} for casting spells.",
+            f"The player can cast a fire bolt spell to attack an enemy.",
+            f"The player has no defensive capabilities against an attack "
+            "by an enemy.enemy.",
+            f"The player can cast a healing spell to restore their health "
+            "points to full strength.",
         ]
 
     def get_supported_intents(self) -> list[IntentType]:

@@ -64,4 +64,4 @@ def test_warrior_facts_name_the_current_equipment():
 
 def test_mage_facts_name_the_staff():
     facts = _mage().get_facts()
-    assert "The player has a wooden staff." in facts
+    assert "The player has a wooden staff for casting spells." in facts

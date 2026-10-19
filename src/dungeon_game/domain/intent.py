@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 IntentType = Literal[
     "explore",
@@ -27,6 +27,7 @@ class Intent(BaseModel):
 
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
+    unowned_weapons: list[str] = Field(default_factory=list)
     chest_side: ChestSide | None = None
     shop_item_name: ShopItemName | None = None
     shop_quantity: int | None = None
@@ -48,6 +49,9 @@ class Intent(BaseModel):
 
     def is_attack(self) -> bool:
         return self.type == "attack"
+
+    def is_attack_with_missing_weapon(self) -> bool:
+        return self.type == "attack" and bool(self.unowned_weapons)
 
     def is_shop(self) -> bool:
         return self.type == "shop"

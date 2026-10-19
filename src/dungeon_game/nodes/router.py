@@ -50,7 +50,10 @@ def _attack_instructions(enemy_name: str | None) -> str:
         "themself, or `other` for anyone or anything else.\n"
         "  - Set attack_target_name to the name the player gave what they "
         "attack (e.g. `rat`); leave it unset if they gave none or only said "
-        "`it`, `the beast`, `the monster` or `the enemy`."
+        "`it`, `the beast`, `the monster` or `the enemy`.\n"
+        "  - Set unowned_weapons to every weapon or spell the command names "
+        "that the player facts do not say the player has (e.g. `knife`); "
+        "leave it empty if there are none."
     )
 
 
@@ -72,12 +75,16 @@ def _build_prompt(
     supported_intents: list[IntentType],
     shop_items: list[ShopItemName],
     enemy_name: str | None = None,
+    player_facts: list[str] | None = None,
 ) -> str:
     intents: list[IntentType] = [*supported_intents, "multiple", "unknown"]
     categories = "\n".join(_CATEGORIES[intent] for intent in intents)
+    facts = "".join(f"- {fact}\n" for fact in player_facts or [])
+    facts_section = f"Player facts:\n{facts}\n" if facts else ""
     prompt = (
         f"Player command: {quote_command(command)}\n"
         "\n"
+        f"{facts_section}"
         "Categorize the player's command as exactly one of these "
         "categories:\n"
         f"{categories}"
@@ -109,7 +116,11 @@ class RouterNode:
         enemy = room.enemy if isinstance(room, CombatRoom) else None
         enemy_name = enemy.name if enemy is not None and not enemy.is_dead() else None
         content = _build_prompt(
-            state.command, supported_intents, shop_items, enemy_name
+            state.command,
+            supported_intents,
+            shop_items,
+            enemy_name,
+            state.player.get_facts(),
         )
         result = self._router_agent.invoke(
             content, supported_intents, shop_items, enemy_name
@@ -118,6 +129,7 @@ class RouterNode:
             "intent": {
                 "type": result.intent,
                 "explore_direction": result.explore_direction,
+                "unowned_weapons": result.unowned_weapons,
                 "chest_side": result.chest_side,
                 "shop_item_name": result.shop_item_name,
                 "shop_quantity": result.shop_quantity,
