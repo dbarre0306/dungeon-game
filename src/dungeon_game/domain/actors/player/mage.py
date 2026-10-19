@@ -19,9 +19,8 @@ class Mage(Player):
         return [
             "The player is a mage, a magical wizard.",
             f"The player has a {self.staff.name} for casting spells.",
-            f"The player can cast a fire bolt spell to attack an enemy.",
-            f"The player has no defensive capabilities against an attack "
-            "by an enemy.",
+            "The player can cast a fire bolt spell to attack an enemy.",
+            "The player has no defensive capabilities against an attack by an enemy.",
             *self._healing_facts(),
         ]
 
