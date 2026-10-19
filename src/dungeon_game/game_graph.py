@@ -9,6 +9,7 @@ from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
+from dungeon_game.nodes.cast_healing import CastHealingNode
 from dungeon_game.nodes.cross_trap import CrossTrapNode
 from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
@@ -40,6 +41,7 @@ class GameGraph:
         self.enemy_attack_node = EnemyAttackNode(dungeon_master_agent, dice)
         self.shop_node = ShopNode(dungeon_master_agent)
         self.drink_potion_node = DrinkPotionNode(dungeon_master_agent)
+        self.cast_healing_node = CastHealingNode(dungeon_master_agent)
         self.open_chest_node = OpenChestNode(dungeon_master_agent, dice)
         self.game_over_node = GameOverNode(dungeon_master_agent)
 
@@ -57,6 +59,7 @@ class GameGraph:
         graph_builder.add_node("enemy_attack", self.enemy_attack_node.execute)
         graph_builder.add_node("shop", self.shop_node.execute)
         graph_builder.add_node("drink_potion", self.drink_potion_node.execute)
+        graph_builder.add_node("cast_healing", self.cast_healing_node.execute)
         graph_builder.add_node("open_chest", self.open_chest_node.execute)
         graph_builder.add_node("game_over", self.game_over_node.execute)
         graph_builder.add_node("multiple", self._multiple)
@@ -74,6 +77,7 @@ class GameGraph:
                 "player_attack",
                 "shop",
                 "drink_potion",
+                "cast_healing",
                 "open_chest",
                 # "get_coins",
                 "multiple",
@@ -93,6 +97,9 @@ class GameGraph:
         graph_builder.add_edge("shop", END)
         graph_builder.add_conditional_edges(
             "drink_potion", self._player_is_fighting, ["enemy_attack", END]
+        )
+        graph_builder.add_conditional_edges(
+            "cast_healing", self._player_is_fighting, ["enemy_attack", END]
         )
         graph_builder.add_edge("open_chest", END)
         graph_builder.add_edge("multiple", END)

@@ -22,12 +22,14 @@ class Mage(Player):
             f"The player can cast a fire bolt spell to attack an enemy.",
             f"The player has no defensive capabilities against an attack "
             "by an enemy.enemy.",
-            f"The player can cast a healing spell to restore their health "
+            "The player can cast a healing spell to restore their health "
             "points to full strength.",
+            f"The player can cast the healing spell {self.healing_casts_left} "
+            "more times.",
         ]
 
     def get_supported_intents(self) -> list[IntentType]:
-        return ["explore", "look", "attack", "shop", "open_chest"]
+        return ["explore", "look", "attack", "shop", "cast_healing", "open_chest"]
 
     def get_supported_merchandise(self) -> list[Merchandise]:
         return [
@@ -39,6 +41,19 @@ class Mage(Player):
                 item=ELDER_STAFF,
             )
         ]
+
+    @property
+    def healing_casts_left(self) -> int:
+        return self.staff.healing_spell.quantity
+
+    def with_healed_by_healing_spell(self) -> Self:
+        """Return a copy that spent one healing cast and is back at full health."""
+        staff = self.staff.model_copy(
+            update={"healing_spell": self.staff.healing_spell.with_cast()}
+        )
+        return self.model_copy(
+            update={"staff": staff, "health_points": self.max_health_points}
+        )
 
     @property
     def offensive_weapon(self) -> str:
@@ -61,15 +76,27 @@ class Mage(Player):
         raise Exception("invalid inventory item")
 
     def _with_purchased_staff(self, staff: Staff, price: int) -> Self:
+        """The new staff keeps the healing casts the old one had left."""
+        carried = self.staff.healing_spell.quantity
+        staff = staff.model_copy(
+            update={"healing_spell": staff.healing_spell.with_added_casts(carried)}
+        )
         return self.model_copy(
             update={"staff": staff, "gold_coins": self.gold_coins - price}
         )
+
+    def print(self):
+        print(f"Gold Coins: {self.gold_coins}")
+        print(f"Health Points: {self.health_points}")
+        print(f"Is Fighting: {self.is_fighting}")
+        print(f"Staff: {self.staff.name}")
+        print(f"Healing Spells: {self.healing_casts_left} ")
 
 
 def create_default_mage() -> Player:
     return Mage(
         max_health_points=25,
-        health_points=20,
+        health_points=25,
         is_fighting=False,
         staff=STAFF,
         gold_coins=10,

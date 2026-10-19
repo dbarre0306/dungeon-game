@@ -17,7 +17,7 @@ class TreasureRoom(CombatRoom):
         killed the serpent."""
         return self.opened_side == self.serpent_side and self.enemy.is_alive()
 
-    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+    def _is_valid_room_intent(self, intent: Intent) -> tuple[bool, str | None]:
         if intent.is_open_chest():
             return self._is_valid_open_chest(intent)
         if intent.is_explore():

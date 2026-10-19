@@ -69,9 +69,17 @@ class FireBoltSpell(BaseModel):
 
 
 class HealingSpell(BaseModel):
+    """Restores the caster to full health. It can be cast `quantity` more times."""
+
     name: str
-    health_points: int
     quantity: int
+
+    def with_cast(self) -> "HealingSpell":
+        """Return a copy with one fewer cast left (never below zero)."""
+        return self.model_copy(update={"quantity": max(0, self.quantity - 1)})
+
+    def with_added_casts(self, casts: int) -> "HealingSpell":
+        return self.model_copy(update={"quantity": self.quantity + casts})
 
 
 class Staff(BaseModel):
@@ -96,12 +104,12 @@ STEEL_SHIELD = Shield(
 STAFF = Staff(
     name="staff",
     fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=0),
-    healing_spell=HealingSpell(name="healing", health_points=100, quantity=1),
+    healing_spell=HealingSpell(name="healing", quantity=1),
 )
 ELDER_STAFF = Staff(
     name="elder staff",
     fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=3),
-    healing_spell=HealingSpell(name="healing", health_points=100, quantity=2),
+    healing_spell=HealingSpell(name="healing", quantity=2),
 )
 
 InventoryItem = Annotated[Potion | Sword | Shield | Staff, Field(discriminator="type")]

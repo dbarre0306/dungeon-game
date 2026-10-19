@@ -11,8 +11,15 @@ from dungeon_game.domain.intent import Intent
 class DungeonRoom(BaseModel, ABC):
     history: Annotated[list[str], operator.add] = Field(default_factory=list)
 
-    @abstractmethod
     def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+        """Casting a healing spell works in every room; any other intent is up
+        to the room."""
+        if intent.is_cast_healing():
+            return (True, None)
+        return self._is_valid_room_intent(intent)
+
+    @abstractmethod
+    def _is_valid_room_intent(self, intent: Intent) -> tuple[bool, str | None]:
         """This is an abstract method. Subclasses must implement it."""
         ...
 

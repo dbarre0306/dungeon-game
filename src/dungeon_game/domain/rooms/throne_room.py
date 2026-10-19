@@ -7,7 +7,7 @@ from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 class ThroneRoom(DungeonRoom):
     type: Literal["throne_room"] = "throne_room"
 
-    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+    def _is_valid_room_intent(self, intent: Intent) -> tuple[bool, str | None]:
         return (True, None)
 
     def get_room_facts(self) -> list[str]:

@@ -11,7 +11,7 @@ class ShopRoom(DungeonRoom):
     type: Literal["shop_room"] = "shop_room"
     merchant: Merchant
 
-    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+    def _is_valid_room_intent(self, intent: Intent) -> tuple[bool, str | None]:
         if intent.is_shop():
             return self._is_valid_purchase(intent)
         if intent.is_explore():

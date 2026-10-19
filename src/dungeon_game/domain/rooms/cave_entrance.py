@@ -9,7 +9,7 @@ from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 class CaveEntrance(DungeonRoom):
     type: Literal["cave_entrance"] = "cave_entrance"
 
-    def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
+    def _is_valid_room_intent(self, intent: Intent) -> tuple[bool, str | None]:
         if intent.is_explore_forward():
             return (True, None)
         return False, (

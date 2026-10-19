@@ -32,7 +32,7 @@ def _mage() -> Mage:
         staff=Staff(
             name="wooden staff",
             fire_bolt_spell=FireBoltSpell(name="firebolt", additional_damage_points=2),
-            healing_spell=HealingSpell(name="mend", health_points=5, quantity=1),
+            healing_spell=HealingSpell(name="mend", quantity=1),
         ),
     )
 

@@ -8,6 +8,7 @@ IntentType = Literal[
     "attack",
     "shop",
     "drink_potion",
+    "cast_healing",
     "open_chest",
     "multiple",
     "unknown",
@@ -61,6 +62,9 @@ class Intent(BaseModel):
 
     def is_drink_potion(self) -> bool:
         return self.type == "drink_potion"
+
+    def is_cast_healing(self) -> bool:
+        return self.type == "cast_healing"
 
     def is_open_chest(self) -> bool:
         return self.type == "open_chest"
