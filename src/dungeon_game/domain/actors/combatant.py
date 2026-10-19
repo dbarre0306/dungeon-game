@@ -24,6 +24,11 @@ class Combatant(BaseModel, ABC):
         return self.offensive_weapon
 
     @property
+    def damage_die(self) -> int:
+        """The number of sides on the die rolled for damage on a hit."""
+        return 6
+
+    @property
     @abstractmethod
     def additional_offensive_weapon_damage(self) -> int: ...
 

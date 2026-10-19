@@ -26,8 +26,22 @@ class DungeonFactory:
                 self._generate_combat_room(first_room),
                 self._generate_combat_room(second_room),
                 ShopRoom(merchant=merchant),
-                ThroneRoom(),
+                self._generate_throne_room(),
             ]
+        )
+
+    @staticmethod
+    def _generate_throne_room() -> ThroneRoom:
+        return ThroneRoom(
+            enemy=Enemy(
+                name="troll",
+                weapon="large spiked wooden club",
+                max_health_points=30,
+                health_points=30,
+                hit_bonus=0,
+                damage_die_sides=10,
+                damage_bonus=2,
+            )
         )
 
     @staticmethod

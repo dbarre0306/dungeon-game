@@ -6,6 +6,7 @@ from langgraph.graph import END, START, StateGraph
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.dice import Dice
+from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
@@ -90,7 +91,9 @@ class GameGraph:
         graph_builder.add_edge("cross_trap", "game_over")
         graph_builder.add_edge("look", END)
         graph_builder.add_conditional_edges(
-            "player_attack", self._player_is_fighting, ["enemy_attack", END]
+            "player_attack",
+            self._after_player_attack,
+            ["enemy_attack", "game_over", END],
         )
         graph_builder.add_edge("enemy_attack", "game_over")
         graph_builder.add_edge("game_over", END)
@@ -145,6 +148,14 @@ class GameGraph:
         return (
             "enemy_attack" if is_blocked and state.intent.is_explore_forward() else END
         )
+
+    def _after_player_attack(self, state: GameState) -> str:
+        """The enemy strikes back if the fight goes on; killing the troll wins
+        the game."""
+        room = state.get_current_room()
+        if isinstance(room, ThroneRoom) and room.enemy.is_dead():
+            return "game_over"
+        return self._player_is_fighting(state)
 
     def _player_is_fighting(self, state: GameState) -> str:
         return "enemy_attack" if state.player.is_fighting else END

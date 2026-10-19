@@ -4,6 +4,7 @@ from dungeon_game.domain.actors.enemy import Enemy
 from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 from dungeon_game.domain.rooms.monster_room import MonsterRoom
+from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.attack import AttackNode, _Strike
 
@@ -88,11 +89,16 @@ class _PlayerStrike(_Strike[Enemy]):
             f"You must describe how the player attacked the {self._enemy.name}. "
             "Stick to what it would feel like after a brutal battle. "
             f"{looted}"
-            "Do say something about the doorway out.",
+            f"{self._exit_note()}",
             gold=loot,
             enemy=defender,
             **({"gold_coins": 0} if loot else {}),
         )
+
+    def _exit_note(self) -> str:
+        if isinstance(self._room, ThroneRoom):
+            return "Do NOT say anything about a way out."
+        return "Do say something about the doorway out."
 
     def _update(
         self, is_fighting: bool, msg: str, gold: int = 0, **room_updates: Any

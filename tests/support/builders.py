@@ -29,6 +29,23 @@ def goblin(health_points: int = 10) -> Enemy:
     )
 
 
+def troll(health_points: int = 30) -> Enemy:
+    return Enemy(
+        name="troll",
+        weapon="large spiked wooden club",
+        max_health_points=30,
+        health_points=health_points,
+        hit_bonus=0,
+        damage_die_sides=10,
+        damage_bonus=2,
+    )
+
+
+def throne_dungeon(troll_health_points: int = 30) -> Dungeon:
+    """Just the throne room, where the dungeon ends."""
+    return Dungeon(rooms=[ThroneRoom(enemy=troll(health_points=troll_health_points))])
+
+
 def full_dungeon() -> Dungeon:
     """Entrance, chamber, monster room, shop and throne room, as the game
     currently lays out."""
@@ -38,7 +55,7 @@ def full_dungeon() -> Dungeon:
             CaveChamber(),
             MonsterRoom(enemy=goblin()),
             ShopRoom(merchant=_warrior_merchant()),
-            ThroneRoom(),
+            ThroneRoom(enemy=troll()),
         ]
     )
 
