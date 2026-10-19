@@ -14,6 +14,7 @@ ROUTES = {
     "go right": RouterState(intent="explore", explore_direction="right"),
     "go back": RouterState(intent="explore", explore_direction="backward"),
     "look around": RouterState(intent="look"),
+    "drink": RouterState(intent="drink_potion"),
 }
 
 
@@ -83,3 +84,17 @@ def test_player_walks_from_the_cave_entrance_into_the_monster_room():
 
     game.say("go left")
     assert game.room_type == "monster_room"
+
+
+def test_drinking_a_potion_works_in_the_chamber():
+    game = Scenario(ROUTES, room_index=CAVE_CHAMBER)
+    player = game.state.player
+    game.state = game.state.model_copy(
+        update={"player": player.model_copy(update={"health_points": 1})}
+    )
+    potions = player.potions.quantity
+
+    state = game.say("drink")
+
+    assert state.player.potions.quantity == potions - 1
+    assert state.player.health_points > 1

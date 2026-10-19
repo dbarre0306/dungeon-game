@@ -12,9 +12,9 @@ class DungeonRoom(BaseModel, ABC):
     history: Annotated[list[str], operator.add] = Field(default_factory=list)
 
     def is_valid_intent(self, intent: Intent) -> tuple[bool, str | None]:
-        """Casting a healing spell works in every room; any other intent is up
-        to the room."""
-        if intent.is_cast_healing():
+        """Drinking a potion and casting a healing spell work in every room;
+        any other intent is up to the room."""
+        if intent.is_drink_potion() or intent.is_cast_healing():
             return (True, None)
         return self._is_valid_room_intent(intent)
 

@@ -20,8 +20,6 @@ class TrapRoom(DungeonRoom):
                     "the passageway."
                 ),
             )
-        elif intent.is_drink_potion():
-            return (True, None)
         return (
             False,
             "Tell the player that you don't understand what they have asked.",

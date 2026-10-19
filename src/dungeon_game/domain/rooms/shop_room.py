@@ -16,7 +16,7 @@ class ShopRoom(DungeonRoom):
             return self._is_valid_purchase(intent)
         if intent.is_explore():
             return self._is_valid_explore(intent)
-        if intent.is_look() or intent.is_drink_potion():
+        if intent.is_look():
             return (True, None)
         if intent.is_attack():
             return (

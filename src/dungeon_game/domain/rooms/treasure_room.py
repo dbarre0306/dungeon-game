@@ -24,8 +24,6 @@ class TreasureRoom(CombatRoom):
             return self._is_valid_explore(intent)
         if intent.is_attack():
             return self._is_valid_attack()
-        if intent.is_drink_potion():
-            return (True, None)
         return (
             False,
             "Tell the player that you don't understand what they have asked.",
