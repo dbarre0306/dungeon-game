@@ -5,13 +5,13 @@ from types import SimpleNamespace
 
 from dungeon_game.agents.router_agent import RouterAgent, RouterState
 from dungeon_game.domain.actors.merchant import Merchant
-from dungeon_game.domain.actors.player.mage import (
+from dungeon_game.domain.actors.player.mage import Mage
+from dungeon_game.domain.actors.player.warrior import create_default_warrior
+from dungeon_game.domain.items.inventory_items import (
     FireBoltSpell,
     HealingSpell,
-    Mage,
     Staff,
 )
-from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.nodes.router import RouterNode
 from tests.support.builders import (
     full_dungeon,

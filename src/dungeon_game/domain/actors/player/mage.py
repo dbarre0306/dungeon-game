@@ -1,6 +1,4 @@
-from typing import Literal, Self
-
-from pydantic import BaseModel
+from typing import Literal, Self, cast
 
 from dungeon_game.domain.actors.merchant.merchandise import Merchandise
 from dungeon_game.domain.actors.player.player import Player
@@ -9,24 +7,8 @@ from dungeon_game.domain.items.inventory_items import (
     ELDER_STAFF,
     STAFF,
     InventoryItem,
+    Staff,
 )
-
-
-class FireBoltSpell(BaseModel):
-    name: str
-    additional_damage_points: int
-
-
-class HealingSpell(BaseModel):
-    name: str
-    health_points: int
-    quantity: int
-
-
-class Staff(BaseModel):
-    name: str
-    fire_bolt_spell: FireBoltSpell
-    healing_spell: HealingSpell
 
 
 class Mage(Player):
@@ -69,8 +51,14 @@ class Mage(Player):
         self, item: InventoryItem, quantity: int, price: int
     ) -> Self:
         """Return a copy that spent `price` gold coins and added purchased item."""
-        pass
-        # TODO: implement
+        if item.type == "staff":
+            return self._with_purchased_staff(cast(Staff, item), price)
+        raise Exception("invalid inventory item")
+
+    def _with_purchased_staff(self, staff: Staff, price: int) -> Self:
+        return self.model_copy(
+            update={"staff": staff, "gold_coins": self.gold_coins - price}
+        )
 
 
 def create_default_mage() -> Player:

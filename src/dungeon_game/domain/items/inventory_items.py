@@ -63,9 +63,22 @@ class Shield(BaseModel):
         )
 
 
+class FireBoltSpell(BaseModel):
+    name: str
+    additional_damage_points: int
+
+
+class HealingSpell(BaseModel):
+    name: str
+    health_points: int
+    quantity: int
+
+
 class Staff(BaseModel):
     type: Literal["staff"] = "staff"
     name: str
+    fire_bolt_spell: FireBoltSpell
+    healing_spell: HealingSpell
 
 
 POTION = Potion()
@@ -80,7 +93,15 @@ STEEL_SHIELD = Shield(
     name="steel shield", defensive_health_points=4, max_durability=10, durability=10
 )
 
-STAFF = Staff(name="staff")
-ELDER_STAFF = Staff(name="elder staff")
+STAFF = Staff(
+    name="staff",
+    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=0),
+    healing_spell=HealingSpell(name="healing", health_points=100, quantity=1),
+)
+ELDER_STAFF = Staff(
+    name="elder staff",
+    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=3),
+    healing_spell=HealingSpell(name="healing", health_points=100, quantity=2),
+)
 
 InventoryItem = Annotated[Potion | Sword | Shield | Staff, Field(discriminator="type")]

@@ -1,11 +1,11 @@
 from dungeon_game.domain.actors.enemy import Enemy
-from dungeon_game.domain.actors.player.mage import (
+from dungeon_game.domain.actors.player.mage import Mage
+from dungeon_game.domain.actors.player.warrior import Sword, create_default_warrior
+from dungeon_game.domain.items.inventory_items import (
     FireBoltSpell,
     HealingSpell,
-    Mage,
     Staff,
 )
-from dungeon_game.domain.actors.player.warrior import Sword, create_default_warrior
 
 
 def _mage() -> Mage:
