@@ -44,7 +44,7 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 - **Stock depends on the class:**
   - Warrior: one steel sword, one steel shield, and three potions.
-  - Wizard: the Elder staff, which has more powerful firebolt spells. No potions.
+  - Mage: the Elder staff, which has more powerful firebolt spells. No potions.
 - **Prices:**
   - Potion: 5 gold coins.
   - Steel sword: 10 gold coins.
