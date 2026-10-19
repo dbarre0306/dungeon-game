@@ -89,3 +89,13 @@ def test_healing_works_in_a_room_that_rejects_other_actions():
     assert state.player.health_points == state.player.max_health_points
     assert state.player.staff.healing_spell.quantity == 0
     assert "restored to full strength" in dm.messages[-1]
+
+
+def test_facts_offer_healing_only_while_casts_remain():
+    with_casts = " ".join(_mage(casts=2).get_facts())
+    without_casts = " ".join(_mage(casts=0).get_facts())
+
+    assert "can cast a healing spell" in with_casts
+    assert "2 more times" in with_casts
+    assert "can cast a healing spell" not in without_casts
+    assert "no healing spell casts left" in without_casts

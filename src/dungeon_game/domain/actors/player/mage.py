@@ -22,6 +22,13 @@ class Mage(Player):
             f"The player can cast a fire bolt spell to attack an enemy.",
             f"The player has no defensive capabilities against an attack "
             "by an enemy.enemy.",
+            *self._healing_facts(),
+        ]
+
+    def _healing_facts(self) -> list[str]:
+        if self.healing_casts_left <= 0:
+            return ["The player has no healing spell casts left."]
+        return [
             "The player can cast a healing spell to restore their health "
             "points to full strength.",
             f"The player can cast the healing spell {self.healing_casts_left} "
