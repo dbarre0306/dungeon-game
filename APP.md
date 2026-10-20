@@ -68,7 +68,7 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
   - Steel sword: 10 gold coins.
   - Steel shield: 10 gold coins.
   - Elder staff: 15 gold coins.
-- **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield (the new shield arrives in full condition) and the staff. The Elder staff keeps any Heal casts the old staff had left, and adds its own on top (the number of casts is in _Game Balance_).
+- **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield (the new shield arrives in full condition) and the staff. The Elder staff keeps any Heal casts the old staff had left, and adds its own 2 on top (so a Mage who has not cast any arrives with 3).
 - **Potions add up:** bought potions are added to any potions the player already has.
 - **Quantity:**
   - The player names one kind of item per purchase and may give a number (e.g. "buy 2 potions"). Only potions have more than one in stock.
@@ -99,7 +99,7 @@ Two classes are available for this demo: **Warrior** and **Mage**. Each starts w
 | To-hit bonus     | +3                           | +5                     |
 | Damage           | 1d6 + 1                      | 1d8 (Fire bolt)        |
 | Starting potions | 2                            | 0                      |
-| Heal casts       | none                         | 4 (see _Game Balance_) |
+| Heal casts       | none                         | 1 (see _Game Balance_) |
 | Starting gold    | 10                           | 10                     |
 | Starting items   | Sword, shield, potions       | Staff                  |
 
@@ -157,7 +157,7 @@ The bronze shield has block value 2 and durability 6; the steel shield has block
 
 **Design goal:** the game should be fun, so a reasonably sensible player should win roughly **60–70% of runs or more**, yet losing must stay a real possibility, mostly in the Throne Room or after a bad streak in the challenge rooms. Dice add drama; the numbers below make sure the odds stay in the player's favor. All values are starting points to be validated by play-testing.
 
-**Healing.** A potion restores 8 HP (never above the maximum); the Heal spell restores the Mage to full HP and is limited to a fixed number of casts: 4 with the starting staff, with the Elder staff adding more on top (count to be set with the other values). Either takes the player's whole turn, so during a fight the enemy still counterattacks, which makes healing a real decision, not a free action. Outside a fight there is no counterattack. A potion drunk at full HP is used up for nothing, and a Heal cast at full HP still uses up a cast. When the player has no potions or Heal casts left, the action is refused (during a fight the enemy still counterattacks). Players start with enough healing to survive one bad fight, and the shop lets them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
+**Healing.** A potion restores 8 HP (never above the maximum); the Heal spell restores the Mage to full HP and is limited to a fixed number of casts: 1 with the starting staff, and buying the Elder staff adds 2 more on top of any casts left. Either takes the player's whole turn, so during a fight the enemy still counterattacks, which makes healing a real decision, not a free action. Outside a fight there is no counterattack. A potion drunk at full HP is used up for nothing, and a Heal cast at full HP still uses up a cast. When the player has no potions or Heal casts left, the action is refused (during a fight the enemy still counterattacks). Players start with enough healing to survive one bad fight, and the shop lets them prepare for the troll. Heal's small cast limit stops the Mage from out-sustaining everything.
 
 **Enemies** (to-hit is added to the d20 and the total must reach 12; the player's shield then reduces the damage):
 
