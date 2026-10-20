@@ -55,11 +55,9 @@ def test_failed_turn_logs_a_generic_error_without_leaking_details():
     assert "secret" not in ERROR_MESSAGE
 
 
-def test_hud_shows_health_weapon_shield_potions_gold_and_room():
+def test_hud_shows_health_weapon_shield_potions_and_gold():
     html = hud_html(start_session("warrior").state)
     for expected in [
-        "Cave entrance",
-        "Room 1 of 6",
         "30",
         "Bronze sword",
         "Bronze shield",

@@ -4,7 +4,6 @@ from html import escape
 
 from dungeon_game.domain.actors.player.warrior import Warrior
 from dungeon_game.game_state import GameState
-from dungeon_game.ui.content import ROOM_NAMES
 from dungeon_game.ui.session import LogEntry
 
 SHIELD_LABELS = {"good": "Good", "damaged": "Damaged", "broken": "Broken"}
@@ -37,21 +36,6 @@ def _row(label: str, value: str) -> str:
     return f"<dt>{label}</dt><dd>{value}</dd>"
 
 
-def _room_html(state: GameState) -> str:
-    room = state.get_current_room()
-    index = state.player.current_room_index
-    total = len(state.dungeon.rooms)
-    name = ROOM_NAMES.get(room.type, "Unknown room")  # type: ignore[attr-defined]
-    return (
-        '<section class="mw-panel">'
-        '<p class="mw-label">You are in</p>'
-        f'<h2 class="mw-room-name">{name}</h2>'
-        f'<div class="mw-trail" aria-hidden="true">{_pips(index + 1, total)}</div>'
-        f'<p class="mw-sub">Room {index + 1} of {total}</p>'
-        "</section>"
-    )
-
-
 def _enemy_html(state: GameState) -> str:
     enemy = getattr(state.get_current_room(), "enemy", None)
     if enemy is None or not state.player.is_fighting or enemy.is_dead():
@@ -70,7 +54,7 @@ def _enemy_html(state: GameState) -> str:
 
 
 def hud_html(state: GameState) -> str:
-    """The hero's vital signs and surroundings."""
+    """The hero's vital signs and gear, and any foe being fought."""
     player = state.player
     if not isinstance(player, Warrior):
         raise TypeError("The game screen only supports the Warrior so far")
@@ -100,7 +84,6 @@ def hud_html(state: GameState) -> str:
     )
     return (
         '<aside class="mw-hud warrior">'
-        + _room_html(state)
         + health
         + gear
         + _enemy_html(state)
