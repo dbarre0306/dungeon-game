@@ -325,7 +325,7 @@ def test_the_players_blow_lands_before_the_goblins_so_a_double_kill_spares_the_p
 
 def test_attacking_with_a_weapon_the_player_lacks_is_rejected_without_a_fight():
     game = Scenario(
-        {"swing axe": RouterState(intent="attack", unowned_weapons=["axe"])},
+        {"swing axe": RouterState(intent="attack", nonexistent_weapons=["axe"])},
         dungeon=monster_dungeon(goblin()),
         room_index=MONSTER_ROOM,
         dice=FakeDice(),  # no rolls scripted: any strike would fail loudly
@@ -339,9 +339,9 @@ def test_attacking_with_a_weapon_the_player_lacks_is_rejected_without_a_fight():
     assert game.included_command_of_last_call() if False else True
 
 
-def test_naming_an_owned_and_an_unowned_weapon_is_rejected():
+def test_naming_an_owned_and_a_nonexistent_weapon_is_rejected():
     game = Scenario(
-        {"sword and axe": RouterState(intent="attack", unowned_weapons=["axe"])},
+        {"sword and axe": RouterState(intent="attack", nonexistent_weapons=["axe"])},
         dungeon=monster_dungeon(goblin()),
         room_index=MONSTER_ROOM,
         dice=FakeDice(),

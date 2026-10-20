@@ -75,4 +75,4 @@ def test_the_router_prompt_includes_the_player_facts():
         "Player facts:\n- The player is a mage.\n- The player has a wooden staff."
         in prompt
     )
-    assert "unowned_weapons" in prompt
+    assert "nonexistent_weapons" in prompt

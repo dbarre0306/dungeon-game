@@ -19,7 +19,7 @@ ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
     "go left": RouterState(intent="explore", explore_direction="left"),
     "attack": RouterState(intent="attack"),
-    "attack with a knife": RouterState(intent="attack", unowned_weapons=["knife"]),
+    "attack with a knife": RouterState(intent="attack", nonexistent_weapons=["knife"]),
     "drink": RouterState(intent="drink_potion"),
     "look around": RouterState(intent="look"),
     "buy something": RouterState(intent="shop"),

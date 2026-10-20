@@ -58,7 +58,7 @@ def _attack_instructions(enemy_name: str | None) -> str:
         "  - Set attack_target_name to the name the player gave what they "
         "attack (e.g. `rat`); leave it unset if they gave none or only said "
         "`it`, `the beast`, `the monster` or `the enemy`.\n"
-        "  - Set unowned_weapons to every weapon or spell the command names "
+        "  - Set nonexistent_weapons to every weapon or spell the command names "
         "that the player facts do not say the player has (e.g. `knife`); "
         "leave it empty if there are none."
     )
@@ -136,7 +136,7 @@ class RouterNode:
             "intent": {
                 "type": result.intent,
                 "explore_direction": result.explore_direction,
-                "unowned_weapons": result.unowned_weapons,
+                "nonexistent_weapons": result.nonexistent_weapons,
                 "chest_side": result.chest_side,
                 "shop_item_name": result.shop_item_name,
                 "shop_quantity": result.shop_quantity,

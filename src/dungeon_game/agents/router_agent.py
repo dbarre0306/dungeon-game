@@ -42,7 +42,7 @@ class RouterState(BaseModel):
             "`the enemy`."
         ),
     )
-    unowned_weapons: list[str] = Field(
+    nonexistent_weapons: list[str] = Field(
         default_factory=list,
         description=(
             "Every weapon or spell the player named that the player facts do "

@@ -28,7 +28,7 @@ class Intent(BaseModel):
 
     type: IntentType | None = None
     explore_direction: ExploreDirection | None = None
-    unowned_weapons: list[str] = Field(default_factory=list)
+    nonexistent_weapons: list[str] = Field(default_factory=list)
     chest_side: ChestSide | None = None
     shop_item_name: ShopItemName | None = None
     shop_quantity: int | None = None
@@ -52,7 +52,7 @@ class Intent(BaseModel):
         return self.type == "attack"
 
     def is_attack_with_nonexistent_weapon(self) -> bool:
-        return self.type == "attack" and bool(self.unowned_weapons)
+        return self.type == "attack" and bool(self.nonexistent_weapons)
 
     def is_shop(self) -> bool:
         return self.type == "shop"
