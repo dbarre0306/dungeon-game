@@ -174,14 +174,14 @@ def test_a_serpent_strike_while_leaving_can_kill_the_player():
     assert state.game_over
 
 
-def test_going_another_direction_is_refused_without_a_strike():
-    game = treasure()
+def test_going_another_direction_is_refused_and_the_serpent_strikes():
+    game = treasure(15, 5)  # the serpent hits for 5, less 2 from the shield
     game.say("open the right chest")
 
     state = game.say("go left")
 
-    assert "only way out is forward" in game.dm.messages[-1]
-    assert state.player.health_points == 25
+    assert "only way out is forward" in game.dm.messages[-2]
+    assert state.player.health_points == 22
     game.dice.assert_exhausted()
 
 

@@ -18,7 +18,7 @@ class ExploreNode:
             response = self._dungeon_master_agent.invoke(
                 state, msg, include_command=True
             )
-            return {"narration": [response.narration]}
+            return {"narration": [response.narration], "attempt_failed": True}
 
         next_room = state.get_next_room()
         if next_room is None:

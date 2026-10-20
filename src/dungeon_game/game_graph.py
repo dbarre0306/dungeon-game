@@ -8,7 +8,6 @@ from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.domain.rooms.trap_room import TrapRoom
-from dungeon_game.domain.rooms.treasure_room import TreasureRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.nodes.cast_healing import CastHealingNode
 from dungeon_game.nodes.cross_trap import CrossTrapNode
@@ -64,6 +63,7 @@ class GameGraph:
         graph_builder.add_node("open_chest", self.open_chest_node.execute)
         graph_builder.add_node("game_over", self.game_over_node.execute)
         graph_builder.add_node("multiple", self._multiple)
+        graph_builder.add_node("illegal", self._illegal)
         graph_builder.add_node("unknown", self._unknown)
 
         # Add edges to connect nodes
@@ -83,10 +83,11 @@ class GameGraph:
                 # "get_coins",
                 "multiple",
                 "unknown",
+                "illegal",
             ],
         )
         graph_builder.add_conditional_edges(
-            "explore", self._serpent_blocks_the_way, ["enemy_attack", END]
+            "explore", self._enemy_strikes_after_failed_attempt, ["enemy_attack", END]
         )
         graph_builder.add_edge("cross_trap", "game_over")
         graph_builder.add_edge("look", END)
@@ -104,14 +105,19 @@ class GameGraph:
         graph_builder.add_conditional_edges(
             "cast_healing", self._player_is_fighting, ["enemy_attack", END]
         )
-        graph_builder.add_edge("open_chest", END)
+        graph_builder.add_conditional_edges(
+            "open_chest",
+            self._enemy_strikes_after_failed_attempt,
+            ["enemy_attack", END],
+        )
         graph_builder.add_edge("multiple", END)
         graph_builder.add_edge("unknown", END)
+        graph_builder.add_edge("illegal", END)
 
         return graph_builder.compile()
 
     def invoke(self, state: GameState) -> GameState:
-        state = state.model_copy(update={"narration": []})
+        state = state.model_copy(update={"narration": [], "attempt_failed": False})
         return GameState.model_validate(self.agent.invoke(state))
 
     def _multiple(self, state: GameState) -> dict[str, Any]:
@@ -127,27 +133,39 @@ class GameGraph:
         response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
         return {"narration": [response.narration]}
 
+    def _illegal(self, state: GameState) -> dict[str, Any]:
+        """The room does not allow this intent: tell the player and do nothing
+        else, even in a fight."""
+        _, msg = state.get_current_room().is_valid_intent(state.intent)
+        msg = msg or "Tell the player that they can't do that here."
+        response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
+        return {"narration": [response.narration]}
+
     def _next_action(self, state: GameState) -> str:
-        if state.intent.type == "attack":
+        intent = state.intent
+        if intent.type in ("multiple", "unknown"):
+            return intent.type
+        room = state.get_current_room()
+        if intent.type not in room.get_legal_intents(state.player):
+            return "illegal"
+        if intent.type == "attack":
             return "player_attack"
-        if state.intent.is_explore_forward() and self._is_trap_unsprung(state):
+        if intent.is_explore_forward() and self._is_trap_unsprung(state):
             return "cross_trap"
-        return state.intent.type
+        return intent.type
+
+    @staticmethod
+    def _enemy_strikes_after_failed_attempt(state: GameState) -> str:
+        """A legal attempt the room refuses while the player is fighting costs
+        the player their turn: the enemy strikes after it is narrated."""
+        return (
+            "enemy_attack" if state.attempt_failed and state.player.is_fighting else END
+        )
 
     @staticmethod
     def _is_trap_unsprung(state: GameState) -> bool:
         room = state.get_current_room()
         return isinstance(room, TrapRoom) and not room.is_sprung
-
-    @staticmethod
-    def _serpent_blocks_the_way(state: GameState) -> str:
-        """A player who tries to leave the treasure room while the serpent is
-        loose stays put, and the serpent strikes."""
-        room = state.get_current_room()
-        is_blocked = isinstance(room, TreasureRoom) and room.is_serpent_loose()
-        return (
-            "enemy_attack" if is_blocked and state.intent.is_explore_forward() else END
-        )
 
     def _after_player_attack(self, state: GameState) -> str:
         """The enemy strikes back if the fight goes on; killing the troll wins

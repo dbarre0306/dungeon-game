@@ -28,7 +28,7 @@ class OpenChestNode:
             response = self._dungeon_master_agent.invoke(
                 state, msg, include_command=True
             )
-            return {"narration": [response.narration]}
+            return {"narration": [response.narration], "attempt_failed": True}
         if not isinstance(room, TreasureRoom):
             raise TypeError("The room must be a TreasureRoom")
         side = state.intent.chest_side
