@@ -220,6 +220,7 @@ body, .gradio-container {
 .mw-outcome.victory { color: var(--mw-ember); }
 .mw-outcome.defeat { color: #c4503f; }
 
+.mw-replay { gap: .75rem; }
 .mw-input-row { align-items: stretch !important; gap: .5rem; }
 .mw-command textarea, .mw-command input {
   background: var(--mw-stone) !important; color: var(--mw-bone) !important;

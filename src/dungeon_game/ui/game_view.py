@@ -5,7 +5,7 @@ from functools import partial
 
 import gradio as gr
 
-from dungeon_game.ui.content import TITLE
+from dungeon_game.ui.content import CLASSES, TITLE
 from dungeon_game.ui.render import hud_html, log_html, outcome_of
 from dungeon_game.ui.session import (
     Session,
@@ -32,6 +32,8 @@ class GameView:
     confirm: gr.Row
     confirm_leave: gr.Button
     stay: gr.Button
+    replay: gr.Row
+    replay_buttons: dict[str, gr.Button]
 
 
 def build_game() -> GameView:
@@ -65,7 +67,26 @@ def build_game() -> GameView:
                     act = gr.Button(
                         "Act", variant="primary", scale=0, elem_classes="mw-act"
                     )
-    return GameView(root, hud, log, command, act, leave, confirm, confirm_leave, stay)
+                replay_buttons: dict[str, gr.Button] = {}
+                with gr.Row(visible=False, elem_classes="mw-replay") as replay:
+                    for player_class in CLASSES:
+                        replay_buttons[player_class.key] = gr.Button(
+                            f"Play again as the {player_class.name}",
+                            elem_classes=["mw-play", player_class.key],
+                        )
+    return GameView(
+        root,
+        hud,
+        log,
+        command,
+        act,
+        leave,
+        confirm,
+        confirm_leave,
+        stay,
+        replay,
+        replay_buttons,
+    )
 
 
 def _render(session: Session) -> tuple[str, str]:
@@ -96,6 +117,9 @@ def wire_game(
             hud,
             log,
             gr.update(value="", interactive=False),
+            gr.update(visible=False),
+            gr.update(visible=True),
+            gr.update(visible=False),
         )
 
     def submit(current: Session | None, text: str):
@@ -107,10 +131,17 @@ def wire_game(
 
     def resolve(current: Session | None):
         if current is None:
-            return gr.skip(), gr.skip(), gr.skip(), gr.skip()
+            return gr.skip(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         current = resolve_pending(current)
         hud, log = _render(current)
-        return current, hud, log, gr.update(interactive=not current.state.game_over)
+        over = current.state.game_over
+        return (
+            current,
+            hud,
+            log,
+            gr.update(interactive=not over),
+            gr.update(visible=over),
+        )
 
     def ask_to_leave():
         return gr.update(visible=False), gr.update(visible=True)
@@ -128,21 +159,31 @@ def wire_game(
         )
 
     turn_outputs = [session, game.hud, game.log, game.command]
+    resolve_outputs = [*turn_outputs, game.replay]
+    ask_outputs = [game.leave, game.confirm]
+    start_outputs = [
+        session,
+        *views,
+        game.hud,
+        game.log,
+        game.command,
+        game.replay,
+        *ask_outputs,
+    ]
 
-    for class_key, play in play_buttons.items():
+    starters = [*play_buttons.items(), *game.replay_buttons.items()]
+    for class_key, play in starters:
         play.click(
-            partial(enter_game, class_key),
-            outputs=[session, *views, game.hud, game.log, game.command],
-        ).then(resolve, session, turn_outputs).then(None, js=FOCUS_COMMAND_BOX)
+            partial(enter_game, class_key), outputs=start_outputs
+        ).then(resolve, session, resolve_outputs).then(None, js=FOCUS_COMMAND_BOX)
 
     for trigger in (game.command.submit, game.act.click):
         trigger(
             submit, [session, game.command], turn_outputs, show_progress="hidden"
-        ).then(resolve, session, turn_outputs, show_progress="hidden").then(
+        ).then(resolve, session, resolve_outputs, show_progress="hidden").then(
             None, js=FOCUS_COMMAND_BOX
         )
 
-    ask_outputs = [game.leave, game.confirm]
     game.leave.click(ask_to_leave, outputs=ask_outputs)
     game.stay.click(keep_playing, outputs=ask_outputs)
     game.confirm_leave.click(leave_game, outputs=[session, *views, *ask_outputs])
