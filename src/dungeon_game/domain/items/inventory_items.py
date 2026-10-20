@@ -103,12 +103,12 @@ STEEL_SHIELD = Shield(
 
 STAFF = Staff(
     name="staff",
-    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=0),
+    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=2),
     healing_spell=HealingSpell(name="healing", quantity=1),
 )
 ELDER_STAFF = Staff(
     name="elder staff",
-    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=3),
+    fire_bolt_spell=FireBoltSpell(name="fire bolt", additional_damage_points=5),
     healing_spell=HealingSpell(name="healing", quantity=2),
 )
 

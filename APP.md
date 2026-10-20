@@ -97,7 +97,7 @@ Two classes are available for this demo: **Warrior** and **Mage**. Each starts w
 | Starting HP      | 30                           | 24                     |
 | Weapon           | Bronze sword + bronze shield | Staff                  |
 | To-hit bonus     | +3                           | +5                     |
-| Damage           | 1d6 + 1                      | 1d8 (Fire bolt)        |
+| Damage           | 1d6 + 1                      | 1d6 + 2 (Fire bolt)    |
 | Starting potions | 2                            | 0                      |
 | Heal casts       | none                         | 1 (see _Game Balance_) |
 | Starting gold    | 10                           | 10                     |
@@ -121,7 +121,7 @@ Inventory Rules:
 **Shop upgrades** (class-specific, so each class is only offered relevant gear):
 
 - Warrior: **Steel Sword** (+2 damage over the bronze sword, so 1d6 + 3), **Steel Shield** (a sturdier shield, see _Combat_), **Potion** (+8 HP, usable anytime)
-- Mage: **Elder Staff** (+2 damage, so 1d8 + 2)
+- Mage: **Elder Staff** (+3 damage over the staff, so 1d6 + 5)
 
 **Which class can be played.** Both classes exist in the game logic, but the Gradio UI can currently only start a Warrior game; choosing the Mage is not yet supported there.
 
