@@ -18,7 +18,9 @@ The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms 
 
 **Path:** `Cave Entrance → Cave Chamber → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Throne Room`
 
-The rooms form a one-way line: the player only ever moves forward, and there is no going back. In every room the player can _look_ around, and can drink a potion (Warrior) or cast Heal (Mage); other actions depend on the room, as described below. A command the room doesn't allow gets a narrated refusal and costs nothing, unless noted.
+The rooms form a one-way line: the player only ever moves forward, and there is no going back. In every room the player can _look_ around, and can drink a potion (Warrior) or cast Heal (Mage); other actions depend on the room, as described below.
+
+**Legal actions.** Each room has a fixed set of legal intents (listed below). If the player types something outside that set, the DM tells them it can't be done here and nothing else happens: no state changes, no dice, and no counterattack, even in a fight. A _legal_ intent can still fail: the exit is blocked, the wrong direction is given, no chest is named, the player can't afford the item, has no potions left, or names a weapon they don't carry. A failed attempt is narrated and changes nothing, but during a fight the enemy still counterattacks (see _Combat_).
 
 | Room          | What's there                                                                                                                                   |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -30,13 +32,25 @@ The rooms form a one-way line: the player only ever moves forward, and there is 
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold.                                    |
 | Throne Room   | Final fight: a 25 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others.                                   |
 
+| Room          | Legal intents                                   |
+| ------------- | ----------------------------------------------- |
+| Cave Entrance | look, move, heal                                |
+| Cave Chamber  | look, move, heal                                |
+| Monster Room  | look, move, attack, heal                        |
+| Trap Room     | look, move, heal                                |
+| Treasure Room | look, move, attack, open a chest, heal          |
+| Shop Room     | look, move, buy, heal                           |
+| Throne Room   | look, move, attack, heal                        |
+
+Heal means drinking a potion (Warrior) or casting Heal (Mage). Anything else, including the "multiple" and "unknown" commands described under _What the Player Does_, is illegal in that room.
+
 **Monster Room details.** The player enters the room already in a fight. The monster will not let the player pass while it is alive, so the only way on is to kill it; there is no going back. Each exchange follows the _Combat_ rules. When the monster dies, the player automatically collects the 5 gold coins behind it and the doorway forward opens. Attacking a monster that is already dead is refused.
 
 Exactly 2 of the 3 challenge rooms appear in any given run — the third is simply skipped that time. This keeps every playthrough a little different while guaranteeing the Shop is always reachable, so gold earned earlier always has somewhere to go.
 
 **Trap Room details.** The trap is randomly either a poison dart or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. In this room the only actions that do anything are moving forward, looking around, and healing (drink a potion or cast Heal); anything else is not understood. Healing here costs only the turn, since there is no counterattack. Left and right are refused. The trap triggers automatically the moment the player tries to cross the room. The shield does not reduce trap damage, and the shield loses no durability to it. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The game rolls a d20 (no bonus): **11 or lower dodges the trap** (55% of the time); **12 or higher strikes the player** (45%). When struck, a d10 decides the extent of the wound: 8 or greater is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap — whether they dodged it or were wounded — automatically collects the gold coins on the far side: a random 4 to 6 (3 + a d3). If the wound kills the player, the game ends.
 
-**Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the dungeon is generated, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both; trying to open the other one afterwards is refused.
+**Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the dungeon is generated, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both; trying to open the other one afterwards is refused. If the serpent is loose when that happens, the attempt costs the player their turn and the serpent gets a free attack.
 
 - **Gold chest:** the player is awarded a random 3 to 6 gold coins (2 + a d4) the moment they open it. Nothing else happens, and the player is free to leave the room.
 - **Serpent chest:** combat begins immediately. The serpent starts with 12 HP and fights using the same logic as the monster room — the serpent's stats are in _Game Balance_, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. The serpent does not bite on the turn the chest is opened; the narration just tells the player they must kill it. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
@@ -69,7 +83,7 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 - **The troll:** twice the player's size and armed with a large spiked wooden club. 25 HP. It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies. The player enters the room already in a fight.
 - **The troll hits much harder than other enemies.** Its club deals more damage than anything else in the dungeon: 1d8 + 2 (see _Game Balance_).
-- **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out and nothing else happens.
+- **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out, and the troll counterattacks like it does after any other command during the fight.
 - **Winning:** the moment the troll's HP reaches 0, the player wins — the troll does not get a final counterattack. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
 - If the player's HP reaches 0 first, the game ends as usual.
 
@@ -120,19 +134,21 @@ At the start, the player picks a class (Warrior or Mage) and is dropped into the
 3. The game figures out what kind of action that is (fighting, shopping, talking, exploring) and resolves it — rolling dice where the outcome is uncertain.
 4. The DM narrates the result, and the player's HP / inventory / gold sidebar updates to match.
 
-The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible in the current room is narrated as not making sense, again at no cost. Left and right are valid only in the Cave Chamber; everywhere else the only valid move is forward. The actions the game recognizes are: look, move (left / right / forward), attack (for the Mage this includes casting Fire bolt), buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. Keeps combat math and the graph's logic simple, one action in, one resolved turn out.
+The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible, or isn't a legal intent in the current room, is narrated as not making sense or not possible here, again at no cost. Left and right are valid only in the Cave Chamber; everywhere else the only valid move is forward. The actions the game recognizes are: look, move (left / right / forward), attack (for the Mage this includes casting Fire bolt), buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. Keeps combat math and the graph's logic simple, one action in, one resolved turn out.
 
 ### Combat
 
 Combat is a back-and-forth exchange resolved with two dice rolls per attack. To see whether an attack lands, the game rolls a d20, adds the attacker's to-hit bonus, and the attack hits on a total of **12 or more** — the same target for everyone, since there is no Armor Class. There are no critical hits or automatic misses. On a hit, the attacker rolls their damage die and adds their damage bonus.
 
-A fight starts when the player enters the Monster Room or Throne Room, or opens the serpent's chest, and ends when one side dies. While the player is fighting, the enemy gets its own attack (same two-roll process) right after each of these player actions, provided the enemy is still alive:
+A fight starts when the player enters the Monster Room or Throne Room, or opens the serpent's chest, and ends when one side dies. While the player is fighting, the enemy gets its own attack (same two-roll process) right after **every** player command, provided the enemy is still alive. That includes:
 
-- attacking,
-- drinking a potion or casting Heal,
-- trying to leave the treasure room while the serpent is loose.
+- attacking (including an attack cancelled because the player named a weapon they don't carry),
+- drinking a potion or casting Heal (including when none are left, so the action is refused),
+- trying to leave the room (the Monster Room, the Throne Room, or the Treasure Room with the serpent loose),
+- trying to open a chest in the Treasure Room while the serpent is loose (the other chest, or no chest named),
+- any other legal intent that fails, such as moving in a wrong direction.
 
-Looking around, refused commands, and confused commands do not provoke a counterattack. This includes trying to leave the Monster Room or Throne Room while the enemy lives: that is simply refused, unlike the Treasure Room, where the serpent is loose and punishes the attempt. One full player turn — action, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response. If the player dies from the counterattack, the game ends; if the enemy dies, the fight is over and no counterattack happens.
+The commands that do not provoke a counterattack are looking around, compound ("multiple") or confused ("unknown") commands, and any intent that is illegal in the room (for example trying to buy or open a chest mid-fight): those are refused outright and nothing else happens. One full player turn — action, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response. If the player dies from the counterattack, the game ends; if the enemy dies, the fight is over and no counterattack happens.
 
 **The shield (Warrior).** The shield's absorption rules are defined under _Inventory Rules_ above; this is a summary. A shield cannot be repaired; it changes condition as it wears:
 
@@ -148,7 +164,7 @@ The bronze shield has block value 2 and durability 6; the steel shield has block
 
 **Design goal:** the game should be fun, so a reasonably sensible player should win roughly **60–70% of runs or more**, yet losing must stay a real possibility, mostly in the Throne Room or after a bad streak in the challenge rooms. Dice add drama; the numbers below make sure the odds stay in the player's favor. All values are starting points to be validated by play-testing.
 
-**Healing.** A potion restores 8 HP (never above the maximum); the Heal spell restores the Mage to full HP and is limited to a fixed number of casts: 4 with the starting staff, with the Elder staff adding more on top (count to be set with the other values). Either takes the player's whole turn, so during a fight the enemy still counterattacks, which makes healing a real decision, not a free action. Outside a fight there is no counterattack. A potion drunk at full HP is used up for nothing, and a Heal cast at full HP still uses up a cast. When the player has no potions or Heal casts left, the action is refused. Players start with enough healing to survive one bad fight, and the shop lets them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
+**Healing.** A potion restores 8 HP (never above the maximum); the Heal spell restores the Mage to full HP and is limited to a fixed number of casts: 4 with the starting staff, with the Elder staff adding more on top (count to be set with the other values). Either takes the player's whole turn, so during a fight the enemy still counterattacks, which makes healing a real decision, not a free action. Outside a fight there is no counterattack. A potion drunk at full HP is used up for nothing, and a Heal cast at full HP still uses up a cast. When the player has no potions or Heal casts left, the action is refused (during a fight the enemy still counterattacks). Players start with enough healing to survive one bad fight, and the shop lets them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
 
 **Enemies** (to-hit is added to the d20 and the total must reach 12; the player's shield then reduces the damage):
 
@@ -188,14 +204,14 @@ A full playthrough — Cave Entrance through the troll fight — is designed to 
 
 ### Design Principle: Data vs. Narration
 
-The dungeon's rooms, enemies, stats, and the merchant's stock are all defined as fixed data (Python/Pydantic models), not invented by the LLM. Graph nodes read and update this data directly — rolling the dice and checking real numbers like enemy HP — while the LLM's only job is to turn the outcome into narration. Each room supplies a list of "room facts" that the Dungeon Master is told to stick to, and each room validates whether the player's intent makes sense there (returning an instruction for how to narrate a refusal). This keeps the conditional edges reliable and the game state consistent across turns.
+The dungeon's rooms, enemies, stats, and the merchant's stock are all defined as fixed data (Python/Pydantic models), not invented by the LLM. Graph nodes read and update this data directly — rolling the dice and checking real numbers like enemy HP — while the LLM's only job is to turn the outcome into narration. Each room supplies a list of "room facts" that the Dungeon Master is told to stick to, and each room declares its set of legal intents and validates whether the player's intent makes sense there (returning an instruction for how to narrate a refusal). An intent outside the set is refused before any node acts. This keeps the conditional edges reliable and the game state consistent across turns.
 
 ### The Workflow Graph
 
 Each player command triggers exactly one graph invocation — input goes in, flows through the relevant nodes, and the narration comes out. The graph looks like this:
 
 1. **Router Node** — asks the Router agent to classify the player's free-text input as explore, look, attack, shop, drink potion, cast healing, open chest, multiple, or unknown (only the intents the class supports are offered), and fills in details such as direction, chest side, shop item and quantity.
-2. **Explore Node** — validates the move against the room and, if allowed, advances the player to the next room, marking the player as fighting when the room is a Monster Room or Throne Room. A forward move in an un-sprung Trap Room goes to the Cross Trap Node instead. A forward move out of a Treasure Room while the serpent is loose goes on to the Enemy Attack Node.
+2. **Explore Node** — validates the move against the room and, if allowed, advances the player to the next room, marking the player as fighting when the room is a Monster Room or Throne Room. A forward move in an un-sprung Trap Room goes to the Cross Trap Node instead. During a fight, a refused move (leaving a Monster Room, Throne Room, or a Treasure Room with the serpent loose) goes on to the Enemy Attack Node, like every other command except look, multiple, and unknown.
 3. **Cross Trap Node** — rolls the trap, applies any wound, awards the gold, then goes to the Game Over Node.
 4. **Look Node** — describes the room; valid everywhere.
 5. **Player Attack Node** — validates the attack, then rolls to hit and damage. If the enemy survives, it goes on to the Enemy Attack Node; if the troll died, it goes straight to the Game Over Node; if another enemy died, the turn ends (the player collects any gold).
@@ -204,7 +220,7 @@ Each player command triggers exactly one graph invocation — input goes in, flo
 8. **Drink Potion / Cast Healing Nodes** — heal the player; if the player is fighting, the Enemy Attack Node follows.
 9. **Open Chest Node** — gives the gold or releases the serpent (and starts the fight).
 10. **Game Over Node** — reached after the trap and after enemy attacks, or directly when the troll dies. It ends the game with a death or victory narration if the player's HP is 0 or the troll is dead; otherwise it does nothing.
-11. **Multiple / Unknown** — canned or narrated refusals for compound or nonsensical commands.
+11. **Multiple / Unknown / Illegal** — canned or narrated refusals for compound, nonsensical, or room-illegal commands. None of these goes on to the Enemy Attack Node.
 
 **Example — an attack turn:** a player attack that wounds the enemy runs `Router → Player Attack → Enemy Attack → Game Over Node` (the last one only acts if the player just died). A killing blow on a monster is `Router → Player Attack`; a killing blow on the troll is `Router → Player Attack → Game Over`. Most other turns are just `Router → one node`.
 
