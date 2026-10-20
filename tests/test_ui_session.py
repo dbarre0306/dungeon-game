@@ -60,7 +60,7 @@ def test_hud_shows_health_weapon_shield_potions_gold_and_room():
     for expected in [
         "Cave entrance",
         "Room 1 of 6",
-        "20",
+        "25",
         "Bronze sword",
         "Bronze shield",
         "Good",

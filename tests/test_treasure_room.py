@@ -1,6 +1,6 @@
 """The treasure room: two chests, one with 3 to 6 gold (2 + a d4) and one with a
 15 HP serpent. The player opens exactly one by naming it. The serpent fights like
-a monster: the warrior has 20 of 25 HP and +3 to hit (a d20 of 9 or more hits)
+a monster: the warrior has 25 HP and +3 to hit (a d20 of 9 or more hits)
 with a 2 point shield; the serpent has +0 to hit (12 or more hits)."""
 
 import pytest
@@ -78,7 +78,7 @@ def test_the_serpent_chest_starts_a_fight_and_tells_the_player_to_kill_it():
     state = game.say("open the right chest")
 
     assert state.player.is_fighting
-    assert state.player.health_points == 20
+    assert state.player.health_points == 25
     assert state.player.gold_coins == 10
     assert state.get_current_room().opened_side == "right"
     assert state.get_current_room().enemy.health_points == 15
@@ -113,7 +113,7 @@ def test_a_fight_round_with_the_serpent():
     state = game.say("attack")
 
     assert state.get_current_room().enemy.health_points == 11
-    assert state.player.health_points == 17
+    assert state.player.health_points == 22
     assert len(state.narration) == 2
     assert game.room_type == "treasure_room"
     game.dice.assert_exhausted()
@@ -152,7 +152,7 @@ def test_trying_to_leave_while_the_serpent_lives_costs_a_turn_and_it_strikes():
     state = game.say("go forward")
 
     assert game.room_type == "treasure_room"
-    assert state.player.health_points == 17
+    assert state.player.health_points == 22
     assert (
         state.get_current_room().enemy.health_points == 15
     )  # the player did not attack
@@ -181,7 +181,7 @@ def test_going_another_direction_is_refused_without_a_strike():
     state = game.say("go left")
 
     assert "only way out is forward" in game.dm.messages[-1]
-    assert state.player.health_points == 20
+    assert state.player.health_points == 25
     game.dice.assert_exhausted()
 
 

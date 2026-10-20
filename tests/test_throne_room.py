@@ -1,7 +1,7 @@
 """The throne room: the player arrives mid-fight with the troll, there is no way
 out, and killing the troll wins the game.
 
-The warrior has 20 of 25 HP, +3 to hit (so a d20 roll of 9 or more hits), and a shield
+The warrior has 25 HP, +3 to hit (so a d20 roll of 9 or more hits), and a shield
 absorbing 2 damage. The troll has 30 HP and +0 to hit (12 or more hits), and
 hits for a d10 plus 2. Dice are consumed in order: the player's d20, then d6 for
 damage on a hit, and then the troll's d20 and d10 in the same way."""
@@ -18,7 +18,7 @@ from tests.support.scenario import Scenario
 
 THRONE_ROOM = 0
 SHOP_ROOM = 3
-PLAYER_HEALTH_POINTS = 20
+PLAYER_HEALTH_POINTS = 25
 
 ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
@@ -125,13 +125,14 @@ def test_the_troll_misses_just_under_the_needed_roll():
 def test_drinking_a_potion_mid_fight_heals_and_lets_the_troll_strike():
     # The player misses and the troll hits for 5 + 2 - 2; then the potion heals 8
     # and the troll hits for 5 again.
+    # The potion heals only up to the 25 HP maximum.
     game = throne_game(5, 14, 5, 14, 5)
     game.say("attack")
 
     state = game.say("drink")
 
     assert state.player.potions.quantity == 1
-    assert state.player.health_points == (PLAYER_HEALTH_POINTS - 5) + 8 - 5
+    assert state.player.health_points == 25 - 5
 
 
 def test_killing_the_troll_wins_the_game():

@@ -334,7 +334,7 @@ def test_attacking_with_a_weapon_the_player_lacks_is_rejected_without_a_fight():
     state = game.say("swing axe")
 
     assert state.get_current_room().enemy.health_points == 10
-    assert state.player.health_points == 20
+    assert state.player.health_points == 25
     assert "do not have the weapon" in game.dm.messages[-1]
     assert game.included_command_of_last_call() if False else True
 
