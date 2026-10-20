@@ -10,37 +10,41 @@ A text-based dungeon crawler — design notes for a LangGraph / LangChain demo a
 
 ### Overview
 
-This is a short, text-based dungeon crawler in the style of a choose-your-own-adventure story. The player reads narration, types what their character does in plain English, and a narrator (the "DM") describes what happens next. There's no board and no rules to memorize — combat, exploration, and shopping are all resolved through short text exchanges, with dice rolls determining outcomes behind the scenes.
+This is a short, text-based dungeon crawler in the style of a choose-your-own-adventure story. The player reads narration, types what their character does in plain English, and a narrator (the "DM") describes what happens next. There's no board and no rules to memorize — combat, exploration, and shopping are all resolved through short text exchanges, with dice rolls determining outcomes behind the scenes. The game rules live in code, not in the LLM: one model classifies what the player typed, the code resolves it with real numbers, and a second model only narrates the result.
 
 ### The Dungeon
 
-The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. At the Fork, the player can go left or right — this choice is flavor only. Either way, the game randomly picks **2 of 3 possible challenge rooms** (Monster Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Throne Room.
+The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms is randomized each playthrough. The whole dungeon is generated up front when the game starts. At the Cave Chamber (the fork), the player must say left or right — this choice is flavor only and does not change the route. The game randomly picks **2 of 3 possible challenge rooms** (Monster Room, Trap Room, Treasure Room — no repeats), in random order, before a guaranteed stop at the Shop and the final Throne Room.
 
-**Path:** `Cave Entrance → Fork → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Throne Room`
+**Path:** `Cave Entrance → Cave Chamber → (2 of 3: Monster Room, Trap Room, Treasure Room, in random order) → Shop Room → Throne Room`
+
+The rooms form a one-way line: the player only ever moves forward, and there is no going back. In every room the player can *look* around, and can drink a potion (Warrior) or cast Heal (Mage); other actions depend on the room, as described below. A command the room doesn't allow gets a narrated refusal and costs nothing, unless noted.
 
 | Room          | What's there                                                                                                |
 | ------------- | ----------------------------------------------------------------------------------------------------------- |
-| Cave Entrance | Starting point. A torch on the wall.                                                                        |
-| Fork          | Tunnel splits left/right — cosmetic only; triggers the random challenge sequence either way.                |
-| Monster Room  | A random enemy: giant rat, goblin, or orc (stats in *Game Balance*). Drops 10 gold.                         |
-| Trap Room     | A dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.    |
+| Cave Entrance | Starting point. The player must enter the cave (move forward); any other direction is refused.              |
+| Cave Chamber  | The fork. A torch on the wall and a passage left and right. The player must pick left or right ("forward" is refused); the choice is cosmetic. |
+| Monster Room  | A random enemy: giant rat, goblin, or orc (stats in *Game Balance*). Drops 5 gold.                         |
+| Trap Room     | A poison dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way. |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold. |
 | Throne Room   | Final fight: a 25 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others. |
 
+**Monster Room details.** The player enters the room already in a fight. The monster will not let the player pass while it is alive, so the only way on is to kill it; there is no going back. Each exchange follows the *Combat* rules. When the monster dies, the player automatically collects the 5 gold coins behind it and the doorway forward opens. Attacking a monster that is already dead is refused.
+
 Exactly 2 of the 3 challenge rooms appear in any given run — the third is simply skipped that time. This keeps every playthrough a little different while guaranteeing the Shop is always reachable, so gold earned earlier always has somewhere to go.
 
-**Trap Room details.** The trap is randomly either a dart trap or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. The trap triggers automatically the moment the player attempts to cross the room. A dice roll decides whether they dodge it cleanly, suffer a minor wound, or a major wound. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The player rolls a d20 (no bonus): **8 or higher dodges the trap** (65% of the time). On a lower roll the player is struck, and a d10 determines the extent of the wound: 8 or greater is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap automatically collects the gold coins on the far side: a random 4 to 6.
+**Trap Room details.** The trap is randomly either a poison dart or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. In this room the only action that does anything is moving forward (looking around is also allowed); anything else is not understood. The trap triggers automatically the moment the player tries to cross the room. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The game rolls a d20 (no bonus): **11 or lower dodges the trap** (55% of the time); **12 or higher strikes the player** (45%). When struck, a d10 decides the extent of the wound: 8 or greater is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap — whether they dodged it or were wounded — automatically collects the gold coins on the far side: a random 4 to 6 (3 + a d3). If the wound kills the player, the game ends.
 
-**Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the player enters the room, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both.
+**Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the dungeon is generated, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both; trying to open the other one afterwards is refused.
 
-- **Gold chest:** the player is awarded a random 3 to 6 gold coins the moment they open it. Nothing else happens, and the player is free to leave the room.
-- **Serpent chest:** combat begins immediately. The serpent starts with 12 HP (tracked internally — the player is not told its HP) and fights using the same logic as the monster room — the serpent's stats are in *Game Balance*, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. Only when the player opens this chest does the narration tell them they must kill the serpent. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
-- **Trying to leave while the serpent is alive:** the player cannot leave. The attempt costs them their turn, and the serpent can strike them.
+- **Gold chest:** the player is awarded a random 3 to 6 gold coins (2 + a d4) the moment they open it. Nothing else happens, and the player is free to leave the room.
+- **Serpent chest:** combat begins immediately. The serpent starts with 12 HP and fights using the same logic as the monster room — the serpent's stats are in *Game Balance*, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. The serpent does not bite on the turn the chest is opened; the narration just tells the player they must kill it. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
+- **Trying to leave while the serpent is alive:** the player cannot leave. The attempt costs them their turn, and the serpent gets a free attack. Attacking is only possible while the serpent is loose; otherwise there is nothing to attack.
 - **Trying to leave before opening a chest:** the player cannot leave until they open one. The attempt is simply refused, with no penalty.
 - If the player's HP reaches 0 in the fight, the game ends as usual.
 
-**Shop Room details.** An old merchant selling stuff.
+**Shop Room details.** An old merchant behind a two-wheeled wooden cart, selling stuff. The player can look around, buy, or move forward; trying to attack the merchant is refused (he is peaceful).
 
 - **Stock depends on the class:**
   - Warrior: one steel sword, one steel shield, and three potions.
@@ -50,43 +54,47 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
   - Steel sword: 10 gold coins.
   - Steel shield: 10 gold coins.
   - Elder staff: 15 gold coins.
-- **Rest by the fire:** on entering the Shop Room the merchant offers a seat by his fire, and the player automatically recovers 5 HP (up to their max). This gives the player a breather before the final fight.
-- **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield and the staff.
+- **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield (the new shield arrives in full condition) and the staff. The Elder staff keeps any Heal casts the old staff had left, and adds its own on top.
 - **Potions add up:** bought potions are added to any potions the player already has.
 - **Quantity:**
-  - Potions are the only item that can be bought in quantity (e.g. "buy 2 potions").
-  - If the player doesn't say how many, they buy one.
+  - The player names one kind of item per purchase and may give a number (e.g. "buy 2 potions"). Only potions have more than one in stock.
+  - If the player doesn't say how many, they buy one. A quantity below one is refused.
+  - If the player doesn't say what they want to buy, the merchant asks.
 - **Limited stock:** the merchant tracks how many of each item are left, and an item that runs out (e.g. the steel sword once bought) can't be bought again.
 - **All or nothing:** if the player asks for more than the merchant has left, or can't afford the total, nothing is bought and the merchant says why.
 - **Leaving:** the player is not required to buy anything. At any point, the player can move forward to the next room.
+- There is no rest by the fire or any other free healing here.
 
 **Throne Room details.** The final room. A troll twice the player's size sits on a stone throne, a large spiked wooden club in its hand and the Amulet of Valdorin hanging around its neck.
 
-- **The troll:** twice the player's size and armed with a large spiked wooden club. 25 HP (tracked internally — the player is not told its HP). It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies.
+- **The troll:** twice the player's size and armed with a large spiked wooden club. 25 HP. It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies. The player enters the room already in a fight.
 - **The troll hits much harder than other enemies.** Its club deals more damage than anything else in the dungeon: 1d8 + 2 (see *Game Balance*).
 - **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out and nothing else happens.
-- **Winning:** the moment the troll's HP reaches 0, the player wins. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
+- **Winning:** the moment the troll's HP reaches 0, the player wins — the troll does not get a final counterattack. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
 - If the player's HP reaches 0 first, the game ends as usual.
 
 ### Playable Roles
 
 Two classes are available for this demo: **Warrior** and **Mage**. Each starts with fixed gear and stats — no character building or leveling required.
 
-|                | Warrior                                     | Mage                                  |
-| -------------- | ------------------------------------------- | ------------------------------------- |
-| Starting HP    | 30                                          | 24                                    |
-| Armor Class    | 14 (shield included)                        | 12                                    |
-| Weapon         | Bronze sword + shield                       | Staff                                 |
-| To-hit bonus   | +3                                          | +5                                    |
-| Damage         | 1d6 + 1                                     | 1d8 (Firebolt)                        |
-| Special        | Shield passively lowers chance of being hit | Can cast Heal (+8 HP), 4 casts per run |
-| Starting gold  | 10                                          | 10                                    |
-| Starting items | Sword, shield, 2 potions                    | Staff                                 |
+|                | Warrior                                                  | Mage                                   |
+| -------------- | -------------------------------------------------------- | -------------------------------------- |
+| Starting HP    | 30                                                       | 24                                     |
+| Weapon         | Bronze sword + bronze shield                             | Staff                                  |
+| To-hit bonus   | +3                                                       | +5                                     |
+| Damage         | 1d6 + 1                                                  | 1d8 (Fire bolt)                        |
+| Special        | Shield absorbs damage until it wears out (see *Combat*)  | Can cast Heal to full HP, 4 casts per run |
+| Starting gold  | 10                                                       | 10                                     |
+| Starting items | Sword, shield, 2 potions                                 | Staff                                  |
+
+There is no Armor Class: the player's defense is only the shield's damage absorption. The Mage has no defense at all.
 
 **Shop upgrades** (class-specific, so each class is only offered relevant gear):
 
-- Warrior: **Steel Sword** (+2 damage, so 1d6 + 3), **Steel Shield** (+1 Armor Class, so 15), **Potion** (+8 HP, usable anytime)
+- Warrior: **Steel Sword** (+2 damage over the bronze sword, so 1d6 + 3), **Steel Shield** (a sturdier shield, see *Combat*), **Potion** (+8 HP, usable anytime)
 - Mage: **Elder Staff** (+2 damage, so 1d8 + 2)
+
+**Which class can be played.** Both classes exist in the game logic, but the Gradio UI can currently only start a Warrior game; choosing the Mage is not yet supported there.
 
 ### What the Player Does
 
@@ -97,38 +105,56 @@ At the start, the player picks a class (Warrior or Mage) and is dropped into the
 3. The game figures out what kind of action that is (fighting, shopping, talking, exploring) and resolves it — rolling dice where the outcome is uncertain.
 4. The DM narrates the result, and the player's HP / inventory / gold sidebar updates to match.
 
-The player can type anything, but each turn resolves a **single action**. If someone types a compound action (e.g. "drink a potion and attack the troll"), the game resolves just the first one and narrates accordingly — keeps combat math and the graph's logic simple, one action in, one resolved turn out.
+The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible in the current room is narrated as not making sense, again at no cost. The actions the game recognizes are: look, move (left / right / forward), attack, buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. Keeps combat math and the graph's logic simple, one action in, one resolved turn out.
 
 ### Combat
 
-Combat is a back-and-forth exchange resolved with two dice rolls per attack: a 20-sided die decides whether an attack lands (d20 + the attacker's to-hit bonus must meet or beat the target's Armor Class), and if it hits, a smaller die decides how much damage is dealt. A natural 20 always hits and rolls the damage die twice (a critical hit); a natural 1 always misses. After the player's attack resolves, the enemy immediately gets its own attack in the same turn, using the same two-roll process. One full player turn — attack, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response.
+Combat is a back-and-forth exchange resolved with two dice rolls per attack. To see whether an attack lands, the game rolls a d20, adds the attacker's to-hit bonus, and the attack hits on a total of **12 or more** — the same target for everyone, since there is no Armor Class. There are no critical hits or automatic misses. On a hit, the attacker rolls their damage die and adds their damage bonus.
+
+A fight starts when the player enters the Monster Room or Throne Room, or opens the serpent's chest, and ends when one side dies. While the player is fighting, the enemy gets its own attack (same two-roll process) right after each of these player actions, provided the enemy is still alive:
+
+- attacking,
+- drinking a potion or casting Heal,
+- trying to leave the treasure room while the serpent is loose.
+
+Looking around, refused commands, and confused commands do not provoke a counterattack. One full player turn — action, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response. If the player dies from the counterattack, the game ends; if the enemy dies, the fight is over and no counterattack happens.
+
+**The shield (Warrior).** A hit's damage is reduced by what the shield absorbs, and the shield loses one durability point for each point absorbed. If the shield absorbs the whole blow, the hit does no damage. A shield cannot be repaired; it changes condition as it wears:
+
+| Condition | When                          | Absorbs from each blow                 |
+| --------- | ----------------------------- | -------------------------------------- |
+| Good      | more than half durability left | its full block value                  |
+| Damaged   | half durability or less, but some left | half its block value (at least 1) |
+| Broken    | no durability left            | nothing                                |
+
+A shield never absorbs more than the durability it has left. The bronze shield has block value 2 and durability 6; the steel shield has block value 4 and durability 10. The narration mentions when the shield becomes damaged or breaks.
 
 ### Game Balance
 
 **Design goal:** the game should be fun, so a reasonably sensible player should win roughly **60–70% of runs or more**, yet losing must stay a real possibility, mostly in the Throne Room or after a bad streak in the challenge rooms. Dice add drama; the numbers below make sure the odds stay in the player's favor. All values are starting points to be validated by play-testing.
 
-**Healing.** A potion or the Heal spell restores 8 HP and takes the player's whole turn (the enemy still counterattacks), so healing is a real decision, not a free action. Players start with enough healing to survive one bad fight, and the shop and rest let them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
+**Healing.** A potion restores 8 HP (never above the maximum); the Heal spell restores the Mage to full HP. Either takes the player's whole turn, so during a fight the enemy still counterattacks, which makes healing a real decision, not a free action. Outside a fight there is no counterattack. A potion drunk at full HP is used up for nothing, and a Heal cast at full HP still uses up a cast. When the player has none left, the action is refused. Players start with enough healing to survive one bad fight, and the shop lets them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
 
-**Enemies** (to-hit is added to the enemy's d20 and must meet or beat the player's Armor Class):
+**Enemies** (to-hit is added to the d20 and the total must reach 12; the player's shield then reduces the damage):
 
-| Enemy        | HP | Armor Class | To-hit | Damage | Notes                          |
-| ------------ | -- | ----------- | ------ | ------ | ------------------------------ |
-| Giant rat    | 7  | 10          | +2     | 1d3    | Easy warm-up                   |
-| Goblin       | 10 | 12          | +3     | 1d4+1  | Average                        |
-| Orc          | 16 | 13          | +4     | 1d6+1  | Toughest of the monster room   |
-| Serpent      | 12 | 12          | +3     | 1d6    | Ambush; no gold reward         |
-| Troll (boss) | 25 | 13          | +4     | 1d8+2  | Hits for 3–10; avg 6.5 per hit |
+| Enemy        | HP | Weapon             | To-hit | Damage | Notes                          |
+| ------------ | -- | ------------------ | ------ | ------ | ------------------------------ |
+| Giant rat    | 7  | Razor sharp teeth  | +2     | 1d3    | Easy warm-up                   |
+| Goblin       | 10 | Dagger             | +3     | 1d4+1  | Average                        |
+| Orc          | 16 | Battle ax          | +4     | 1d6+1  | Toughest of the monster room   |
+| Serpent      | 12 | Fangs              | +3     | 1d6    | Ambush; no gold reward         |
+| Troll (boss) | 25 | Spiked wooden club | +4     | 1d8+2  | Hits for 3–10; avg 6.5 per hit |
 
-**Resulting odds (approximate).** The Warrior hits most enemies about 60–70% of the time, the Mage about 70–75%. The troll hits the Warrior (AC 14–15) about half the time and the Mage (AC 12) about 65% of the time. The troll fight lasts roughly 5–7 turns, so a player who arrives with 20+ HP and a healing option usually wins, while one who skipped the shop or ignored low HP can lose.
+**Resulting odds.** With a flat target of 12, a hit lands with probability (9 + to-hit bonus) / 20. The Warrior (+3) hits 60% of the time and the Mage (+5) 70%. The rat hits 55%, the goblin and serpent 60%, and the orc and troll 65%. The shield trims every hit: a good bronze shield absorbs up to 2 points, a good steel shield up to 4, which matters most against the many small hits of the monster rooms and takes a real bite out of the troll's 3–10. The Mage has no such protection. The troll fight lasts roughly 5–7 turns, so a player who arrives with 20+ HP and a healing option usually wins, while one who skipped the shop or ignored low HP can lose.
 
-**Economy.** Gold sources: starting gold (10), Monster Room (10), Trap Room (4–6), Treasure Room gold chest (3–6, no gold from the serpent chest). Both classes start with 10 gold and reach the shop with 14–26. The Warrior can afford a steel sword or shield plus a potion or two; the Mage can afford the Elder Staff (15) in all but the unluckiest case (Trap Room plus a serpent chest leaves 14–16 gold), a mild setback rather than a dead end.
+**Economy.** Gold sources: starting gold (10), Monster Room (5), Trap Room (4–6), Treasure Room gold chest (3–6, no gold from the serpent chest). Both classes start with 10 gold and reach the shop with 14–22. The Warrior can afford a steel sword or shield plus a potion or two; the Mage can afford the Elder Staff (15) in all but the unluckiest case (Trap Room plus a serpent chest leaves 14–16 gold), a mild setback rather than a dead end.
 
-**Simulated win rates.** A simple simulation (always attack, heal when HP ≤ 10, buy sword → shield → potions for the Warrior and the staff for the Mage) gives roughly **75% for the Warrior and 70% for the Mage**. Real players will be a bit less optimal, which lands in the intended 60–70%+ range. Re-run this simulation whenever the numbers change.
+**Win rates.** The earlier simulation figures (~75% Warrior, ~70% Mage) were computed with an Armor Class model that no longer matches the combat rules, so they should be treated as stale. Re-run the simulation against the current rules whenever the numbers change.
 
 ### Winning and Losing
 
-- **Lose:** the player's HP reaches 0 at any point — the game ends immediately with a death narration.
-- **Win:** the player defeats the troll in the Throne Room (its HP reaches 0) and reclaims the **Amulet of Valdorin** automatically — the narration tells them they have taken it from the troll's neck. The amulet's power then brings the player back to the kingdom, ending the run with a victory narration.
+- **Lose:** the player's HP reaches 0 at any point (in a fight or from the trap) — the game ends immediately with a death narration followed by a brief farewell.
+- **Win:** the player defeats the troll in the Throne Room (its HP reaches 0) and reclaims the **Amulet of Valdorin** automatically — the narration tells them they have taken it from the troll's neck. The amulet's power then brings the player back to the kingdom, ending the run with a victory narration. Once the game is over, further commands are ignored.
 
 ### Session Length
 
@@ -140,27 +166,33 @@ A full playthrough — Cave Entrance through the troll fight — is designed to 
 
 ### Tech Stack
 
-- **LangGraph** — the state machine that drives the game: nodes for each type of turn, conditional edges for branching (hit vs. miss, alive vs. dead, in-budget vs. not).
-- **LangChain** — underlying building blocks used inside the graph: the chat model wrapper, tool definitions, etc.
-- **Gradio** — the chat-style UI, deployed as a Hugging Face Space, with a sidebar showing HP, inventory, and gold.
-- **Persistence** — LangGraph's checkpointer (SQLite-backed) saves game state per player session (`thread_id`), so a player can leave and resume later.
+- **LangGraph** — the state machine that drives the game: nodes for each type of turn, conditional edges for branching (fighting vs. not, alive vs. dead).
+- **LangChain** — underlying building blocks used inside the graph: the chat model wrapper and structured output. Two agents are built on it: a **Router agent** that classifies the player's text into an intent, and a **Dungeon Master agent** that narrates results. The model is chosen with the `MODEL` environment variable (default `gpt-4o-mini`; a bare name means OpenAI, `provider:name` is used as given).
+- **Gradio** — the chat-style UI, meant for deployment as a Hugging Face Space, with a status panel showing HP, shield condition, potions and gold, plus the current enemy's HP. The home page lets the player pick a hero; the game page shows the narration and takes commands.
+- **Pydantic** — all game state (player, dungeon, rooms, merchant) is made of immutable-style models: nodes return updated copies rather than mutating state.
 
 ### Design Principle: Data vs. Narration
 
-The dungeon's rooms, enemies, stats, and the merchant's stock are all defined as fixed data (a Python structure), not invented by the LLM. Graph nodes read and update this data directly — checking real numbers like enemy HP — while the LLM's only job is to turn those numbers into narration. This keeps the conditional edges reliable and the game state consistent across turns.
+The dungeon's rooms, enemies, stats, and the merchant's stock are all defined as fixed data (Python/Pydantic models), not invented by the LLM. Graph nodes read and update this data directly — rolling the dice and checking real numbers like enemy HP — while the LLM's only job is to turn the outcome into narration. Each room supplies a list of "room facts" that the Dungeon Master is told to stick to, and each room validates whether the player's intent makes sense there (returning an instruction for how to narrate a refusal). This keeps the conditional edges reliable and the game state consistent across turns.
 
 ### The Workflow Graph
 
-Each player command triggers exactly one graph invocation — input goes in, flows through the relevant nodes, and a single narrated response comes out. The graph looks roughly like this:
+Each player command triggers exactly one graph invocation — input goes in, flows through the relevant nodes, and the narration comes out. The graph looks like this:
 
-1. **Router Node** — classifies the player's free-text input as explore, combat, dialogue, or shop, and routes to the matching node.
-2. **Explore Node** — default handling for movement and looking around; generates the randomized 2-of-3 challenge sequence at the Fork, tracks the player's position in that sequence, and resolves room transitions and traps.
-3. **Combat Node** — resolves the player's attack, then the enemy's counterattack, updating HP for both sides.
-4. **Shop Node** — checks the merchant's remaining stock and the player's gold against the price; if the purchase is valid, it hands the item to the player, deducts the gold, and reduces the merchant's stock.
-5. **Game Over Node** — reached only via a conditional check (HP ≤ 0 for either side) after combat; ends the session or triggers the victory narration and reward.
+1. **Router Node** — asks the Router agent to classify the player's free-text input as explore, look, attack, shop, drink potion, cast healing, open chest, multiple, or unknown (only the intents the class supports are offered), and fills in details such as direction, chest side, shop item and quantity.
+2. **Explore Node** — validates the move against the room and, if allowed, advances the player to the next room, marking the player as fighting when the room is a Monster Room or Throne Room. A forward move in an un-sprung Trap Room goes to the Cross Trap Node instead. A forward move out of a Treasure Room while the serpent is loose goes on to the Enemy Attack Node.
+3. **Cross Trap Node** — rolls the trap, applies any wound, awards the gold, then goes to the Game Over Node.
+4. **Look Node** — describes the room; valid everywhere.
+5. **Player Attack Node** — validates the attack, then rolls to hit and damage. If the enemy survives, it goes on to the Enemy Attack Node; if the troll died, it goes straight to the Game Over Node; if another enemy died, the turn ends (the player collects any gold).
+6. **Enemy Attack Node** — the mirror image of the player's attack, applying the shield's absorption for the Warrior; then goes to the Game Over Node.
+7. **Shop Node** — checks the merchant's stock and the player's gold; if the purchase is valid, hands the item to the player, deducts the gold, and reduces the merchant's stock.
+8. **Drink Potion / Cast Healing Nodes** — heal the player; if the player is fighting, the Enemy Attack Node follows.
+9. **Open Chest Node** — gives the gold or releases the serpent (and starts the fight).
+10. **Game Over Node** — reached after the trap and after enemy attacks, or directly when the troll dies. It ends the game with a death or victory narration if the player's HP is 0 or the troll is dead; otherwise it does nothing.
+11. **Multiple / Unknown** — canned or narrated refusals for compound or nonsensical commands.
 
-**Example — an attack turn:** the longest realistic path through the graph in a single turn — a player attack that results in a kill — looks like: `Router → Combat Node → Game Over Node`. Most turns are shorter, resolving in just `Router → one node`, since the "did someone just die" check is the only case that chains a third node.
+**Example — an attack turn:** a player attack that wounds the enemy runs `Router → Player Attack → Enemy Attack → Game Over Node` (the last one only acts if the player just died). A killing blow on a monster is `Router → Player Attack`; a killing blow on the troll is `Router → Player Attack → Game Over`. Most other turns are just `Router → one node`.
 
-### Persistence Flow
+### State and Persistence
 
-Each play session is tied to a `thread_id`. Every graph invocation reads the current state (HP, inventory, gold, current room, the merchant's remaining stock) from the checkpointer at the start and writes the updated state back out at the end. This is what allows a player to close the browser tab and resume later with their character and progress intact, and it doubles as a clean, concrete example of LangGraph's persistence model.
+The whole game is one `GameState` (player, dungeon, last command, intent, narration, and a game-over flag). Each Gradio session holds its own `GameState` and a log of the story so far in memory, and each command is run through the graph against that state. There is currently no checkpointer or database: closing the tab or restarting the server loses the game. Saving progress with LangGraph's checkpointer (keyed by `thread_id`) is a possible future addition.
