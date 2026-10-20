@@ -32,6 +32,3 @@ class Player(Combatant):
     def with_purchased_item(
         self, item: InventoryItem, quantity: int, price: int
     ) -> Self: ...
-
-    def print(self):
-        pass

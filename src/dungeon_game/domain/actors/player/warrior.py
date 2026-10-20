@@ -126,17 +126,6 @@ class Warrior(Player):
             return None
         return f"The player's {self.shield.name} is now {self.shield.state}."
 
-    def print(self):
-        print(f"Gold Coins: {self.gold_coins}")
-        print(f"Health Points: {self.health_points}")
-        print(f"Is Fighting: {self.is_fighting}")
-        print(f"Potions: {self.potions.quantity}")
-        print(f"Sword: {self.sword.name}")
-        print(
-            f"Shield: {self.shield.name} "
-            f"({self.shield.condition}:{self.shield.durability})"
-        )
-
 
 def create_default_warrior() -> Player:
     return Warrior(

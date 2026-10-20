@@ -91,13 +91,6 @@ class Mage(Player):
             update={"staff": staff, "gold_coins": self.gold_coins - price}
         )
 
-    def print(self):
-        print(f"Gold Coins: {self.gold_coins}")
-        print(f"Health Points: {self.health_points}")
-        print(f"Is Fighting: {self.is_fighting}")
-        print(f"Staff: {self.staff.name}")
-        print(f"Healing Spells: {self.healing_casts_left}")
-
 
 def create_default_mage() -> Player:
     return Mage(
