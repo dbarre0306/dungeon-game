@@ -2,6 +2,8 @@
 
 from html import escape
 
+from dungeon_game.domain.actors.player.mage import Mage
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.actors.player.warrior import Warrior
 from dungeon_game.game_state import GameState
 from dungeon_game.ui.session import LogEntry
@@ -53,39 +55,63 @@ def _enemy_html(state: GameState) -> str:
     )
 
 
-def hud_html(state: GameState) -> str:
-    """The hero's vital signs and gear, and any foe being fought."""
-    player = state.player
-    if not isinstance(player, Warrior):
-        raise TypeError("The game screen only supports the Warrior so far")
-    shield = player.shield
-    condition = shield.condition
+def _health_html(player: Player) -> str:
     tone = _health_tone(player.health_points, player.max_health_points)
-    health = (
+    return (
         '<section class="mw-panel">'
         '<p class="mw-vital">Health Points: '
         f"<strong>{player.health_points}/{player.max_health_points}</strong></p>"
         + _bar(player.health_points, player.max_health_points, tone)
         + "</section>"
     )
-    gear = (
+
+
+def _gear_html(rows: list[str]) -> str:
+    return (
         '<section class="mw-panel"><dl class="mw-gear">'
-        + _row("Weapon", escape(player.sword.name.capitalize()))
-        + _row(
+        + "".join(rows)
+        + "</dl></section>"
+    )
+
+
+def _warrior_rows(player: Warrior) -> list[str]:
+    shield = player.shield
+    condition = shield.condition
+    return [
+        _row("Weapon", escape(player.sword.name.capitalize())),
+        _row(
             "Shield",
             f"{escape(shield.name.capitalize())}"
             f'<span class="mw-cond {condition}">{SHIELD_LABELS[condition]}</span>'
             f'<span class="mw-pips" title="Shield durability">'
             f"{_pips(shield.durability, shield.max_durability)}</span>",
-        )
-        + _row("Potions", str(player.potions.quantity))
-        + _row("Gold coins", str(player.gold_coins))
-        + "</dl></section>"
-    )
+        ),
+        _row("Potions", str(player.potions.quantity)),
+        _row("Gold coins", str(player.gold_coins)),
+    ]
+
+
+def _mage_rows(player: Mage) -> list[str]:
+    return [
+        _row("Weapon", escape(player.staff.name.capitalize())),
+        _row("Heal casts", str(player.healing_casts_left)),
+        _row("Gold coins", str(player.gold_coins)),
+    ]
+
+
+def hud_html(state: GameState) -> str:
+    """The hero's vital signs and gear, and any foe being fought."""
+    player = state.player
+    if isinstance(player, Warrior):
+        rows = _warrior_rows(player)
+    elif isinstance(player, Mage):
+        rows = _mage_rows(player)
+    else:
+        raise TypeError(f"The game screen does not support {type(player).__name__}")
     return (
-        '<aside class="mw-hud warrior">'
-        + health
-        + gear
+        f'<aside class="mw-hud {player.type}">'
+        + _health_html(player)
+        + _gear_html(rows)
         + _enemy_html(state)
         + "</aside>"
     )

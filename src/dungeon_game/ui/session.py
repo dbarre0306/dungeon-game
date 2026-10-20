@@ -2,6 +2,7 @@
 
 import logging
 import os
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Literal
@@ -9,6 +10,8 @@ from typing import Literal
 from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.agents.router_agent import RouterAgent
 from dungeon_game.domain.actors.merchant import Merchant
+from dungeon_game.domain.actors.player.mage import create_default_mage
+from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon_factory import DungeonFactory
 from dungeon_game.game_graph import GameGraph
@@ -21,6 +24,11 @@ ERROR_MESSAGE = (
     "The narrator lost the thread of the story. "
     "Check the model settings and your API key, then try your action again."
 )
+
+HERO_FACTORIES: dict[str, Callable[[], Player]] = {
+    "warrior": create_default_warrior,
+    "mage": create_default_mage,
+}
 
 EntryKind = Literal["command", "narration", "error"]
 
@@ -50,9 +58,9 @@ def get_graph() -> GameGraph:
 
 def start_session(class_key: str) -> Session:
     """A fresh dungeon and hero, waiting for the narrator to open the scene."""
-    if class_key != "warrior":
-        raise ValueError(f"Cannot start a game as {class_key!r} yet")
-    player = create_default_warrior()
+    if class_key not in HERO_FACTORIES:
+        raise ValueError(f"Cannot start a game as {class_key!r}")
+    player = HERO_FACTORIES[class_key]()
     merchant = Merchant(merchandise=player.get_supported_merchandise())
     dungeon = DungeonFactory().generate(merchant)
     state = GameState(player=player, dungeon=dungeon, command=OPENING_COMMAND)

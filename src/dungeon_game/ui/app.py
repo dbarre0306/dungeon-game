@@ -14,7 +14,7 @@ def build_app() -> gr.Blocks:
         with gr.Column(elem_classes="mw-home") as home:
             play_buttons = build_home()
         game = build_game()
-        wire_game(home, play_buttons["warrior"], game, session)
+        wire_game(home, play_buttons, game, session)
     return demo
 
 

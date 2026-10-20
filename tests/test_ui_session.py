@@ -1,3 +1,5 @@
+import pytest
+
 from dungeon_game.game_state import GameState
 from dungeon_game.ui.render import hud_html, log_html, outcome_of
 from dungeon_game.ui.session import (
@@ -93,3 +95,22 @@ def test_outcome_depends_on_game_over_and_health():
     )
     assert outcome_of(dead) == "defeat"
     assert outcome_of(state.model_copy(update={"game_over": True})) == "victory"
+
+
+def test_new_mage_session_opens_the_scene_first():
+    session = start_session("mage")
+    assert session.pending == "look around"
+    assert session.state.player.type == "mage"
+
+
+def test_mage_hud_shows_health_staff_heal_casts_and_gold():
+    html = hud_html(start_session("mage").state)
+    for expected in ["18", "Staff", "Heal casts", "Gold coins", "mage"]:
+        assert expected in html
+    assert "Shield" not in html
+    assert "Potions" not in html
+
+
+def test_unknown_class_cannot_start():
+    with pytest.raises(ValueError):
+        start_session("rogue")

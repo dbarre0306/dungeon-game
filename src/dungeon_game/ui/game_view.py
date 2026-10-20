@@ -1,6 +1,7 @@
 """Game page: the hero's status, the narration, and the command box."""
 
 from dataclasses import dataclass
+from functools import partial
 
 import gradio as gr
 
@@ -78,15 +79,15 @@ def _render(session: Session) -> tuple[str, str]:
 
 def wire_game(
     home: gr.Column,
-    play_warrior: gr.Button,
+    play_buttons: dict[str, gr.Button],
     game: GameView,
     session: gr.State,
 ) -> None:
-    """Connect the Warrior's play button and the game page's controls."""
+    """Connect each hero's play button and the game page's controls."""
     views = [home, game.root]
 
-    def enter_game():
-        new_session = start_session("warrior")
+    def enter_game(class_key: str):
+        new_session = start_session(class_key)
         hud, log = _render(new_session)
         return (
             new_session,
@@ -128,10 +129,11 @@ def wire_game(
 
     turn_outputs = [session, game.hud, game.log, game.command]
 
-    play_warrior.click(
-        enter_game,
-        outputs=[session, *views, game.hud, game.log, game.command],
-    ).then(resolve, session, turn_outputs).then(None, js=FOCUS_COMMAND_BOX)
+    for class_key, play in play_buttons.items():
+        play.click(
+            partial(enter_game, class_key),
+            outputs=[session, *views, game.hud, game.log, game.command],
+        ).then(resolve, session, turn_outputs).then(None, js=FOCUS_COMMAND_BOX)
 
     for trigger in (game.command.submit, game.act.click):
         trigger(

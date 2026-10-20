@@ -160,6 +160,7 @@ body, .gradio-container {
 
 .mw-board { align-items: flex-start !important; gap: 1rem; }
 
+.mw-hud.mage { --mw-accent: var(--mw-witch); }
 .mw-hud { --mw-accent: var(--mw-ember); display: flex; flex-direction: column; gap: .75rem; }
 .mw-panel { border: 1px solid var(--mw-stone-edge); background: var(--mw-stone); border-radius: 4px; padding: 1rem 1.15rem; }
 .mw-panel.foe { border-color: #6b3a2e; }

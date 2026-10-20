@@ -54,10 +54,10 @@ MAGE = PlayerClass(
     name="Mage",
     tagline="Fragile, but a firebolt hits hard.",
     stats=[
-        ("Health", "15 Health Points (HP)"),
+        ("Health", "18 Health Points (HP)"),
         ("Gear", "Staff"),
         ("Special", "Cast spells to throw fire bolts or to fully heal thyself"),
-        ("Starts with", "5 gold coins"),
+        ("Starts with", "10 gold coins"),
     ],
 )
 
