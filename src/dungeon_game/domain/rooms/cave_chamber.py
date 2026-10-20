@@ -1,6 +1,6 @@
 from typing import Literal
 
-from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.intent import Intent, IntentType
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
@@ -15,6 +15,9 @@ class CaveChamber(DungeonRoom):
         elif intent.is_explore_right():
             return (True, None)
         return False, "Tell the player they must go either left or right."
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore"})
 
     def get_room_facts(self) -> list[str]:
         return [

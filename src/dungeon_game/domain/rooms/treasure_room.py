@@ -1,6 +1,6 @@
 from typing import Literal
 
-from dungeon_game.domain.intent import ChestSide, Intent
+from dungeon_game.domain.intent import ChestSide, Intent, IntentType
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 
 
@@ -78,6 +78,9 @@ class TreasureRoom(CombatRoom):
                 "and they can stop attacking.",
             )
         return (False, "Tell the player that there is nothing here to attack.")
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore", "attack", "open_chest"})
 
     def get_room_facts(self) -> list[str]:
         if self.opened_side is None:

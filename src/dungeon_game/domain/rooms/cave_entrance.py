@@ -2,7 +2,7 @@
 # it does simplify the software design.
 from typing import Literal
 
-from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.intent import Intent, IntentType
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
@@ -16,6 +16,9 @@ class CaveEntrance(DungeonRoom):
             "Tell the player that they cannot go that way "
             "and that they must enter the cave."
         )
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore"})
 
     def get_room_facts(self) -> list[str]:
         return [

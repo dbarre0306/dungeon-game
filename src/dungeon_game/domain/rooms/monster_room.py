@@ -1,6 +1,6 @@
 from typing import Literal
 
-from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.intent import Intent, IntentType
 from dungeon_game.domain.rooms.combat_room import CombatRoom
 
 _NUMBER_OF_GOLD_COINS = 5
@@ -56,6 +56,9 @@ class MonsterRoom(CombatRoom):
             False,
             "Tell the player that you don't understand what they have asked.",
         )
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore", "attack"})
 
     def get_room_facts(self) -> list[str]:
         return [

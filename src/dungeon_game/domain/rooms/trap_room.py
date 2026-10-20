@@ -1,6 +1,6 @@
 from typing import Literal
 
-from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.intent import Intent, IntentType
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
@@ -24,6 +24,9 @@ class TrapRoom(DungeonRoom):
             False,
             "Tell the player that you don't understand what they have asked.",
         )
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore"})
 
     def get_room_facts(self) -> list[str]:
         if self.is_sprung:

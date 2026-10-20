@@ -1,7 +1,7 @@
 from typing import Literal
 
 from dungeon_game.domain.actors.merchant import Merchant
-from dungeon_game.domain.intent import Intent
+from dungeon_game.domain.intent import Intent, IntentType
 from dungeon_game.domain.rooms.dungeon_room import DungeonRoom
 
 
@@ -52,6 +52,9 @@ class ShopRoom(DungeonRoom):
             False,
             "Tell the player that the only way out is forward through the passageway.",
         )
+
+    def _legal_room_intents(self) -> frozenset[IntentType]:
+        return frozenset({"explore", "shop"})
 
     def get_room_facts(self) -> list[str]:
         return [
