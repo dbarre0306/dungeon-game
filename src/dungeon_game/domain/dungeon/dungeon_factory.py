@@ -47,7 +47,6 @@ class DungeonFactory:
     @staticmethod
     def _pick_first_combat_room(rooms: list[str]) -> tuple[str, list[str]]:
         room = random.choice(rooms)
-        room = "monster"
         return room, DungeonFactory._other_rooms(rooms, room)
 
     @staticmethod
