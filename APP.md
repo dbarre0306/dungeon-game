@@ -22,20 +22,20 @@ The dungeon is a small, fixed set of rooms, but the sequence of challenge rooms 
 | ------------- | ----------------------------------------------------------------------------------------------------------- |
 | Cave Entrance | Starting point. A torch on the wall.                                                                        |
 | Fork          | Tunnel splits left/right — cosmetic only; triggers the random challenge sequence either way.                |
-| Monster Room  | A random enemy: goblin, orc, or giant rat. Drops 10 gold.                                                   |
+| Monster Room  | A random enemy: giant rat, goblin, or orc (stats in *Game Balance*). Drops 10 gold.                         |
 | Trap Room     | A dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.    |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold. |
-| Throne Room   | Final fight: a 30 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others. |
+| Throne Room   | Final fight: a 25 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others. |
 
 Exactly 2 of the 3 challenge rooms appear in any given run — the third is simply skipped that time. This keeps every playthrough a little different while guaranteeing the Shop is always reachable, so gold earned earlier always has somewhere to go.
 
-**Trap Room details.** The trap is randomly either a dart trap or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. The trap triggers automatically the moment the player attempts to cross the room. A dice roll decides whether they dodge it cleanly, suffer a minor wound, or a major wound. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The die to determine if the player is struck is the same as the monster room. Another die with ten sides determine the extent of the wound. If it is eight or greater, then it is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap automatically collects the gold coins on the far side: a random 4 to 6.
+**Trap Room details.** The trap is randomly either a dart trap or a swinging blade — not a pit, so it never stops the player from moving on. The passageway forward and some gold coins are on the opposite side of the room. The trap triggers automatically the moment the player attempts to cross the room. A dice roll decides whether they dodge it cleanly, suffer a minor wound, or a major wound. There's no "stuck and must escape" mechanic — it's a one-time crossing, not an ongoing obstacle. The player rolls a d20 (no bonus): **8 or higher dodges the trap** (65% of the time). On a lower roll the player is struck, and a d10 determines the extent of the wound: 8 or greater is a major wound (5 HP); otherwise a minor wound (2 HP). A player who survives the trap automatically collects the gold coins on the far side: a random 4 to 6.
 
 **Treasure Room details.** Two identical chests sit to the left and right of the passageway forward — one holds real loot (gold coins), the other has a serpent coiled inside that strikes when opened. Which chest is which is randomized once, when the player enters the room, and stays fixed for that playthrough. The player must name the chest to open (e.g. "open the left chest") without knowing in advance which is safe. If the command doesn't specify a chest (e.g. just "open the chest"), the DM tells the player they must say which chest to open, and nothing else happens. They can open only one chest, never both.
 
 - **Gold chest:** the player is awarded a random 3 to 6 gold coins the moment they open it. Nothing else happens, and the player is free to leave the room.
-- **Serpent chest:** combat begins immediately. The serpent starts with 15 HP (tracked internally — the player is not told its HP) and fights using the same logic as the monster room — the same to-hit roll and damage die as the monsters, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. Only when the player opens this chest does the narration tell them they must kill the serpent. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
+- **Serpent chest:** combat begins immediately. The serpent starts with 12 HP (tracked internally — the player is not told its HP) and fights using the same logic as the monster room — the serpent's stats are in *Game Balance*, with the player's attack followed by the serpent's counterattack each turn, until one of them dies. Only when the player opens this chest does the narration tell them they must kill the serpent. Killing it allows the player to leave, but earns no gold, and the other chest stays closed.
 - **Trying to leave while the serpent is alive:** the player cannot leave. The attempt costs them their turn, and the serpent can strike them.
 - **Trying to leave before opening a chest:** the player cannot leave until they open one. The attempt is simply refused, with no penalty.
 - If the player's HP reaches 0 in the fight, the game ends as usual.
@@ -44,12 +44,13 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 - **Stock depends on the class:**
   - Warrior: one steel sword, one steel shield, and three potions.
-  - Mage: the Elder staff, which has more powerful firebolt spells. No potions.
+  - Mage: the Elder staff, which has more powerful firebolt spells. No potions (the Mage has Heal instead).
 - **Prices:**
   - Potion: 5 gold coins.
   - Steel sword: 10 gold coins.
   - Steel shield: 10 gold coins.
-  - Elder staff: 20 gold coins.
+  - Elder staff: 15 gold coins.
+- **Rest by the fire:** on entering the Shop Room the merchant offers a seat by his fire, and the player automatically recovers 5 HP (up to their max). This gives the player a breather before the final fight.
 - **Upgrades replace old gear:** buying a steel sword automatically discards the bronze sword. The same goes for the shield and the staff.
 - **Potions add up:** bought potions are added to any potions the player already has.
 - **Quantity:**
@@ -61,8 +62,8 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 **Throne Room details.** The final room. A troll twice the player's size sits on a stone throne, a large spiked wooden club in its hand and the Amulet of Valdorin hanging around its neck.
 
-- **The troll:** twice the player's size and armed with a large spiked wooden club. 30 HP (tracked internally — the player is not told its HP). It fights using the same logic as the monster room — the same to-hit roll as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies.
-- **The troll hits much harder than other enemies.** Its club deals a bigger damage die than anything else in the dungeon: 1d10 + 2 (placeholder — HP and damage numbers are expected to be tuned later).
+- **The troll:** twice the player's size and armed with a large spiked wooden club. 25 HP (tracked internally — the player is not told its HP). It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies.
+- **The troll hits much harder than other enemies.** Its club deals more damage than anything else in the dungeon: 1d8 + 2 (see *Game Balance*).
 - **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out and nothing else happens.
 - **Winning:** the moment the troll's HP reaches 0, the player wins. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
 - If the player's HP reaches 0 first, the game ends as usual.
@@ -71,20 +72,21 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 Two classes are available for this demo: **Warrior** and **Mage**. Each starts with fixed gear and stats — no character building or leveling required.
 
-|                | Warrior                                     | Mage                  |
-| -------------- | ------------------------------------------- | --------------------- |
-| Starting HP    | 25                                          | 15                    |
-| Weapon         | Sword + shield                              | Staff                 |
-| To-hit bonus   | +3                                          | +2                    |
-| Damage die     | 1d6                                         | 1d8 (Firebolt)        |
-| Special        | Shield passively lowers chance of being hit | Can cast Heal (+8 HP) |
-| Starting gold  | 10                                          | 5                     |
-| Starting items | Sword, shield, 2 potions                    | Staff                 |
+|                | Warrior                                     | Mage                                  |
+| -------------- | ------------------------------------------- | ------------------------------------- |
+| Starting HP    | 30                                          | 24                                    |
+| Armor Class    | 14 (shield included)                        | 12                                    |
+| Weapon         | Bronze sword + shield                       | Staff                                 |
+| To-hit bonus   | +3                                          | +5                                    |
+| Damage         | 1d6 + 1                                     | 1d8 (Firebolt)                        |
+| Special        | Shield passively lowers chance of being hit | Can cast Heal (+8 HP), 4 casts per run |
+| Starting gold  | 10                                          | 10                                    |
+| Starting items | Sword, shield, 2 potions                    | Staff                                 |
 
 **Shop upgrades** (class-specific, so each class is only offered relevant gear):
 
-- Warrior: **Steel Sword** (+2 damage), **Steel Shield** (further reduces chance of being hit), **Potion** (+8 HP, usable anytime)
-- Mage: **Elder Staff** (+2 damage)
+- Warrior: **Steel Sword** (+2 damage, so 1d6 + 3), **Steel Shield** (+1 Armor Class, so 15), **Potion** (+8 HP, usable anytime)
+- Mage: **Elder Staff** (+2 damage, so 1d8 + 2)
 
 ### What the Player Does
 
@@ -99,7 +101,29 @@ The player can type anything, but each turn resolves a **single action**. If som
 
 ### Combat
 
-Combat is a back-and-forth exchange resolved with two dice rolls per attack: a 20-sided die decides whether an attack lands (roll + class's to-hit bonus, compared against a target number), and if it hits, a smaller die decides how much damage is dealt. After the player's attack resolves, the enemy immediately gets its own attack in the same turn, using the same two-roll process. One full player turn — attack, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response.
+Combat is a back-and-forth exchange resolved with two dice rolls per attack: a 20-sided die decides whether an attack lands (d20 + the attacker's to-hit bonus must meet or beat the target's Armor Class), and if it hits, a smaller die decides how much damage is dealt. A natural 20 always hits and rolls the damage die twice (a critical hit); a natural 1 always misses. After the player's attack resolves, the enemy immediately gets its own attack in the same turn, using the same two-roll process. One full player turn — attack, outcome, enemy counterattack, outcome — is resolved and narrated together as a single response.
+
+### Game Balance
+
+**Design goal:** the game should be fun, so a reasonably sensible player should win roughly **60–70% of runs or more**, yet losing must stay a real possibility, mostly in the Throne Room or after a bad streak in the challenge rooms. Dice add drama; the numbers below make sure the odds stay in the player's favor. All values are starting points to be validated by play-testing.
+
+**Healing.** A potion or the Heal spell restores 8 HP and takes the player's whole turn (the enemy still counterattacks), so healing is a real decision, not a free action. Players start with enough healing to survive one bad fight, and the shop and rest let them prepare for the troll. Heal's 4-cast limit stops the Mage from out-sustaining everything.
+
+**Enemies** (to-hit is added to the enemy's d20 and must meet or beat the player's Armor Class):
+
+| Enemy        | HP | Armor Class | To-hit | Damage | Notes                          |
+| ------------ | -- | ----------- | ------ | ------ | ------------------------------ |
+| Giant rat    | 7  | 10          | +2     | 1d3    | Easy warm-up                   |
+| Goblin       | 10 | 12          | +3     | 1d4+1  | Average                        |
+| Orc          | 16 | 13          | +4     | 1d6+1  | Toughest of the monster room   |
+| Serpent      | 12 | 12          | +3     | 1d6    | Ambush; no gold reward         |
+| Troll (boss) | 25 | 13          | +4     | 1d8+2  | Hits for 3–10; avg 6.5 per hit |
+
+**Resulting odds (approximate).** The Warrior hits most enemies about 60–70% of the time, the Mage about 70–75%. The troll hits the Warrior (AC 14–15) about half the time and the Mage (AC 12) about 65% of the time. The troll fight lasts roughly 5–7 turns, so a player who arrives with 20+ HP and a healing option usually wins, while one who skipped the shop or ignored low HP can lose.
+
+**Economy.** Gold sources: starting gold (10), Monster Room (10), Trap Room (4–6), Treasure Room gold chest (3–6, no gold from the serpent chest). Both classes start with 10 gold and reach the shop with 14–26. The Warrior can afford a steel sword or shield plus a potion or two; the Mage can afford the Elder Staff (15) in all but the unluckiest case (Trap Room plus a serpent chest leaves 14–16 gold), a mild setback rather than a dead end.
+
+**Simulated win rates.** A simple simulation (always attack, heal when HP ≤ 10, buy sword → shield → potions for the Warrior and the staff for the Mage) gives roughly **75% for the Warrior and 70% for the Mage**. Real players will be a bit less optimal, which lands in the intended 60–70%+ range. Re-run this simulation whenever the numbers change.
 
 ### Winning and Losing
 
