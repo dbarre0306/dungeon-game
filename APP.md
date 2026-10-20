@@ -30,7 +30,7 @@ The rooms form a one-way line: the player only ever moves forward, and there is 
 | Trap Room     | A poison dart or swinging blade (random) — dodge it or take damage. Gold is visible across the room either way.                                |
 | Treasure Room | Two chests — one gold, one a hidden serpent.                                                                                                   |
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold.                                    |
-| Throne Room   | Final fight: a 25 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others.                                   |
+| Throne Room   | Final fight: a 30 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others.                                   |
 
 | Room          | Legal intents                          |
 | ------------- | -------------------------------------- |
@@ -81,7 +81,7 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 **Throne Room details.** The final room. A troll twice the player's size sits on a stone throne, a large spiked wooden club in its hand and the Amulet of Valdorin hanging around its neck.
 
-- **The troll:** twice the player's size and armed with a large spiked wooden club. 25 HP. It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies. The player enters the room already in a fight.
+- **The troll:** twice the player's size and armed with a large spiked wooden club. 30 HP. It fights using the same logic as the monster room — the same to-hit rules as the monsters, with the player's attack followed by the troll's counterattack each turn, until one of them dies. The player enters the room already in a fight.
 - **The troll hits much harder than other enemies.** Its club deals more damage than anything else in the dungeon: 1d8 + 2 (see _Game Balance_).
 - **No exit:** there is no way out of this room. The player's only goal is to kill the troll. If the player tries to leave or go anywhere, the DM tells them there is no way out, and the troll counterattacks like it does after any other command during the fight.
 - **Winning:** the moment the troll's HP reaches 0, the player wins — the troll does not get a final counterattack. The narration simply tells the player that they have taken the amulet from the troll's neck. The amulet has the power to bring the player back to the kingdom, so the victory narration ends with the player being carried home. The amulet is not a separate pickup action and is not added to the inventory.
@@ -93,10 +93,10 @@ Two classes are available for this demo: **Warrior** and **Mage**. Each starts w
 
 |                  | Warrior                      | Mage                   |
 | ---------------- | ---------------------------- | ---------------------- |
-| Maximum HP       | 30                           | 24                     |
-| Starting HP      | 30                           | 24                     |
+| Maximum HP       | 30                           | 18                     |
+| Starting HP      | 30                           | 18                     |
 | Weapon           | Bronze sword + bronze shield | Staff                  |
-| To-hit bonus     | +3                           | +5                     |
+| To-hit bonus     | +3                           | +4                     |
 | Damage           | 1d6 + 1                      | 1d6 + 2 (Fire bolt)    |
 | Starting potions | 2                            | 0                      |
 | Heal casts       | none                         | 1 (see _Game Balance_) |
@@ -178,13 +178,23 @@ The bronze shield has block value 2 and durability 6; the steel shield has block
 | Goblin    | 10  | Dagger             | +3     | 1d4+1  | Average                        |
 | Orc       | 16  | Battle ax          | +4     | 1d6+1  | Toughest of the monster room   |
 | Serpent   | 12  | Fangs              | +3     | 1d6    | Ambush; no gold reward         |
-| Troll     | 25  | Spiked wooden club | +4     | 1d8+2  | Hits for 3–10; avg 6.5 per hit |
+| Troll     | 30  | Spiked wooden club | +4     | 1d8+2  | Hits for 3–10; avg 6.5 per hit |
 
-**Resulting odds.** With a flat target of 12, a hit lands with probability (9 + to-hit bonus) / 20. The Warrior (+3) hits 60% of the time and the Mage (+5) 70%. The rat hits 55%, the goblin and serpent 60%, and the orc and troll 65%. The shield trims every hit: a good bronze shield absorbs up to 2 points, a good steel shield up to 4, which matters most against the many small hits of the monster rooms and takes a real bite out of the troll's 3–10. The Mage has no such protection. The troll fight lasts roughly 5–7 turns, so a player who arrives with 20+ HP and a healing option usually wins, while one who skipped the shop or ignored low HP can lose.
+**Resulting odds.** With a flat target of 12, a hit lands with probability (9 + to-hit bonus) / 20. The Warrior (+3) hits 60% of the time and the Mage (+4) 65%. The rat hits 55%, the goblin and serpent 60%, and the orc and troll 65%. The shield trims every hit: a good bronze shield absorbs up to 2 points, a good steel shield up to 4, which matters most against the many small hits of the monster rooms and takes a real bite out of the troll's 3–10. The Mage has no such protection. The troll fight lasts roughly 5–8 turns, so a Warrior who arrives near full HP with a healing option usually wins, while one who skipped the shop or ignored low HP can lose. The Mage has the lowest HP and no shield, so the Heal spell is the Mage's lifeline: a Mage who casts it at about half HP wins most often, while one who waits too long or casts too early can lose.
 
 **Economy.** Gold sources: starting gold (10), Monster Room (5), Trap Room (4–6), Treasure Room gold chest (3–6, no gold from the serpent chest). Both classes start with 10 gold and reach the shop with 14–22. The Warrior can afford a steel sword or shield plus a potion or two; the Mage can afford the Elder Staff (15) in all but the unluckiest case (Trap Room with a 4-gold roll plus a serpent chest leaves 14 gold), a mild setback rather than a dead end.
 
-**Win rates.** The earlier simulation figures (~75% Warrior, ~70% Mage) were computed with an Armor Class model that no longer matches the combat rules, so they should be treated as stale. Re-run the simulation against the current rules whenever the numbers change.
+**Win rates.** A Monte Carlo simulation of the current rules (60,000 runs per setting) gives these win rates for a sensible player. The player attacks, drinks a potion or casts Heal when HP falls below a threshold, and spends gold at the shop (Warrior: steel sword, then potions, then steel shield; Mage: Elder staff if affordable). Rows vary how early the player heals, as a fraction of max HP.
+
+| Heal below | Warrior | Mage |
+| ---------- | ------- | ---- |
+| 30% HP     | 65%     | 56%  |
+| 40% HP     | 67%     | 67%  |
+| 50% HP     | 68%     | 73%  |
+| 60% HP     | 68%     | 71%  |
+| 70% HP     | 69%     | 60%  |
+
+The Warrior lands at 65–69% however carefully they heal. The Mage's result depends more on timing, since Heal restores to full but is limited to a few casts: healing at about half HP is best. Nearly all losses come in the Throne Room; fewer than 1% of Warrior runs and about 2–4% of Mage runs end earlier. Re-run the simulation whenever the numbers change.
 
 ### Winning and Losing
 
