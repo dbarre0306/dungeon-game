@@ -62,3 +62,13 @@ MAGE = PlayerClass(
 )
 
 CLASSES = [WARRIOR, MAGE]
+
+ROOM_NAMES = {
+    "cave_entrance": "Cave entrance",
+    "cave_chamber": "Cave chamber",
+    "monster_room": "Monster room",
+    "treasure_room": "Treasure room",
+    "trap_room": "Trap room",
+    "shop_room": "Merchant's shop",
+    "throne_room": "Throne room",
+}
