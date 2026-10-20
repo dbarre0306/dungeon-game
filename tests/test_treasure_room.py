@@ -19,6 +19,7 @@ ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
     "go left": RouterState(intent="explore", explore_direction="left"),
     "attack": RouterState(intent="attack"),
+    "attack with a knife": RouterState(intent="attack", unowned_weapons=["knife"]),
     "drink": RouterState(intent="drink_potion"),
     "look around": RouterState(intent="look"),
     "buy something": RouterState(intent="shop"),
@@ -237,3 +238,15 @@ def test_looking_during_the_fight_has_the_chests_passageway_and_serpent_to_descr
     assert "left chest is closed" in facts
     assert "passageway" in facts
     assert "serpent" in facts
+
+
+def test_attacking_with_a_nonexistent_weapon_is_cancelled_and_the_serpent_strikes():
+    game = treasure(15, 5)  # the serpent hits for 5, less 2 from the shield
+    game.say("open the right chest")
+
+    state = game.say("attack with a knife")
+
+    assert "do not have the weapon" in game.dm.messages[-2]
+    assert state.get_current_room().enemy.health_points == 15
+    assert state.player.health_points == 22
+    game.dice.assert_exhausted()

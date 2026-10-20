@@ -1,7 +1,7 @@
 from typing import Literal
 
 from dungeon_game.domain.intent import Intent, IntentType
-from dungeon_game.domain.rooms.combat_room import CombatRoom
+from dungeon_game.domain.rooms.combat_room import NONEXISTENT_WEAPON_REFUSAL, CombatRoom
 
 
 class ThroneRoom(CombatRoom):
@@ -26,18 +26,8 @@ class ThroneRoom(CombatRoom):
                     f"Tell the player that the {self.enemy.name} is already dead "
                     "and they can stop attacking.",
                 )
-            if intent.is_attack_with_missing_weapon():
-                return (
-                    False,
-                    (
-                        "Tell the player that they do not have the weapon "
-                        "they named, so no attack happens. Using the player "
-                        "facts, say what they do carry instead and suggest "
-                        "they use it. Do NOT describe them swinging, "
-                        "casting or striking, and do NOT imply they once "
-                        "owned the weapon. Do NOT describe any damage."
-                    ),
-                )
+            if intent.is_attack_with_nonexistent_weapon():
+                return (False, NONEXISTENT_WEAPON_REFUSAL)
             return (True, None)
         return (
             False,

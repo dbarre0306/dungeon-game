@@ -51,7 +51,7 @@ class Intent(BaseModel):
     def is_attack(self) -> bool:
         return self.type == "attack"
 
-    def is_attack_with_missing_weapon(self) -> bool:
+    def is_attack_with_nonexistent_weapon(self) -> bool:
         return self.type == "attack" and bool(self.unowned_weapons)
 
     def is_shop(self) -> bool:

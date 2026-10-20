@@ -1,7 +1,7 @@
 from typing import Literal
 
 from dungeon_game.domain.intent import ChestSide, Intent, IntentType
-from dungeon_game.domain.rooms.combat_room import CombatRoom
+from dungeon_game.domain.rooms.combat_room import NONEXISTENT_WEAPON_REFUSAL, CombatRoom
 
 
 class TreasureRoom(CombatRoom):
@@ -23,7 +23,7 @@ class TreasureRoom(CombatRoom):
         if intent.is_explore():
             return self._is_valid_explore(intent)
         if intent.is_attack():
-            return self._is_valid_attack()
+            return self._is_valid_attack(intent)
         return (
             False,
             "Tell the player that you don't understand what they have asked.",
@@ -68,8 +68,10 @@ class TreasureRoom(CombatRoom):
             )
         return (True, None)
 
-    def _is_valid_attack(self) -> tuple[bool, str | None]:
+    def _is_valid_attack(self, intent: Intent) -> tuple[bool, str | None]:
         if self.is_serpent_loose():
+            if intent.is_attack_with_nonexistent_weapon():
+                return (False, NONEXISTENT_WEAPON_REFUSAL)
             return (True, None)
         if self.enemy.is_dead():
             return (
