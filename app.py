@@ -1,5 +1,4 @@
-from dungeon_game.game import Game
+from dungeon_game.ui import launch
 
 if __name__ == "__main__":
-    game = Game()
-    game.run()
+    launch()
