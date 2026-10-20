@@ -22,7 +22,7 @@ HOW_TO_PLAY = [
     "“Buy a bottle of potion” or “Go into the left passageway”.",
     "The game rolls the dice and the narrator tells you what happened. "
     "Your Health Points (HP), items and gold coins update to match.",
-    "The gold coins can be used to purchase upgrades from a merchant.",
+    "The gold coins can be used to purchase items of value from a merchant.",
     "You must defeat the troll to win. "
     "If your Health Points (HP) reach zero, you are dead and have failed in "
     "your quest.",
