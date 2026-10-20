@@ -42,7 +42,7 @@ WARRIOR = PlayerClass(
     name="Warrior",
     tagline="Hard to hit and steady in a long fight.",
     stats=[
-        ("Health", "25 Health Points (HP)"),
+        ("Health", "30 Health Points (HP)"),
         ("Gear", "Sword and shield"),
         ("Special", "The shield provides protection, but can be damaged or broken"),
         ("Starts with", "10 gold coins, 2 bottles of potion"),
