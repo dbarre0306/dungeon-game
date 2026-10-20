@@ -42,7 +42,7 @@ class Mage(Player):
             Merchandise(
                 type="elder_staff",
                 name="elder staff",
-                price=10,
+                price=15,
                 quantity=1,
                 item=ELDER_STAFF,
             )
@@ -94,11 +94,11 @@ class Mage(Player):
 
 def create_default_mage() -> Player:
     return Mage(
-        max_health_points=25,
-        health_points=25,
+        max_health_points=18,
+        health_points=18,
         is_fighting=False,
         staff=STAFF,
         gold_coins=10,
-        hit_bonus=3,
+        hit_bonus=4,
         current_room_index=0,
     )

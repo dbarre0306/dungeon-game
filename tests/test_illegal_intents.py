@@ -30,10 +30,10 @@ ROUTES = {
     "dance": RouterState(intent="unknown"),
 }
 
-# The enemy hits (15 >= 12 with +0) with a damage roll of 4; the shield absorbs 2.
+# The enemy hits (a 15 always does) with a damage roll of 4; the shield absorbs 2.
 # The goblin and serpent add nothing to it, the troll adds 2.
 STRIKE = (15, 4)
-PLAYER_HEALTH_POINTS = 25
+PLAYER_HEALTH_POINTS = 30
 AFTER_STRIKE = PLAYER_HEALTH_POINTS - 2
 AFTER_TROLL_STRIKE = PLAYER_HEALTH_POINTS - 4
 

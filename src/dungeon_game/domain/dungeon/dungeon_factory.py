@@ -38,8 +38,8 @@ class DungeonFactory:
                 weapon="large spiked wooden club",
                 max_health_points=30,
                 health_points=30,
-                hit_bonus=0,
-                damage_die_sides=10,
+                hit_bonus=4,
+                damage_die_sides=8,
                 damage_bonus=2,
             )
         )
@@ -62,32 +62,50 @@ class DungeonFactory:
                     enemy=Enemy(
                         name="serpent",
                         weapon="fangs",
-                        max_health_points=15,
-                        health_points=15,
-                        hit_bonus=0,
+                        max_health_points=12,
+                        health_points=12,
+                        hit_bonus=3,
+                        damage_die_sides=6,
                     ),
                 )
             case "monster":
                 monster_name = random.choice(["goblin", "orc", "giant rat"])
-                return MonsterRoom(
-                    enemy=Enemy(
-                        name=monster_name,
-                        weapon=DungeonFactory._get_monster_weapon(monster_name),
-                        max_health_points=100,
-                        health_points=100,
-                        hit_bonus=0,
-                    )
-                )
+                return MonsterRoom(enemy=DungeonFactory._create_monster(monster_name))
             case "trap":
                 trap_type = random.choice(["poison dart", "swinging blade"])
                 return TrapRoom(trap_type=trap_type)
 
     @staticmethod
-    def _get_monster_weapon(monster: str) -> str:
+    def _create_monster(monster: str) -> Enemy:
         match monster:
             case "goblin":
-                return "dagger"
+                return Enemy(
+                    name="goblin",
+                    weapon="dagger",
+                    max_health_points=10,
+                    health_points=10,
+                    hit_bonus=3,
+                    damage_die_sides=4,
+                    damage_bonus=1,
+                )
             case "orc":
-                return "battle ax"
+                return Enemy(
+                    name="orc",
+                    weapon="battle ax",
+                    max_health_points=16,
+                    health_points=16,
+                    hit_bonus=4,
+                    damage_die_sides=6,
+                    damage_bonus=1,
+                )
             case "giant rat":
-                return "razor sharp teeth"
+                return Enemy(
+                    name="giant rat",
+                    weapon="razor sharp teeth",
+                    max_health_points=7,
+                    health_points=7,
+                    hit_bonus=2,
+                    damage_die_sides=3,
+                )
+            case _:
+                raise ValueError(f"unknown monster: {monster!r}")

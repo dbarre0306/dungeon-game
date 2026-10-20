@@ -73,7 +73,7 @@ def test_the_goblin_will_not_let_the_player_pass(game, command):
 def test_trying_to_leave_costs_the_turn_and_the_goblin_strikes(game):
     state = game.say("go forward")
 
-    assert state.player.health_points == 23
+    assert state.player.health_points == 28
     assert state.player.is_fighting
     game.dice.assert_exhausted()
 

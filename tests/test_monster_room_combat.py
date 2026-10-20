@@ -2,8 +2,8 @@
 is the player's strike followed, if the goblin is still standing, by the goblin's
 strike back.
 
-The warrior has 20 of 25 HP, +3 to hit (so a d20 roll of 9 or more hits), and a
-shield absorbing 2 damage. The goblin has 10 HP and +0 to hit (12 or more hits).
+The warrior has 20 of 30 HP, +3 to hit (so a d20 roll of 9 or more hits), and a
+shield absorbing 2 damage. The goblin has 10 HP and +3 to hit (9 or more hits).
 Dice are consumed in order: the player's d20, then d6 for damage on a hit, and
 then the same for the goblin."""
 
@@ -210,21 +210,21 @@ def test_drinking_a_potion_mid_fight_heals_and_the_goblin_strikes():
 
 
 def test_a_potion_never_heals_past_full_health():
-    game = fight(5, health_points=22)  # the goblin strikes and misses
+    game = fight(5, health_points=27)  # the goblin strikes and misses
 
     state = game.say("drink")
 
-    assert state.player.health_points == 25
+    assert state.player.health_points == 30
     assert state.player.potions.quantity == 1
     game.dice.assert_exhausted()
 
 
 def test_a_potion_at_full_health_is_used_up_for_nothing():
-    game = fight(5, health_points=25)  # the goblin strikes and misses
+    game = fight(5, health_points=30)  # the goblin strikes and misses
 
     state = game.say("drink")
 
-    assert state.player.health_points == 25
+    assert state.player.health_points == 30
     assert state.player.potions.quantity == 1
     assert len(state.narration) == 2
     game.dice.assert_exhausted()
@@ -340,7 +340,7 @@ def test_attacking_with_a_nonexistent_weapon_is_cancelled_and_the_goblin_strikes
     state = game.say("swing axe")
 
     assert state.get_current_room().enemy.health_points == 10
-    assert state.player.health_points == 22
+    assert state.player.health_points == 27
     assert "do not have the weapon" in game.dm.messages[0]
     assert len(state.narration) == 2
     game.dice.assert_exhausted()

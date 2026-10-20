@@ -1,7 +1,7 @@
 """The treasure room: two chests, one with 3 to 6 gold (2 + a d4) and one with a
 15 HP serpent. The player opens exactly one by naming it. The serpent fights like
-a monster: the warrior has 25 HP and +3 to hit (a d20 of 9 or more hits)
-with a 2 point shield; the serpent has +0 to hit (12 or more hits)."""
+a monster: the warrior has 30 HP and +3 to hit (a d20 of 9 or more hits)
+with a 2 point shield; the serpent has +3 to hit (9 or more hits)."""
 
 import pytest
 
@@ -79,7 +79,7 @@ def test_the_serpent_chest_starts_a_fight_and_tells_the_player_to_kill_it():
     state = game.say("open the right chest")
 
     assert state.player.is_fighting
-    assert state.player.health_points == 25
+    assert state.player.health_points == 30
     assert state.player.gold_coins == 10
     assert state.get_current_room().opened_side == "right"
     assert state.get_current_room().enemy.health_points == 15
@@ -114,7 +114,7 @@ def test_a_fight_round_with_the_serpent():
     state = game.say("attack")
 
     assert state.get_current_room().enemy.health_points == 10
-    assert state.player.health_points == 22
+    assert state.player.health_points == 27
     assert len(state.narration) == 2
     assert game.room_type == "treasure_room"
     game.dice.assert_exhausted()
@@ -153,7 +153,7 @@ def test_trying_to_leave_while_the_serpent_lives_costs_a_turn_and_it_strikes():
     state = game.say("go forward")
 
     assert game.room_type == "treasure_room"
-    assert state.player.health_points == 22
+    assert state.player.health_points == 27
     assert (
         state.get_current_room().enemy.health_points == 15
     )  # the player did not attack
@@ -182,7 +182,7 @@ def test_going_another_direction_is_refused_and_the_serpent_strikes():
     state = game.say("go left")
 
     assert "only way out is forward" in game.dm.messages[-2]
-    assert state.player.health_points == 22
+    assert state.player.health_points == 27
     game.dice.assert_exhausted()
 
 
@@ -213,7 +213,7 @@ def test_drinking_a_potion_during_the_fight_lets_the_serpent_strike():
     state = game.say("drink")
 
     assert state.player.potions.quantity == 1
-    assert state.player.health_points == 23  # healed to 25, then 2 damage
+    assert state.player.health_points == 28  # healed to 30, then 2 damage
     assert len(state.narration) == 2
     game.dice.assert_exhausted()
 
@@ -248,5 +248,5 @@ def test_attacking_with_a_nonexistent_weapon_is_cancelled_and_the_serpent_strike
 
     assert "do not have the weapon" in game.dm.messages[-2]
     assert state.get_current_room().enemy.health_points == 15
-    assert state.player.health_points == 22
+    assert state.player.health_points == 27
     game.dice.assert_exhausted()

@@ -161,11 +161,11 @@ def test_warrior_sells_potion_sword_and_shield():
     assert sold == ["potion", "sword", "shield"]
 
 
-def test_mage_sells_only_an_elder_staff_for_ten_gold():
+def test_mage_sells_only_an_elder_staff_for_fifteen_gold():
     (merchandise,) = _mage().get_supported_merchandise()
     assert merchandise.type == "elder_staff"
     assert merchandise.name == "elder staff"
-    assert merchandise.price == 10
+    assert merchandise.price == 15
 
 
 def test_merchant_stocks_what_the_player_can_buy():

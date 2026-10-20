@@ -1,9 +1,9 @@
 """The throne room: the player arrives mid-fight with the troll, there is no way
 out, and killing the troll wins the game.
 
-The warrior has 25 HP, +3 to hit (so a d20 roll of 9 or more hits), and a shield
-absorbing 2 damage. The troll has 30 HP and +0 to hit (12 or more hits), and
-hits for a d10 plus 2. Dice are consumed in order: the player's d20, then d6 for
+The warrior has 30 HP, +3 to hit (so a d20 roll of 9 or more hits), and a shield
+absorbing 2 damage. The troll has 30 HP and +4 to hit (8 or more hits), and
+hits for a d8 plus 2. Dice are consumed in order: the player's d20, then d6 for
 damage on a hit, and then the troll's d20 and d10 in the same way."""
 
 import pytest
@@ -18,7 +18,7 @@ from tests.support.scenario import Scenario
 
 THRONE_ROOM = 0
 SHOP_ROOM = 3
-PLAYER_HEALTH_POINTS = 25
+PLAYER_HEALTH_POINTS = 30
 
 ROUTES = {
     "go forward": RouterState(intent="explore", explore_direction="forward"),
@@ -106,16 +106,16 @@ def test_a_round_of_combat_where_both_hit():
     game.dice.assert_exhausted()
 
 
-def test_the_troll_rolls_a_ten_sided_die_plus_two_for_damage():
-    game = throne_game(5, 12, 10)  # the player misses; the troll hits for 10 + 2
+def test_the_troll_rolls_an_eight_sided_die_plus_two_for_damage():
+    game = throne_game(5, 12, 8)  # the player misses; the troll hits for 8 + 2
 
     state = game.say("attack")
 
-    assert state.player.health_points == PLAYER_HEALTH_POINTS - (12 - 2)
+    assert state.player.health_points == PLAYER_HEALTH_POINTS - (10 - 2)
 
 
 def test_the_troll_misses_just_under_the_needed_roll():
-    game = throne_game(5, 11)
+    game = throne_game(5, 7)
 
     state = game.say("attack")
 
@@ -126,14 +126,14 @@ def test_the_troll_misses_just_under_the_needed_roll():
 def test_drinking_a_potion_mid_fight_heals_and_lets_the_troll_strike():
     # The player misses and the troll hits for 5 + 2 - 2; then the potion heals 8
     # and the troll hits for 5 again.
-    # The potion heals only up to the 25 HP maximum.
+    # The potion heals only up to the 30 HP maximum.
     game = throne_game(5, 14, 5, 14, 5)
     game.say("attack")
 
     state = game.say("drink")
 
     assert state.player.potions.quantity == 1
-    assert state.player.health_points == 25 - 5
+    assert state.player.health_points == PLAYER_HEALTH_POINTS - 5
 
 
 def test_killing_the_troll_wins_the_game():
@@ -170,7 +170,7 @@ def test_the_troll_is_not_finished_while_it_has_hit_points_left():
 
 
 def test_the_troll_killing_the_player_ends_the_game():
-    game = throne_game(5, 14, 10, 5)
+    game = throne_game(5, 14, 8, 5)
     player = game.state.player
     game.state = game.state.model_copy(
         update={"player": player.model_copy(update={"health_points": 5})}
