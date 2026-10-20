@@ -164,6 +164,7 @@ body, .gradio-container {
 .mw-hud { --mw-accent: var(--mw-ember); display: flex; flex-direction: column; gap: .75rem; }
 .mw-panel { border: 1px solid var(--mw-stone-edge); background: var(--mw-stone); border-radius: 4px; padding: 1rem 1.15rem; }
 .mw-panel.foe { border-color: #6b3a2e; }
+.mw-panel.shop { border-color: var(--mw-accent); }
 .mw-label { margin: 0 0 .2rem; color: var(--mw-mist); font-size: .95rem; font-style: italic; }
 .mw-sub { margin: .45rem 0 0; color: var(--mw-mist); font-size: .95rem; }
 .mw-room-name, .mw-foe-name {

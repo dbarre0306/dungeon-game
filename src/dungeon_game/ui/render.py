@@ -5,6 +5,7 @@ from html import escape
 from dungeon_game.domain.actors.player.mage import Mage
 from dungeon_game.domain.actors.player.player import Player
 from dungeon_game.domain.actors.player.warrior import Warrior
+from dungeon_game.domain.rooms.shop_room import ShopRoom
 from dungeon_game.game_state import GameState
 from dungeon_game.ui.session import LogEntry
 
@@ -51,6 +52,29 @@ def _enemy_html(state: GameState) -> str:
         f'<p class="mw-foe-hp">{enemy.health_points}/{enemy.max_health_points} '
         "Health Points</p></div>"
         f"{_bar(enemy.health_points, enemy.max_health_points, tone)}"
+        "</section>"
+    )
+
+
+def _merchant_html(state: GameState) -> str:
+    room = state.get_current_room()
+    if not isinstance(room, ShopRoom):
+        return ""
+    stock = room.merchant.stock()
+    if stock:
+        rows = "".join(
+            _row(
+                f"{escape(item.name.capitalize())}",
+                f"{item.quantity} at {item.price} gold coins each",
+            )
+            for item in stock
+        )
+    else:
+        rows = "<dt>Nothing</dt><dd>The merchant is out of items to sell.</dd>"
+    return (
+        '<section class="mw-panel shop">'
+        '<p class="mw-label">The merchant is selling</p>'
+        f'<dl class="mw-gear">{rows}</dl>'
         "</section>"
     )
 
@@ -113,6 +137,7 @@ def hud_html(state: GameState) -> str:
         + _health_html(player)
         + _gear_html(rows)
         + _enemy_html(state)
+        + _merchant_html(state)
         + "</aside>"
     )
 

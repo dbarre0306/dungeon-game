@@ -9,6 +9,7 @@ from dungeon_game.ui.session import (
     resolve_pending,
     start_session,
 )
+from tests.support.builders import new_game_state, shop_dungeon
 
 
 class FakeGraph:
@@ -109,6 +110,21 @@ def test_mage_hud_shows_health_staff_heal_casts_and_gold():
         assert expected in html
     assert "Shield" not in html
     assert "Potions" not in html
+
+
+def test_hud_shows_what_the_merchant_sells_in_the_shop_room():
+    player = start_session("warrior").state.player
+    html = hud_html(new_game_state(player, shop_dungeon()))
+    stock = shop_dungeon().rooms[0].merchant.stock()
+    assert stock
+    assert "The merchant is selling" in html
+    for item in stock:
+        assert item.name.capitalize() in html
+        assert f"{item.quantity} at {item.price} gold coins each" in html
+
+
+def test_hud_has_no_merchant_card_outside_the_shop_room():
+    assert "The merchant is selling" not in hud_html(start_session("warrior").state)
 
 
 def test_unknown_class_cannot_start():

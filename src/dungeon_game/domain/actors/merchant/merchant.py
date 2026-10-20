@@ -63,6 +63,10 @@ class Merchant(BaseModel):
     def _find_merchandise(self, item_name: ShopItemName) -> Merchandise | None:
         return next((m for m in self.merchandise if m.type == item_name), None)
 
+    def stock(self) -> list[Merchandise]:
+        """What is still for sale."""
+        return [m for m in self.merchandise if m.quantity > 0]
+
     def describe_inventory(self) -> list[str]:
         """What is for sale."""
         lines = []
