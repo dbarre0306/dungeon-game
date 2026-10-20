@@ -113,7 +113,7 @@ def test_a_fight_round_with_the_serpent():
 
     state = game.say("attack")
 
-    assert state.get_current_room().enemy.health_points == 11
+    assert state.get_current_room().enemy.health_points == 10
     assert state.player.health_points == 22
     assert len(state.narration) == 2
     assert game.room_type == "treasure_room"

@@ -16,14 +16,14 @@ from tests.support.scenario import MONSTER_ROOM, Scenario, fight
 
 # (rolls, goblin HP left, player HP left)
 ROUNDS = {
-    "both hit": ((15, 4, 14, 5), 6, 17),
-    "player hits, goblin misses": ((15, 4, 5), 6, 20),
+    "both hit": ((15, 4, 14, 5), 5, 17),
+    "player hits, goblin misses": ((15, 4, 5), 5, 20),
     "player misses, goblin hits": ((5, 14, 5), 10, 17),
     "both miss": ((5, 5), 10, 20),
-    "player hits on exactly the needed roll": ((9, 4, 11), 6, 20),
+    "player hits on exactly the needed roll": ((9, 4, 11), 5, 20),
     "player misses just under the needed roll": ((8, 12, 5), 10, 17),
     "goblin hits on exactly the needed roll": ((5, 12, 6), 10, 16),
-    "goblin misses just under the needed roll": ((15, 1, 11), 9, 20),
+    "goblin misses just under the needed roll": ((15, 1, 11), 8, 20),
     "shield absorbs a weak goblin hit": ((5, 12, 2), 10, 20),
     "shield absorbs all but one point": ((5, 12, 3), 10, 19),
 }
@@ -174,7 +174,7 @@ def test_the_player_arrives_fighting_and_stays_fighting_while_the_goblin_lives()
 
 
 def test_a_fight_goes_on_over_several_rounds():
-    game = fight(15, 4, 5, 15, 4, 5)
+    game = fight(15, 3, 5, 15, 3, 5)
 
     game.say("attack")
     state = game.say("attack")
@@ -247,8 +247,8 @@ def test_with_no_potions_left_nothing_is_healed_and_the_goblin_strikes():
 
 def test_a_flawless_victory():
     game = fight(
-        15, 4, 5,  # goblin 10 -> 6, the goblin misses
-        15, 4, 5,  # goblin 6 -> 2, the goblin misses
+        15, 3, 5,  # goblin 10 -> 6, the goblin misses
+        15, 3, 5,  # goblin 6 -> 2, the goblin misses
         15, 2,  # goblin 2 -> 0, dead before it can strike
     )  # fmt: skip
 
@@ -274,9 +274,9 @@ def test_killing_the_monster_gives_the_player_its_gold_once():
 
 def test_a_close_win_with_a_potion_mid_fight():
     game = fight(
-        15, 3, 14, 6,  # goblin 10 -> 7, the goblin hits for 4: player 6 -> 2
+        15, 2, 14, 6,  # goblin 10 -> 7, the goblin hits for 4: player 6 -> 2
         14, 6,  # potion first: player 2 -> 10, then the goblin hits for 4: -> 6
-        15, 6, 14, 4,  # goblin 7 -> 1, the damaged shield blocks 1: player 6 -> 3
+        15, 5, 14, 4,  # goblin 7 -> 1, the damaged shield blocks 1: player 6 -> 3
         15, 1,  # goblin 1 -> 0, dead
         health_points=6,
     )  # fmt: skip

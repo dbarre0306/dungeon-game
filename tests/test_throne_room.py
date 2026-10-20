@@ -95,12 +95,12 @@ def test_a_command_that_makes_no_sense_in_this_room_is_not_understood():
 
 
 def test_a_round_of_combat_where_both_hit():
-    # The player hits for 4; the troll hits for 8 + 2 = 10, the shield absorbs 2.
+    # The player hits for 5; the troll hits for 8 + 2 = 10, the shield absorbs 2.
     game = throne_game(15, 4, 14, 8)
 
     state = game.say("attack")
 
-    assert state.get_current_room().enemy.health_points == 26
+    assert state.get_current_room().enemy.health_points == 25
     assert state.player.health_points == PLAYER_HEALTH_POINTS - 8
     assert not state.game_over
     game.dice.assert_exhausted()
@@ -161,7 +161,7 @@ def test_the_win_narrates_the_amulet_taken_from_the_neck_and_the_kingdom():
 
 
 def test_the_troll_is_not_finished_while_it_has_hit_points_left():
-    game = throne_game(15, 6, 5, troll_health_points=7)
+    game = throne_game(15, 5, 5, troll_health_points=7)
 
     state = game.say("attack")
 

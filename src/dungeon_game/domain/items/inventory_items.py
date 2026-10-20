@@ -91,8 +91,8 @@ class Staff(BaseModel):
 
 POTION = Potion()
 
-BRONZE_SWORD = Sword(name="bronze sword", additional_damage_points=0)
-STEEL_SWORD = Sword(name="steel sword", additional_damage_points=2)
+BRONZE_SWORD = Sword(name="bronze sword", additional_damage_points=1)
+STEEL_SWORD = Sword(name="steel sword", additional_damage_points=3)
 
 BRONZE_SHIELD = Shield(
     name="bronze shield", defensive_health_points=2, max_durability=6, durability=6

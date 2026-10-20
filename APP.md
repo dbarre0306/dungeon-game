@@ -32,15 +32,15 @@ The rooms form a one-way line: the player only ever moves forward, and there is 
 | Shop Room     | A merchant selling class-specific upgrades and potions. Always visited, guaranteeing a place to spend gold.                                    |
 | Throne Room   | Final fight: a 25 HP troll with a spiked club, holding the Amulet of Valdorin. Hits much harder than others.                                   |
 
-| Room          | Legal intents                                   |
-| ------------- | ----------------------------------------------- |
-| Cave Entrance | look, move, heal                                |
-| Cave Chamber  | look, move, heal                                |
-| Monster Room  | look, move, attack, heal                        |
-| Trap Room     | look, move, heal                                |
-| Treasure Room | look, move, attack, open a chest, heal          |
-| Shop Room     | look, move, buy, heal                           |
-| Throne Room   | look, move, attack, heal                        |
+| Room          | Legal intents                          |
+| ------------- | -------------------------------------- |
+| Cave Entrance | look, move, heal                       |
+| Cave Chamber  | look, move, heal                       |
+| Monster Room  | look, move, attack, heal               |
+| Trap Room     | look, move, heal                       |
+| Treasure Room | look, move, attack, open a chest, heal |
+| Shop Room     | look, move, buy, heal                  |
+| Throne Room   | look, move, attack, heal               |
 
 Heal means drinking a potion (Warrior) or casting Heal (Mage). Anything else, including the "multiple" and "unknown" commands described under _What the Player Does_, is illegal in that room.
 
@@ -91,24 +91,24 @@ Exactly 2 of the 3 challenge rooms appear in any given run — the third is simp
 
 Two classes are available for this demo: **Warrior** and **Mage**. Each starts with fixed gear and stats — no character building or leveling required.
 
-|                  | Warrior                      | Mage            |
-| ---------------- | ---------------------------- | --------------- |
-| Maximum HP       | 30                           | 24              |
-| Starting HP      | 30                           | 24              |
-| Weapon           | Bronze sword + bronze shield | Staff           |
-| To-hit bonus     | +3                           | +5              |
-| Damage           | 1d6 + 1                      | 1d8 (Fire bolt) |
-| Starting potions | 2                            | 0               |
+|                  | Warrior                      | Mage                   |
+| ---------------- | ---------------------------- | ---------------------- |
+| Maximum HP       | 30                           | 24                     |
+| Starting HP      | 30                           | 24                     |
+| Weapon           | Bronze sword + bronze shield | Staff                  |
+| To-hit bonus     | +3                           | +5                     |
+| Damage           | 1d6 + 1                      | 1d8 (Fire bolt)        |
+| Starting potions | 2                            | 0                      |
 | Heal casts       | none                         | 4 (see _Game Balance_) |
-| Starting gold    | 10                           | 10              |
-| Starting items   | Sword, shield, potions       | Staff           |
+| Starting gold    | 10                           | 10                     |
+| Starting items   | Sword, shield, potions       | Staff                  |
 
 There is no Armor Class: the player's defense is only the shield's damage absorption. The Mage has no defense at all. Only enemy attacks (including the serpent) are reduced by the shield; trap damage is not.
 
 Inventory Rules:
 
-- The bronze sword has zero (0) additional damage points when the enemy is hit.
-- The steel sword has two (2) additional damage points when the enemy is hit.
+- The bronze sword has one (1) additional damage point when the enemy is hit.
+- The steel sword has three (3) additional damage points when the enemy is hit.
 - Drinking a single potion adds eight (8) health points to the player.
 - The bronze shield has a max durability of 6 and it starts with that.
 - The bronze shield subtracts two (2) health points from any damage inflicted on the player from any enemy.
@@ -116,7 +116,7 @@ Inventory Rules:
 - The steel shield subtracts four (4) health points from any damage inflicted on the player from any enemy.
 - Either type of shield can be good, damaged, or broken. It is good if its durability multiplied by 2 is greater than its max durability. It is broken if its durability is zero or less. If it isn't good or broken, then it is damaged.
 - When an enemy hits the player, the shield absorbs an amount and the player takes the rest. A "good" shield absorbs its full block value, a "damaged" shield half (minimum 1), and a "broken" shield 0. The amount absorbed is also capped by the shield's remaining durability and by the damage of the hit itself, so a shield never absorbs more than the blow deals. The shield loses one durability point per point absorbed; a hit that is fully absorbed does no damage, and a hit that is not absorbed at all costs the shield nothing.
-- The bronze sword's 0 and the steel sword's +2 are added on top of the class's own damage bonus (the Warrior's +1), giving 1d6 + 1 and 1d6 + 3.
+- The Warrior has no damage bonus of its own; the sword supplies it, giving 1d6 + 1 with the bronze sword and 1d6 + 3 with the steel sword.
 
 **Shop upgrades** (class-specific, so each class is only offered relevant gear):
 
@@ -136,13 +136,6 @@ At the start, the player picks a class (Warrior or Mage) and is dropped into the
 
 The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible, or isn't a legal intent in the current room, is narrated as not making sense or not possible here, again at no cost. Left and right are valid only in the Cave Chamber; everywhere else the only valid move is forward. The actions the game recognizes are: look, move (left / right / forward), attack (for the Mage this includes casting Fire bolt), buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. Keeps combat math and the graph's logic simple, one action in, one resolved turn out.
 
-### Combat
-
-Combat is a back-and-forth exchange resolved with two dice rolls per attack. To see whether an attack lands, the game rolls a d20, adds the attacker's to-hit bonus, and the attack hits on a total of **12 or more** — the same target for everyone, since there is no Armor Class. There are no critical hits or automatic misses. On a hit, the attacker rolls their damage die and adds their damage bonus.
-
-A fight starts when the player enters the Monster Room or Throne Room, or opens the serpent's chest, and ends when one side dies. While the player is fighting, the enemy gets its own attack (same two-roll process) right after **every** player command, provided the enemy is still alive. That includes:
-
-- attacking (including an attack cancelled because the player named a weapon they don't carry),
 - drinking a potion or casting Heal (including when none are left, so the action is refused),
 - trying to leave the room (the Monster Room, the Throne Room, or the Treasure Room with the serpent loose),
 - trying to open a chest in the Treasure Room while the serpent is loose (the other chest, or no chest named),
