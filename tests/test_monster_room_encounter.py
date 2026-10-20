@@ -27,8 +27,15 @@ KILLING_BLOW = (15, 6)
 
 @pytest.fixture
 def game() -> Scenario:
-    """The player has just reached the monster room; the goblin is alive."""
-    return Scenario(ROUTES, dungeon=monster_dungeon(), room_index=MONSTER_ROOM)
+    """The player has just reached the monster room, already in a fight; the
+    goblin is alive. Its strike is scripted for the tests that provoke it: it
+    hits (15 >= 12) for 4, of which the shield absorbs 2."""
+    return Scenario(
+        ROUTES,
+        dungeon=monster_dungeon(),
+        room_index=MONSTER_ROOM,
+        dice=FakeDice(15, 4),
+    )
 
 
 @pytest.fixture
@@ -58,18 +65,17 @@ def test_the_goblin_will_not_let_the_player_pass(game, command):
     state = game.say(command)
 
     assert game.room_type == "monster_room"
-    assert len(state.narration) == 1
+    assert len(state.narration) == 2
     assert "will not let them pass" in game.dm.messages[0]
     assert state.get_current_room().enemy.is_alive()
 
 
-def test_refusing_to_let_the_player_pass_costs_nothing(game):
-    before = game.state
+def test_trying_to_leave_costs_the_turn_and_the_goblin_strikes(game):
+    state = game.say("go forward")
 
-    game.say("go forward")
-
-    assert game.state.dungeon == before.dungeon
-    assert game.state.player == before.player
+    assert state.player.health_points == 23
+    assert state.player.is_fighting
+    game.dice.assert_exhausted()
 
 
 @pytest.mark.parametrize("command", ["buy something", "open the chest"])

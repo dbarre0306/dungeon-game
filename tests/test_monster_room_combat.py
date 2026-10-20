@@ -164,9 +164,9 @@ def test_a_round_narrates_both_strikes_and_adds_them_to_the_room_history():
     assert state.get_current_room().history == state.narration
 
 
-def test_the_player_is_fighting_once_attacking():
+def test_the_player_arrives_fighting_and_stays_fighting_while_the_goblin_lives():
     game = fight(5, 5)
-    assert not game.state.player.is_fighting
+    assert game.state.player.is_fighting
 
     state = game.say("attack")
 
@@ -184,8 +184,9 @@ def test_a_fight_goes_on_over_several_rounds():
     game.dice.assert_exhausted()
 
 
-def test_drinking_a_potion_before_the_fight_heals_and_the_goblin_waits():
-    game = fight(health_points=10)  # no dice: the goblin does not strike
+def test_drinking_a_potion_after_the_fight_heals_and_nothing_strikes():
+    game = fight(15, 6, goblin_health_points=5, health_points=10)
+    game.say("attack")  # the player kills the goblin
 
     state = game.say("drink")
 
@@ -193,6 +194,7 @@ def test_drinking_a_potion_before_the_fight_heals_and_the_goblin_waits():
     assert state.player.potions.quantity == 1
     assert not state.player.is_fighting
     assert len(state.narration) == 1
+    game.dice.assert_exhausted()  # the dead goblin did not strike
 
 
 def test_drinking_a_potion_mid_fight_heals_and_the_goblin_strikes():
@@ -208,32 +210,36 @@ def test_drinking_a_potion_mid_fight_heals_and_the_goblin_strikes():
 
 
 def test_a_potion_never_heals_past_full_health():
-    game = fight(health_points=22)
+    game = fight(5, health_points=22)  # the goblin strikes and misses
 
     state = game.say("drink")
 
     assert state.player.health_points == 25
     assert state.player.potions.quantity == 1
+    game.dice.assert_exhausted()
 
 
 def test_a_potion_at_full_health_is_used_up_for_nothing():
-    game = fight(health_points=25)
+    game = fight(5, health_points=25)  # the goblin strikes and misses
 
     state = game.say("drink")
 
     assert state.player.health_points == 25
     assert state.player.potions.quantity == 1
-    assert len(state.narration) == 1
+    assert len(state.narration) == 2
+    game.dice.assert_exhausted()
 
 
-def test_with_no_potions_left_nothing_is_healed():
-    game = fight(health_points=10, potions=0)
+def test_with_no_potions_left_nothing_is_healed_and_the_goblin_strikes():
+    game = fight(14, 5, health_points=10, potions=0)  # the goblin hits for 5 - 2
 
     state = game.say("drink")
 
-    assert state.player.health_points == 10
+    assert state.player.health_points == 7
     assert state.player.potions.quantity == 0
     assert "anymore potions" in game.dm.messages[0]
+    assert len(state.narration) == 2
+    game.dice.assert_exhausted()
 
 
 # Whole fights: every dice roll scripted, from the first blow to the last.
@@ -323,20 +329,21 @@ def test_the_players_blow_lands_before_the_goblins_so_a_double_kill_spares_the_p
     game.dice.assert_exhausted()
 
 
-def test_attacking_with_a_weapon_the_player_lacks_is_rejected_without_a_fight():
+def test_attacking_with_a_nonexistent_weapon_is_cancelled_and_the_goblin_strikes():
     game = Scenario(
         {"swing axe": RouterState(intent="attack", nonexistent_weapons=["axe"])},
         dungeon=monster_dungeon(goblin()),
         room_index=MONSTER_ROOM,
-        dice=FakeDice(),  # no rolls scripted: any strike would fail loudly
+        dice=FakeDice(14, 5),  # the goblin hits for 5, less 2 from the shield
     )
 
     state = game.say("swing axe")
 
     assert state.get_current_room().enemy.health_points == 10
-    assert state.player.health_points == 25
-    assert "do not have the weapon" in game.dm.messages[-1]
-    assert game.included_command_of_last_call() if False else True
+    assert state.player.health_points == 22
+    assert "do not have the weapon" in game.dm.messages[0]
+    assert len(state.narration) == 2
+    game.dice.assert_exhausted()
 
 
 def test_naming_an_owned_and_a_nonexistent_weapon_is_rejected():
@@ -344,10 +351,11 @@ def test_naming_an_owned_and_a_nonexistent_weapon_is_rejected():
         {"sword and axe": RouterState(intent="attack", nonexistent_weapons=["axe"])},
         dungeon=monster_dungeon(goblin()),
         room_index=MONSTER_ROOM,
-        dice=FakeDice(),
+        dice=FakeDice(5),  # the goblin strikes and misses
     )
 
     state = game.say("sword and axe")
 
     assert state.get_current_room().enemy.health_points == 10
-    assert "do not have the weapon" in game.dm.messages[-1]
+    assert "do not have the weapon" in game.dm.messages[0]
+    game.dice.assert_exhausted()

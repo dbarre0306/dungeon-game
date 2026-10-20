@@ -71,18 +71,19 @@ def test_the_room_has_a_troll_with_a_club_and_the_amulet_and_no_exit():
 
 
 @pytest.mark.parametrize("command", ["go forward", "go left", "go back"])
-def test_there_is_no_way_out(command):
-    game = throne_game()
-    before = game.state
+def test_there_is_no_way_out_and_the_troll_strikes(command):
+    # The troll hits for 4 + 2, of which the shield absorbs 2.
+    game = throne_game(15, 4)
 
     state = game.say(command)
 
     assert game.room_type == "throne_room"
     assert "no way out" in game.dm.messages[0]
-    assert len(state.narration) == 1
-    assert state.dungeon == before.dungeon
-    assert state.player == before.player
+    assert len(state.narration) == 2
+    assert state.player.health_points == PLAYER_HEALTH_POINTS - 4
+    assert state.get_current_room().enemy.health_points == 30
     assert not state.game_over
+    game.dice.assert_exhausted()
 
 
 def test_a_command_that_makes_no_sense_in_this_room_is_not_understood():

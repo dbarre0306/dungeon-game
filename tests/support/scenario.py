@@ -1,6 +1,8 @@
 from dungeon_game.agents.router_agent import RouterState
 from dungeon_game.domain.actors.player.warrior import create_default_warrior
 from dungeon_game.domain.dungeon.dungeon import Dungeon
+from dungeon_game.domain.rooms.monster_room import MonsterRoom
+from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.game_graph import GameGraph
 from dungeon_game.game_state import GameState
 from tests.support.builders import full_dungeon, goblin, monster_dungeon
@@ -9,7 +11,8 @@ from tests.support.fakes import FakeDice, FakeDungeonMaster, FakeRouterAgent
 
 class Scenario:
     """A game driven one player command at a time, with the router, Dungeon
-    Master and dice faked. The player starts in the room at `room_index`."""
+    Master and dice faked. The player starts in the room at `room_index`, already
+    fighting if it is the monster or throne room."""
 
     def __init__(
         self,
@@ -21,14 +24,13 @@ class Scenario:
         self.dm = FakeDungeonMaster()
         self.dice = dice or FakeDice()
         self.graph = GameGraph(FakeRouterAgent(routes), self.dm, self.dice)
+        dungeon = dungeon or full_dungeon()
+        # As in the game, the player arrives in these rooms already in a fight.
+        is_fighting = isinstance(dungeon.get_room(room_index), MonsterRoom | ThroneRoom)
         player = create_default_warrior().model_copy(
-            update={"current_room_index": room_index}
+            update={"current_room_index": room_index, "is_fighting": is_fighting}
         )
-        self.state = GameState(
-            player=player,
-            dungeon=dungeon or full_dungeon(),
-            command="",
-        )
+        self.state = GameState(player=player, dungeon=dungeon, command="")
 
     def say(self, command: str) -> GameState:
         self.state = self.graph.invoke(
