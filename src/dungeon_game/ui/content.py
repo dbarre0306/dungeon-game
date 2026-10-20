@@ -24,7 +24,8 @@ HOW_TO_PLAY = [
     "Your Health Points (HP), items and gold coins update to match.",
     "The gold coins can be used to purchase upgrades from a merchant.",
     "You must defeat the troll to win. "
-    "If your Health Points (HP) reach 0, you are dead.",
+    "If your Health Points (HP) reach zero, you are dead and have failed in "
+    "your quest.",
 ]
 
 
