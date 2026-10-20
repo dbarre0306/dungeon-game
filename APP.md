@@ -134,8 +134,19 @@ At the start, the player picks a class (Warrior or Mage) and is dropped into the
 3. The game figures out what kind of action that is (fighting, shopping, talking, exploring) and resolves it — rolling dice where the outcome is uncertain.
 4. The DM narrates the result, and the player's HP / inventory / gold sidebar updates to match.
 
-The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible, or isn't a legal intent in the current room, is narrated as not making sense or not possible here, again at no cost. Left and right are valid only in the Cave Chamber; everywhere else the only valid move is forward. The actions the game recognizes are: look, move (left / right / forward), attack (for the Mage this includes casting Fire bolt), buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. Keeps combat math and the graph's logic simple, one action in, one resolved turn out.
+The player can type anything, but each turn resolves a **single action**. A compound command (e.g. "drink a potion and attack the troll") is rejected: the game replies "You can only perform one action at a time." and nothing happens. A command that matches nothing sensible, or isn't a legal intent in the current room, is narrated as not making sense or not possible here, again at no cost. Left and right are valid only in the Cave Chamber; everywhere else the only valid move is forward. The actions the game recognizes are: look, move (left / right / forward), attack (for the Mage this includes casting Fire bolt), buy, drink a potion (Warrior), cast Heal (Mage), and open a chest. Naming a weapon the player doesn't carry cancels the attack. One action in, one resolved turn out.
 
+### Combat
+
+A fight begins when the player enters the Monster Room or the Throne Room, or opens the serpent's chest in the Treasure Room. It ends when either side's HP reaches 0. Each turn the player acts first, then the enemy counterattacks:
+
+- **To hit:** the attacker rolls a d20, adds its to-hit bonus, and hits if the total reaches 12. This is the same rule for the player and every enemy.
+- **Damage:** a hit rolls the attacker's damage die and adds its bonus (the weapon's bonus for the Warrior or the staff's for the Mage). The defender's shield, if any, then absorbs part of it (see _The shield_ below). Only the player's attacks and enemy attacks use this; the trap does not.
+- **Death:** if the enemy dies, the fight is over and it does not counterattack. If the player dies, the game ends.
+
+In a fight, the enemy counterattacks after any command that costs the player their turn, whether or not it succeeds:
+
+- attacking, including an attack cancelled because the player named a weapon they don't carry,
 - drinking a potion or casting Heal (including when none are left, so the action is refused),
 - trying to leave the room (the Monster Room, the Throne Room, or the Treasure Room with the serpent loose),
 - trying to open a chest in the Treasure Room while the serpent is loose (the other chest, or no chest named),
