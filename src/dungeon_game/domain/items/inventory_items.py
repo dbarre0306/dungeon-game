@@ -1,13 +1,20 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Potion(BaseModel):
+class _Item(BaseModel):
+    """Items are shared module-level constants, so they are immutable: wear and
+    use produce updated copies instead of editing an item in place."""
+
+    model_config = ConfigDict(frozen=True)
+
+
+class Potion(_Item):
     type: Literal["potion"] = "potion"
 
 
-class Sword(BaseModel):
+class Sword(_Item):
     type: Literal["sword"] = "sword"
     name: str
     additional_damage_points: int
@@ -16,7 +23,7 @@ class Sword(BaseModel):
 ShieldCondition = Literal["good", "damaged", "broken"]
 
 
-class Shield(BaseModel):
+class Shield(_Item):
     """A shield blocks damage until it wears out. Every point of damage it
     absorbs costs a point of durability. It cannot be repaired.
 
@@ -63,12 +70,12 @@ class Shield(BaseModel):
         )
 
 
-class FireBoltSpell(BaseModel):
+class FireBoltSpell(_Item):
     name: str
     additional_damage_points: int
 
 
-class HealingSpell(BaseModel):
+class HealingSpell(_Item):
     """Restores the caster to full health. It can be cast `quantity` more times."""
 
     name: str
@@ -82,7 +89,7 @@ class HealingSpell(BaseModel):
         return self.model_copy(update={"quantity": self.quantity + casts})
 
 
-class Staff(BaseModel):
+class Staff(_Item):
     type: Literal["staff"] = "staff"
     name: str
     fire_bolt_spell: FireBoltSpell
