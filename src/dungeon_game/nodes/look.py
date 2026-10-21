@@ -13,7 +13,6 @@ class LookNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("LOOK")
         return {"narration": [self._get_room_description(state)]}
 
     def _get_room_description(self, state: GameState) -> str:

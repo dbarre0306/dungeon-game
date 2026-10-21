@@ -27,7 +27,6 @@ class CrossTrapNode:
         self._dice = dice or Dice()
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("CROSS TRAP")
         room = state.get_current_room()
         if not isinstance(room, TrapRoom):
             raise TypeError("The room must be a TrapRoom")

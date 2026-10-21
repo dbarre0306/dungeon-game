@@ -26,7 +26,6 @@ class AttackNode(ABC):
         self._dice = dice or Dice()
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print(self._label)
         early_result = self._early_result(state)
         if early_result is not None:
             return early_result

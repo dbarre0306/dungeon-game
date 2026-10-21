@@ -10,7 +10,6 @@ class CastHealingNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("CAST HEALING")
         room = state.get_current_room()
         is_valid, err_msg = room.is_valid_intent(state.intent)
         if not is_valid:

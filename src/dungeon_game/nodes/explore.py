@@ -12,7 +12,6 @@ class ExploreNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print(f"EXPLORE : {state.intent.explore_direction}")
         room = state.get_current_room()
         is_valid, msg = room.is_valid_intent(state.intent)
         if not is_valid:

@@ -124,11 +124,9 @@ class GameGraph:
         return GameState.model_validate(self.agent.invoke(state))
 
     def _multiple(self, state: GameState) -> dict[str, Any]:
-        print("MULTIPLE Command")
         return {"narration": ["You can only perform one action at a time."]}
 
     def _unknown(self, state: GameState) -> dict[str, Any]:
-        print("UNKNOWN Command")
         msg = (
             "Tell the player that what they want to do "
             "doesn't make any sense given the room they are in."

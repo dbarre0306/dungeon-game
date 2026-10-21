@@ -13,7 +13,6 @@ class GameOverNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("GAME OVER CHECK")
         if state.player.is_dead():
             return self._defeat(state)
         if self._has_killed_the_troll(state):

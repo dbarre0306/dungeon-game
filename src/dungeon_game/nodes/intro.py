@@ -13,7 +13,6 @@ class IntroNode:
         self._dungeon_master_agent = dungeon_master_agent
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print("INTRO")
         description = describe_arrival(
             self._dungeon_master_agent,
             state,

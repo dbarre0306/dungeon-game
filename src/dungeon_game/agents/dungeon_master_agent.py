@@ -56,10 +56,6 @@ class DungeonMasterAgent:
             ]
         }
 
-        # TODO: remove this comment when it is no longer needed
-        # print(f"TO AGENT: {user_msg['messages'][0]['content']}")
-        # print("-----------")
-
         result = self._agent.invoke(user_msg)
         return result["structured_response"]
 

@@ -21,7 +21,6 @@ class OpenChestNode:
         self._dice = dice or Dice()
 
     def execute(self, state: GameState) -> dict[str, Any]:
-        print(f"OPEN CHEST : {state.intent.chest_side}")
         room = state.get_current_room()
         is_valid, msg = room.is_valid_intent(state.intent)
         if not is_valid:
