@@ -80,7 +80,6 @@ class GameGraph:
                 "drink_potion",
                 "cast_healing",
                 "open_chest",
-                # "get_coins",
                 "multiple",
                 "unknown",
                 "illegal",
