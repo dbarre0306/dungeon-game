@@ -4,8 +4,9 @@ from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.domain.dice import Dice
 from dungeon_game.domain.rooms.trap_room import TrapRoom
 from dungeon_game.game_state import GameState
-from dungeon_game.nodes.attack import HIT_TARGET
 
+# A d20 of at least this strikes the player: 13 in 20 (65%).
+TRAP_HIT_TARGET = 8
 # On a hit, a d10 of at least this is a major wound; otherwise it is minor.
 MAJOR_WOUND_ROLL = 8
 MINOR_WOUND_POINTS = 2
@@ -32,7 +33,7 @@ class CrossTrapNode:
             raise TypeError("The room must be a TrapRoom")
 
         player = state.player
-        if self._dice.roll(20) < HIT_TARGET:
+        if self._dice.roll(20) < TRAP_HIT_TARGET:
             gold = self._roll_gold()
             player = player.model_copy(update={"gold_coins": player.gold_coins + gold})
             msg = (

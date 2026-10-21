@@ -1,4 +1,4 @@
-"""Crossing the trap room. Dice are consumed in order: the d20 to hit (12 or more
+"""Crossing the trap room. Dice are consumed in order: the d20 to hit (8 or more
 strikes), then on a strike a d10 for the wound (8 or more is major: 5 HP, else
 minor: 2 HP), then, if the warrior lives, a d3 for the gold (4 to 6 coins)."""
 
@@ -41,7 +41,7 @@ def trap(*rolls: int, health_points: int = 20) -> Scenario:
 # (rolls, player HP left, gold coins after, wound named in the narration)
 CROSSINGS = {
     "dodged, 4 coins": ((5, 1), 20, 14, None),
-    "dodged, 6 coins": ((11, 3), 20, 16, None),
+    "dodged, 6 coins": ((7, 3), 20, 16, None),
     "minor wound": ((12, 7, 2), 18, 15, "minor"),
     "major wound": ((20, 8, 3), 15, 16, "major"),
 }
