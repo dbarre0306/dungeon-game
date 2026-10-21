@@ -64,8 +64,12 @@ def _merchant_html(state: GameState) -> str:
     if stock:
         rows = "".join(
             _row(
-                f"{escape(item.name.capitalize())}",
-                f"{item.quantity} at {item.price} gold coins each",
+                escape(
+                    item.name.title()
+                    if item.type == "elder_staff"
+                    else item.name.capitalize()
+                ),
+                f"{item.price} gold coins",
             )
             for item in stock
         )
@@ -117,8 +121,8 @@ def _warrior_rows(player: Warrior) -> list[str]:
 
 def _mage_rows(player: Mage) -> list[str]:
     return [
-        _row("Weapon", escape(player.staff.name.capitalize())),
-        _row("Heal casts", str(player.healing_casts_left)),
+        _row("Weapon", escape(player.staff.name.title()) + " (firebolt spell)"),
+        _row("Healing spells", str(player.healing_casts_left)),
         _row("Gold coins", str(player.gold_coins)),
     ]
 
