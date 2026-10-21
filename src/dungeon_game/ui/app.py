@@ -22,4 +22,6 @@ demo = build_app()
 
 
 def launch() -> None:
-    demo.launch(theme=THEME, css=CSS)
+    # SSR (on by default on Hugging Face) leaves custom CSS unscoped, so Gradio's
+    # own .prose rules override it.
+    demo.launch(theme=THEME, css=CSS, ssr_mode=False)
