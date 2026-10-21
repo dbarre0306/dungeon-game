@@ -57,7 +57,9 @@ body, .gradio-container {
 .mw-title {
   font-family: 'IM Fell English', Georgia, serif;
   font-weight: 400;
-  font-size: clamp(2.8rem, 9vw, 6rem);
+  /* !important: Gradio's `.prose h1` rule is more specific and shrinks the
+     title, which in turn shrinks the whole intro column. */
+  font-size: clamp(2.8rem, 9vw, 6rem) !important;
   line-height: 1;
   letter-spacing: -0.01em;
   margin: 0 0 .9rem;
