@@ -1,3 +1,17 @@
+---
+title: Dungeon of Mistwood
+emoji: 🐉
+colorFrom: gray
+colorTo: red
+sdk: gradio
+sdk_version: 6.30.0
+python_version: "3.13"
+app_file: app.py
+pinned: false
+license: mit
+short_description: LLM-narrated dungeon crawler built with LangGraph
+---
+
 # Dungeon of Mistwood
 
 A text-based dungeon crawler built as a LangGraph / LangChain demo, with a Gradio UI meant for deployment on Hugging Face Spaces.
@@ -102,3 +116,18 @@ tests/                      pytest suite
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Deploying to Hugging Face Spaces
+
+The repo is set up as a Gradio Space: the YAML block at the top of this README is the Space configuration, `app.py` is the entry point, and `requirements.txt` (`.`) installs the project and its dependencies from `pyproject.toml`.
+
+1. Create a new Space at <https://huggingface.co/new-space> with the **Gradio** SDK.
+2. In the Space's **Settings → Variables and secrets**, add `OPENAI_API_KEY` as a secret and optionally `MODEL` as a variable.
+3. Push this repo to the Space:
+
+```bash
+git remote add space https://huggingface.co/spaces/<username>/<space-name>
+git push space main
+```
+
+If you change the `gradio` version in `pyproject.toml`, update `sdk_version` in the README front matter to match.
