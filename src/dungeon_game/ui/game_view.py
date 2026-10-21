@@ -14,6 +14,11 @@ from dungeon_game.ui.session import (
     start_session,
 )
 
+# Narrator turns call the LLM, so let several players' turns run at once (Gradio
+# defaults to one at a time across all users), up to a cap that spares API rate
+# limits. They share one id so the cap applies to all of them together.
+TURN_QUEUE = {"concurrency_limit": 8, "concurrency_id": "turn"}
+
 FOCUS_COMMAND_BOX = """() => setTimeout(
     () => document.querySelector('.mw-command input, .mw-command textarea')
         ?.focus(),
@@ -173,16 +178,16 @@ def wire_game(
 
     starters = [*play_buttons.items(), *game.replay_buttons.items()]
     for class_key, play in starters:
-        play.click(
-            partial(enter_game, class_key), outputs=start_outputs
-        ).then(resolve, session, resolve_outputs).then(None, js=FOCUS_COMMAND_BOX)
+        play.click(partial(enter_game, class_key), outputs=start_outputs).then(
+            resolve, session, resolve_outputs, **TURN_QUEUE
+        ).then(None, js=FOCUS_COMMAND_BOX)
 
     for trigger in (game.command.submit, game.act.click):
         trigger(
             submit, [session, game.command], turn_outputs, show_progress="hidden"
-        ).then(resolve, session, resolve_outputs, show_progress="hidden").then(
-            None, js=FOCUS_COMMAND_BOX
-        )
+        ).then(
+            resolve, session, resolve_outputs, show_progress="hidden", **TURN_QUEUE
+        ).then(None, js=FOCUS_COMMAND_BOX)
 
     game.leave.click(ask_to_leave, outputs=ask_outputs)
     game.stay.click(keep_playing, outputs=ask_outputs)
