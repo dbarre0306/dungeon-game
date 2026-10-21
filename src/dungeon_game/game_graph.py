@@ -15,6 +15,7 @@ from dungeon_game.nodes.drink_potion import DrinkPotionNode
 from dungeon_game.nodes.enemy_attack import EnemyAttackNode
 from dungeon_game.nodes.explore import ExploreNode
 from dungeon_game.nodes.game_over import GameOverNode
+from dungeon_game.nodes.intro import IntroNode
 from dungeon_game.nodes.look import LookNode
 from dungeon_game.nodes.open_chest import OpenChestNode
 from dungeon_game.nodes.player_attack import PlayerAttackNode
@@ -33,6 +34,7 @@ class GameGraph:
     ):
         dice = dice or Dice()
         self._dungeon_master_agent = dungeon_master_agent
+        self.intro_node = IntroNode(dungeon_master_agent)
         self.router_node = RouterNode(router_agent)
         self.explore_node = ExploreNode(dungeon_master_agent)
         self.cross_trap_node = CrossTrapNode(dungeon_master_agent, dice)
@@ -51,6 +53,7 @@ class GameGraph:
         graph_builder = StateGraph(GameState)
 
         # Add nodes
+        graph_builder.add_node("intro", self.intro_node.execute)
         graph_builder.add_node("router", self.router_node.execute)
         graph_builder.add_node("explore", self.explore_node.execute)
         graph_builder.add_node("cross_trap", self.cross_trap_node.execute)
@@ -67,7 +70,8 @@ class GameGraph:
         graph_builder.add_node("unknown", self._unknown)
 
         # Add edges to connect nodes
-        graph_builder.add_edge(START, "router")
+        graph_builder.add_conditional_edges(START, self._entry, ["intro", "router"])
+        graph_builder.add_edge("intro", END)
         graph_builder.add_conditional_edges(
             "router",
             self._next_action,
@@ -139,6 +143,10 @@ class GameGraph:
         msg = msg or "Tell the player that they can't do that here."
         response = self._dungeon_master_agent.invoke(state, msg, include_command=True)
         return {"narration": [response.narration]}
+
+    @staticmethod
+    def _entry(state: GameState) -> str:
+        return "intro" if state.opening else "router"
 
     def _next_action(self, state: GameState) -> str:
         intent = state.intent

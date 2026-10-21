@@ -57,16 +57,16 @@ def test_looking_describes_the_chamber_and_keeps_the_player_there(game):
 
     assert game.room_type == "cave_chamber"
     assert len(state.narration) == 1
-    assert state.get_current_room().history == state.narration
+    assert state.get_current_room().history == []
 
 
-def test_looking_again_narrates_without_repeating_the_room_history(game):
-    first = game.say("look around").narration
+def test_looking_again_narrates_again_and_leaves_the_room_history_alone(game):
+    game.say("look around")
     second = game.say("look around").narration
 
     assert len(second) == 1
     assert game.room_type == "cave_chamber"
-    assert game.state.get_current_room().history == first
+    assert game.state.get_current_room().history == []
 
 
 def test_player_can_leave_the_chamber_after_looking(game):

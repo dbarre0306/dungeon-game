@@ -4,6 +4,7 @@ from dungeon_game.agents.dungeon_master_agent import DungeonMasterAgent
 from dungeon_game.domain.rooms.monster_room import MonsterRoom
 from dungeon_game.domain.rooms.throne_room import ThroneRoom
 from dungeon_game.game_state import GameState
+from dungeon_game.nodes.arrival import describe_arrival
 
 
 class ExploreNode:
@@ -42,16 +43,4 @@ class ExploreNode:
         }
 
     def _get_room_description(self, state: GameState) -> str:
-        msg = (
-            "Describe the room to the player using only the room facts. "
-            "The player "
-            "needs to clearly understand what is there in order to make a decision "
-            "on what "
-            "to do next.  Do not invent new "
-            "rooms, paths, exits, creatures, or other plot details that are "
-            "not listed. "
-            "If the facts or room history don't mention something, leave it out."
-        )
-        return self._dungeon_master_agent.invoke(
-            state, msg, include_command=True
-        ).narration
+        return describe_arrival(self._dungeon_master_agent, state, include_command=True)

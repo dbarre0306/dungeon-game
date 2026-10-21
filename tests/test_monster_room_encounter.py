@@ -57,7 +57,7 @@ def test_looking_describes_the_room_and_keeps_the_player_there(game):
 
     assert game.room_type == "monster_room"
     assert len(state.narration) == 1
-    assert state.get_current_room().history == state.narration
+    assert state.get_current_room().history == []
 
 
 @pytest.mark.parametrize("command", ["go forward", "go left", "go back"])

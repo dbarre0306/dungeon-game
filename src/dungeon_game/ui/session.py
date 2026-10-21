@@ -63,7 +63,9 @@ def start_session(class_key: str) -> Session:
     player = HERO_FACTORIES[class_key]()
     merchant = Merchant(merchandise=player.get_supported_merchandise())
     dungeon = DungeonFactory().generate(merchant)
-    state = GameState(player=player, dungeon=dungeon, command=OPENING_COMMAND)
+    state = GameState(
+        player=player, dungeon=dungeon, command=OPENING_COMMAND, opening=True
+    )
     return Session(state=state, pending=OPENING_COMMAND)
 
 

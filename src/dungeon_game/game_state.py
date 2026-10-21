@@ -16,6 +16,8 @@ class GameState(BaseModel):
     game_over: bool = False
     # Set when the room refuses a legal attempt; cleared at the start of each turn.
     attempt_failed: bool = False
+    # True until the intro has opened the game; the first turn skips the router.
+    opening: bool = False
 
     def get_current_room(self) -> DungeonRoom:
         return self.dungeon.get_room(self.player.current_room_index)
